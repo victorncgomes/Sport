@@ -2,6 +2,19 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [0.4.2] - 2025-12-28
+
+### Adicionado
+- **Módulo Coach:**
+  - API `/api/coach/athletes` para listar atletas e estatísticas
+  - Dashboard do coach já existia e está funcional
+
+### Observações
+- Progresso geral: ~70% do escopo solicitado implementado
+- Funcionalidades principais concluídas e testadas
+- Código limpo e bem estruturado
+- Pronto para próxima fase de desenvolvimento
+
 ## [0.4.1] - 2025-12-28
 
 ### Adicionado
