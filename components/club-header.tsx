@@ -142,59 +142,59 @@ export function ClubHeader() {
                     <div className="flex items-center gap-6 mr-[160px]">
                         {/* REDES SOCIAIS */}
                         <div className="flex items-center gap-4">
-                            <a href="#" className="text-white hover:opacity-80 transition-opacity" aria-label="Facebook">
+                            <a href="https://www.instagram.com/sportclubdenatal/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80 transition-opacity" aria-label="Facebook">
                                 <Facebook className="w-6 h-6" />
                             </a>
-                            <a href="#" className="text-white hover:opacity-80 transition-opacity" aria-label="Instagram">
+                            <a href="https://www.instagram.com/sportclubdenatal/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80 transition-opacity" aria-label="Instagram">
                                 <Instagram className="w-6 h-6" />
                             </a>
-                            <a href="#" className="text-white hover:opacity-80 transition-opacity" aria-label="TikTok">
+                            <a href="https://www.instagram.com/sportclubdenatal/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80 transition-opacity" aria-label="TikTok">
                                 <TikTokIcon className="w-6 h-6" />
                             </a>
                         </div>
 
                         {/* PARCEIROS */}
                         <div className="flex items-center gap-4">
-                            <div className="relative h-[30px] w-[40px]" title="Governo do Estado do Rio Grande do Norte">
+                            <a href="https://www.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[30px] w-[40px] hover:opacity-80 transition-opacity" title="Governo do Estado do Rio Grande do Norte">
                                 <Image
                                     src="/logos/svg/RN.svg"
                                     alt="Governo do RN"
                                     fill
                                     className="object-contain"
                                 />
-                            </div>
-                            <div className="relative h-[30px] w-[40px]" title="Prefeitura de Natal">
+                            </a>
+                            <a href="https://www.natal.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[30px] w-[40px] hover:opacity-80 transition-opacity" title="Prefeitura de Natal">
                                 <Image
                                     src="/logos/svg/prefeitura.svg"
                                     alt="Prefeitura de Natal"
                                     fill
                                     className="object-contain"
                                 />
-                            </div>
-                            <div className="relative h-[30px] w-[40px]" title="Eureka">
+                            </a>
+                            <a href="https://www.instagram.com/eurekaerk/" target="_blank" rel="noopener noreferrer" className="relative h-[30px] w-[40px] hover:opacity-80 transition-opacity" title="Eureka">
                                 <Image
                                     src="/logos/svg/ERK.svg"
                                     alt="Eureka"
                                     fill
                                     className="object-contain"
                                 />
-                            </div>
-                            <div className="relative h-[30px] w-[40px]" title="Confederação Brasileira de Remo">
+                            </a>
+                            <a href="https://www.remobrasil.com/" target="_blank" rel="noopener noreferrer" className="relative h-[30px] w-[40px] hover:opacity-80 transition-opacity" title="Confederação Brasileira de Remo">
                                 <Image
                                     src="/logos/svg/CBR.svg"
                                     alt="CBR"
                                     fill
                                     className="object-contain"
                                 />
-                            </div>
-                            <div className="relative h-[30px] w-[40px]" title="Potigás">
+                            </a>
+                            <a href="https://www.potigas.com.br/" target="_blank" rel="noopener noreferrer" className="relative h-[30px] w-[40px] hover:opacity-80 transition-opacity" title="Potigás">
                                 <Image
                                     src="/logos/svg/POTIGAS.svg"
                                     alt="Potigás"
                                     fill
                                     className="object-contain"
                                 />
-                            </div>
+                            </a>
                         </div>
 
                         {/* SISTEMA/USUÁRIO */}
@@ -274,13 +274,13 @@ export function ClubHeader() {
                 <div className="bg-[#000000] h-[80px] flex items-center justify-between px-4 relative">
                     {/* BLOCO ESQUERDA - REDES SOCIAIS (deslocado 20px para baixo) */}
                     <div className="flex items-center gap-3 translate-y-[20px]">
-                        <a href="#" className="text-white" aria-label="Facebook">
+                        <a href="https://www.instagram.com/sportclubdenatal/" target="_blank" rel="noopener noreferrer" className="text-white" aria-label="Facebook">
                             <Facebook className="w-5 h-5" />
                         </a>
-                        <a href="#" className="text-white" aria-label="Instagram">
+                        <a href="https://www.instagram.com/sportclubdenatal/" target="_blank" rel="noopener noreferrer" className="text-white" aria-label="Instagram">
                             <Instagram className="w-5 h-5" />
                         </a>
-                        <a href="#" className="text-white" aria-label="TikTok">
+                        <a href="https://www.instagram.com/sportclubdenatal/" target="_blank" rel="noopener noreferrer" className="text-white" aria-label="TikTok">
                             <TikTokIcon className="w-5 h-5" />
                         </a>
                     </div>

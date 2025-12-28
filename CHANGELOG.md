@@ -2,7 +2,35 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-## [0.4.3] - 2025-12-27
+## [0.4.0] - 2025-12-28
+
+### Adicionado
+- **Correções de UI:**
+  - Logos SVG dos parceiros adicionados no header desktop com links funcionais
+  - Logos SVG adicionados no menu inferior mobile
+  - Links de redes sociais atualizados para Instagram do Sport Club
+  - Links dos parceiros: Governo RN, Prefeitura Natal, Potigás, ERK, CBR
+
+- **Sistema de Treinamento Aprimorado:**
+  - Página de treino ativo (`/training/live`) com GPS tracking em tempo real
+  - Cronômetro, métricas de distância, pace e frequência cardíaca
+  - Controles de pausa/retomar/finalizar
+  - Página de feedback pós-treino (`/training/feedback/[id]`)
+  - Avaliação de intensidade, sensação, grupos musculares
+  - API de feedback (`/api/workouts/[id]/feedback`)
+  - API de relatórios (`/api/workouts/[id]/report`)
+  - Preparação para integração Bluetooth (estrutura de dados)
+
+- **Controle de Versão:**
+  - Histórico completo de versões simuladas (0.1.1 até 0.4.1)
+  - Repositório GitHub configurado e backup realizado
+  - Tag v0.3.6 criada
+
+### Modificado
+- Bottom navigation agora inclui logos dos parceiros no mobile
+- Sistema de GPS tracking aprimorado com cálculo de distância e pace
+
+## [0.3.6] - 2025-12-27
 
 ### Adicionado
 - **Store Completa:**
