@@ -1,0 +1,38 @@
+# Arquivos e pastas a ignorar
+node_modules/
+.next/
+.turbo/
+out/
+build/
+dist/
+
+# Cache
+.cache/
+*.log
+*.tmp
+*.temp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env.local
+.env.*.local
+
+# Prisma
+prisma/migrations/
+
+# Testes
+coverage/
+.nyc_output/
+
+# Misc
+*.tsbuildinfo
+.eslintcache

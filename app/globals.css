@@ -1,0 +1,413 @@
+@import url('https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800;900&family=Saira+Condensed:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   DESIGN SYSTEM - SPORT CLUB DE NATAL
+   Visual mais VIBRANTE e VIVO
+======================================== */
+
+:root {
+    /* Cores principais - mais vibrantes */
+    --club-red: #E11D48;
+    --club-red-dark: #BE123C;
+    --club-black: #171717;
+    --club-gold: #F59E0B;
+    --club-white: #FAFAFA;
+
+    /* Cores de fundo - mais claras e amigáveis */
+    --bg-primary: #1F1F23;
+    --bg-secondary: #27272A;
+    --bg-card: #2D2D32;
+    --bg-hover: #3D3D42;
+
+    /* Acentos vibrantes */
+    --accent-blue: #3B82F6;
+    --accent-green: #10B981;
+    --accent-orange: #F97316;
+    --accent-purple: #8B5CF6;
+
+    /* Sombras */
+    --shadow-red: 0 4px 20px rgba(225, 29, 72, 0.3);
+    --shadow-gold: 0 4px 20px rgba(245, 158, 11, 0.3);
+
+    /* Header específico */
+    --header-height-desktop: 156px;
+    /* 40px top bar + 96px main bar + 20px menu */
+    --header-height-mobile: 80px;
+}
+
+/* Variáveis CSS adicionais para o header */
+.club-red {
+    background-color: #DC2626;
+}
+
+.bg-club-red {
+    background-color: #DC2626;
+}
+
+/* Reset e base - tons mais claros */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Saira', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    color: var(--club-white);
+    min-height: 100vh;
+}
+
+/* Tipografia Saira - estilo Flamengo */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Saira Condensed', 'Saira', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* ========================================
+   COMPONENTES UI VIBRANTES
+======================================== */
+
+/* Cards com glassmorphism sutil */
+.glass-card {
+    background: rgba(45, 45, 50, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    border-color: rgba(225, 29, 72, 0.3);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-red);
+}
+
+/* Card padrão mais leve */
+.card-light {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+}
+
+/* Botões vibrantes */
+.btn-primary {
+    background: linear-gradient(135deg, var(--club-red) 0%, var(--club-red-dark) 100%);
+    color: white;
+    font-family: 'Saira Condensed', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-red);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(225, 29, 72, 0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    font-family: 'Saira Condensed', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--club-red);
+    color: var(--club-red);
+}
+
+/* ========================================
+   NAVEGAÇÃO
+======================================== */
+
+/* Header fixo com fundo sólido */
+.nav-header {
+    background: var(--bg-primary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Bottom navigation - Menu fixo inferior para mobile */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.5rem 0;
+    z-index: 9999;
+    /* Aumentado para garantir visibilidade acima de todos os elementos */
+    height: 70px;
+    display: block !important;
+    /* Garante que sempre seja exibido */
+    visibility: visible !important;
+}
+
+.bottom-nav-inner {
+    display: flex !important;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    min-width: 56px;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.bottom-nav-item.active {
+    color: var(--club-red);
+}
+
+/* Ícones consistentes no bottom-nav */
+.bottom-nav-item svg,
+.bottom-nav-item .lucide {
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0;
+}
+
+.bottom-nav-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+/* ========================================
+   SEÇÕES E CONTAINERS
+======================================== */
+
+.container-app {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.section-header {
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-family: 'Saira Condensed', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========================================
+   TÁBUA DE MARÉS
+======================================== */
+
+.tide-widget {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.tide-high {
+    color: var(--accent-blue);
+}
+
+.tide-low {
+    color: var(--accent-orange);
+}
+
+/* ========================================
+   BADGES E TAGS
+======================================== */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 0.375rem;
+}
+
+.badge-red {
+    background: rgba(225, 29, 72, 0.2);
+    color: var(--club-red);
+}
+
+.badge-gold {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--club-gold);
+}
+
+.badge-blue {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--accent-blue);
+}
+
+.badge-green {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--accent-green);
+}
+
+/* ========================================
+   INPUTS E FORMULÁRIOS
+======================================== */
+
+.input-field {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    color: white;
+    font-family: 'Saira', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--club-red);
+    box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.2);
+}
+
+.input-field::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================
+   ANIMAÇÕES
+======================================== */
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(225, 29, 72, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(225, 29, 72, 0.5);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.5s ease forwards;
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ========================================
+   SCROLLBAR CUSTOMIZADA
+======================================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================
+   UTILITIES
+======================================== */
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--club-red) 0%, var(--club-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.border-glow {
+    border: 1px solid var(--club-red);
+    box-shadow: var(--shadow-red);
+}
+
+/* Status colors */
+.status-online {
+    color: var(--accent-green);
+}
+
+.status-offline {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.status-busy {
+    color: var(--accent-orange);
+}
+
+/* Safe area padding for mobile */
+.pb-safe {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+
+/* Imagens de background decorativas */
+.bg-pattern {
+    background-image: url('/images/gallery/remo-sunset.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.1;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}

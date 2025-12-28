@@ -1,0 +1,18 @@
+
+// Gamification - Activity Log
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  activityType String  // ANAMNESE, VOLUNTEER, EAD_VIDEO, TRAINING, BOAT_RESERVATION, etc.
+  description  String  // "Completou a Ficha de Anamnese"
+  xpEarned     Int     // Pontos ganhos nesta atividade
+  
+  metadata     String? // JSON com dados extras (ex: videoId, trainingId)
+  
+  createdAt    DateTime @default(now())
+  
+  @@index([userId, createdAt])
+  @@map("activity_logs")
+}

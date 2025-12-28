@@ -1,0 +1,132 @@
+// Modelo de Anamnese Completo - Baseado nos PDFs fornecidos
+// Sport Club de Natal - Sistema de Gestão Náutica
+
+model AnamneseForm {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // ===== SEÇÃO 1: DADOS PESSOAIS E BIOMÉTRICOS =====
+  // Dados Cadastrais
+  nomeCompleto      String
+  endereco          String?
+  bairro            String?
+  cidade            String?
+  cep               String?
+  dataNascimento    DateTime?
+  telefone          String?
+  celular           String?
+  planoSaude        String?
+  escolaridade      String?
+  raca              String?
+  
+  // Medidas Biométricas
+  peso              Float?
+  altura            Float?
+  imc               Float?
+  
+  // ===== SEÇÃO 2: HISTÓRICO CLÍNICO E FAMILIAR =====
+  // Histórico Familiar (doenças em parentes)
+  historicoFamiliar String? // JSON: {doenca: string, grauParentesco: string[]}[]
+  
+  // Diagnósticos Pessoais
+  problemasCardiacos    Boolean @default(false)
+  hipertensao           Boolean @default(false)
+  colesterolElevado     Boolean @default(false)
+  diabetesMellitus      Boolean @default(false)
+  
+  // Cirurgias e Procedimentos
+  cirurgiasRealizadas   String? // JSON: {tipo: string, data: string}[]
+  
+  // Medicamentos e Suplementos
+  medicamentosUso       String? // JSON: {nome: string, dosagem: string, frequencia: string}[]
+  suplementosUltimos30  String? // JSON: {tipo: string, marca: string}[] (whey, creatina, termogênicos, anabolizantes)
+  
+  // ===== SEÇÃO 3: SINTOMAS E RISCOS CARDIOVASCULARES =====
+  // Sintomatologia
+  tontura               Boolean @default(false)
+  desmaios              Boolean @default(false)
+  dorPeito              Boolean @default(false)
+  faltaAr               Boolean @default(false)
+  cansacoFacil          Boolean @default(false)
+  falhaCoracao          Boolean @default(false)
+  escurecimentoVista    Boolean @default(false)
+  taquicardia           Boolean @default(false)
+  
+  // Pressão Arterial (múltiplas medições)
+  paClinica1            String? // formato: "120/80"
+  paClinica2            String?
+  paBracoDireito        String?
+  paBracoEsquerdo       String?
+  paMedia               String?
+  paEsforcoMaximo       String?
+  
+  // ===== SEÇÃO 4: HÁBITOS E ESTILO DE VIDA =====
+  // Sono
+  horasSonoPorNoite     Float?
+  
+  // Álcool
+  consumoAlcool         String? // "DIARIO", "SEMANAL", "MENSAL", "OCASIONAL", "NUNCA"
+  dosesAlcool           Int?
+  
+  // Tabagismo
+  fuma                  Boolean @default(false)
+  exFumante             Boolean @default(false)
+  cigarrosPorDia        Int?
+  
+  // Restrições de Saúde
+  restricoesAtuais      String? // texto livre
+  restricoesPassadas    String? // texto livre
+  
+  // ===== SEÇÃO 5: HISTÓRICO ESPORTIVO E AQUÁTICO =====
+  // Atividade Física Atual
+  praticaAtividadeRegular   Boolean @default(false)
+  tipoAtividade             String? // JSON: string[]
+  frequenciaSemanal         Int?
+  duracaoDiaria             Int? // em minutos
+  
+  // Perfil de Condicionamento
+  perfilCondicionamento     String? // "SEDENTARIO", "POUCO_ATIVO", "ATIVO", "MUITO_ATIVO", "ATLETA"
+  
+  // Habilidades Aquáticas
+  condicaoNatatoria         String? // "NAO_SABE", "DIFICULDADE", "COM_ESTILO", "ATLETA"
+  flutuabilidadeVertical10min Boolean @default(false)
+  
+  // Preferência de Avaliação
+  preferenciaAvaliacao      String? // "CORRIDA", "CAMINHADA"
+  
+  // ===== SEÇÃO 6: SAÚDE MUSCULOESQUELÉTICA E MENTAL =====
+  // Problemas Mioarticulares
+  lesoesMioarticulares      Boolean @default(false)
+  artrite                   Boolean @default(false)
+  artrose                   Boolean @default(false)
+  doresCronicas             String? // JSON: {local: string, intensidade: number}[]
+  
+  // Saúde Óssea
+  osteopenia                Boolean @default(false)
+  osteoporose               Boolean @default(false)
+  historicoFraturas         String? // JSON: {local: string, data: string}[]
+  
+  // Saúde Feminina
+  idadeUltimaMenstruacao    Int?
+  reposicaoHormonal         Boolean @default(false)
+  
+  // Saúde Mental
+  sinaisDemencia            Boolean @default(false)
+  sinaisDepressao           Boolean @default(false)
+  escalaDemencia            Int? // pontuação 0-10
+  escalaDepressao           Int? // pontuação 0-10
+  
+  // Orientação Médica
+  exercicioOrientadoMedico  Boolean @default(false)
+  limitacaoMedicaEspecifica String? // texto livre
+  
+  // ===== METADADOS =====
+  comentariosAdicionais     String? // observações livres
+  assinatura                String? // base64 da assinatura digital
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("anamnese_forms")
+}

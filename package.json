@@ -1,0 +1,73 @@
+{
+    "name": "sport-club-natal",
+    "version": "0.4.3",
+    "description": "Sistema de gestão para o Sport Club de Natal",
+    "private": true,
+    "prisma": {
+        "seed": "tsx prisma/seed.ts"
+    },
+    "scripts": {
+        "dev": "next dev -p 3001",
+        "build": "next build",
+        "start": "next start -p 3001",
+        "lint": "next lint",
+        "db:generate": "prisma generate",
+        "db:push": "prisma db push",
+        "db:migrate": "prisma migrate dev",
+        "db:seed": "tsx prisma/seed.ts",
+        "db:studio": "prisma studio",
+        "clean": "rimraf .next .turbo node_modules/.cache",
+        "clean:all": "rimraf .next .turbo node_modules",
+        "fresh": "npm run clean:all && npm install"
+    },
+    "dependencies": {
+        "@hookform/resolvers": "^3.3.4",
+        "@prisma/client": "^5.10.0",
+        "@radix-ui/react-avatar": "^1.0.4",
+        "@radix-ui/react-dialog": "^1.0.5",
+        "@radix-ui/react-dropdown-menu": "^2.0.6",
+        "@radix-ui/react-label": "^2.0.2",
+        "@radix-ui/react-select": "^2.0.0",
+        "@radix-ui/react-slot": "^1.0.2",
+        "@radix-ui/react-tabs": "^1.0.4",
+        "@radix-ui/react-toast": "^1.1.5",
+        "bcryptjs": "^2.4.3",
+        "class-variance-authority": "^0.7.0",
+        "clsx": "^2.1.1",
+        "date-fns": "^3.6.0",
+        "framer-motion": "^12.23.26",
+        "lucide-react": "^0.323.0",
+        "next": "^14.1.0",
+        "next-auth": "^5.0.0-beta.4",
+        "qrcode": "^1.5.3",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-hook-form": "^7.50.0",
+        "recharts": "^3.6.0",
+        "tailwind-merge": "^2.2.1",
+        "tailwindcss-animate": "^1.0.7",
+        "zod": "^3.22.4",
+        "zustand": "^4.5.7"
+    },
+    "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "@types/leaflet": "^1.9.21",
+        "@types/node": "^20.11.16",
+        "@types/qrcode": "^1.5.5",
+        "@types/react": "^18.2.52",
+        "@types/react-dom": "^18.2.18",
+        "autoprefixer": "^10.4.17",
+        "eslint": "^8.56.0",
+        "eslint-config-next": "^14.1.0",
+        "postcss": "^8.4.33",
+        "prisma": "^5.10.0",
+        "rimraf": "^6.1.2",
+        "tailwindcss": "^3.4.1",
+        "tsx": "^4.7.0",
+        "typescript": "^5.3.3"
+    },
+    "engines": {
+        "node": ">=20.0.0",
+        "npm": ">=10.0.0"
+    }
+}

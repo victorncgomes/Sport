@@ -1,0 +1,411 @@
+
+// ════════════════════════════════════════════════════════════════
+// MÓDULO DE TREINOS (WORKOUTS)
+// ════════════════════════════════════════════════════════════════
+
+// Planilhas de treino (criadas por COACH/BOARD)
+model WorkoutTemplate {
+  id              String   @id @default(cuid())
+  title           String
+  type            String   // TECHNIQUE, BASE, INTERVALS, RECOVERY, STRENGTH, INDOOR_TANK, INDOOR_GENERAL
+  targetAudience  String   // JSON array de SkillLevel
+  duration        Int      // minutos
+  distance        Int?     // metros (opcional)
+  
+  // Etapas do treino
+  stages          WorkoutStage[]
+  
+  // Criação e aprovação
+  createdById     String
+  createdBy       User     @relation("WorkoutTemplateCreator", fields: [createdById], references: [id])
+  status          String   @default("APPROVED") // SUGGESTED, PENDING_APPROVAL, APPROVED, ARCHIVED
+  
+  // Sessões baseadas neste template
+  sessions        WorkoutSession[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([type])
+  @@index([status])
+  @@map("workout_templates")
+}
+
+// Etapas de um treino
+model WorkoutStage {
+  id              String   @id @default(cuid())
+  templateId      String
+  template        WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  
+  order           Int      // Ordem da etapa
+  name            String   // "Aquecimento", "Série Principal", "Desaquecimento"
+  duration        Int      // minutos
+  intensity       String   // EASY, MODERATE, HARD, MAX
+  instructions    String
+  targetPace      String?  // "2:00/500m"
+  targetSPM       Int?     // strokes per minute
+  
+  @@index([templateId, order])
+  @@map("workout_stages")
+}
+
+// Sessões de treino executadas
+model WorkoutSession {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation("WorkoutSessions", fields: [userId], references: [id], onDelete: Cascade)
+  
+  templateId      String?
+  template        WorkoutTemplate? @relation(fields: [templateId], references: [id])
+  
+  mode            String   // OUTDOOR, INDOOR_TANK, INDOOR_GENERAL
+  status          String   // IN_PROGRESS, COMPLETED, CANCELLED
+  
+  // Timing
+  startedAt       DateTime
+  completedAt     DateTime?
+  duration        Int?     // segundos
+  
+  // Métricas
+  distance        Float?   // metros
+  avgPace         String?  // "2:05/500m"
+  avgSPM          Int?
+  calories        Int?
+  
+  // GPS Track (se outdoor)
+  gpsTrackPoints  GPSTrackPoint[]
+  
+  // Checklist pós-treino (se outdoor com barco)
+  boatStored      Boolean  @default(false)
+  boatWashed      Boolean  @default(false)
+  damageReported  Boolean  @default(false)
+  damageDetails   String?  // JSON
+  
+  // Gamificação
+  pointsEarned    Int      @default(0)
+  
+  // Metadata
+  metadata        String?  // JSON
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId, startedAt])
+  @@index([status])
+  @@index([mode])
+  @@map("workout_sessions")
+}
+
+// Pontos GPS coletados durante treino outdoor
+model GPSTrackPoint {
+  id              String   @id @default(cuid())
+  sessionId       String
+  session         WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  lat             Float
+  lng             Float
+  timestamp       String   // ISO timestamp
+  accuracy        Float    // metros
+  altitude        Float?
+  speed           Float?   // m/s
+  heading         Float?   // graus
+  
+  @@index([sessionId, timestamp])
+  @@map("gps_track_points")
+}
+
+// ════════════════════════════════════════════════════════════════
+// MÓDULO DE GARAGEM (RECURSOS E RESERVAS)
+// ════════════════════════════════════════════════════════════════
+
+// Recursos (barcos + tanque)
+model Resource {
+  id              String   @id @default(cuid())
+  name            String
+  type            String   // BOAT, TANK
+  status          String   @default("AVAILABLE") // AVAILABLE, RESERVED, IN_USE, OVERDUE, MAINTENANCE, BLOCKED
+  category        String?  // "Single", "Double", "Quad", "Eight"
+  description     String
+  imageUrl        String?
+  
+  // Regras de acesso (JSON)
+  rules           String?  // JSON: { minRole, minSkillLevel, maxDuration, minTankWorkoutsCompleted, requiresApproval }
+  
+  // Localização
+  location        String   // "Garagem Principal", "Área Indoor"
+  
+  // Manutenção
+  lastMaintenanceAt   DateTime?
+  nextMaintenanceAt   DateTime?
+  usageCount          Int      @default(0)
+  
+  // Relacionamentos
+  reservations    Reservation[]
+  waitlist        WaitlistEntry[]
+  maintenanceTickets MaintenanceTicket[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([type])
+  @@index([status])
+  @@map("resources")
+}
+
+// Reservas de recursos
+model Reservation {
+  id              String   @id @default(cuid())
+  resourceId      String
+  resource        Resource @relation(fields: [resourceId], references: [id])
+  userId          String
+  user            User     @relation("Reservations", fields: [userId], references: [id], onDelete: Cascade)
+  
+  status          String   // PENDING, CONFIRMED, IN_USE, COMPLETED, CANCELLED, OVERDUE
+  
+  // Horários
+  startAt         DateTime
+  expectedEndAt   DateTime
+  actualStartAt   DateTime?
+  actualEndAt     DateTime?
+  
+  // Checklist pós-uso
+  stored          Boolean  @default(false)
+  washed          Boolean  @default(false)
+  damageReported  Boolean  @default(false)
+  damageDetails   String?  // JSON
+  
+  // Metadata
+  notes           String?
+  pointsEarned    Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([resourceId, startAt])
+  @@index([userId])
+  @@index([status])
+  @@map("reservations")
+}
+
+// Fila de espera para recursos
+model WaitlistEntry {
+  id              String   @id @default(cuid())
+  resourceId      String
+  resource        Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User     @relation("WaitlistEntries", fields: [userId], references: [id], onDelete: Cascade)
+  
+  position        Int      // Posição na fila
+  interestedFrom  DateTime
+  interestedUntil DateTime?
+  notified        Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([resourceId, position])
+  @@index([userId])
+  @@map("waitlist_entries")
+}
+
+// Tickets de manutenção
+model MaintenanceTicket {
+  id              String   @id @default(cuid())
+  ticketNumber    String   @unique
+  resourceId      String
+  resource        Resource @relation(fields: [resourceId], references: [id])
+  
+  status          String   // OPEN, IN_PROGRESS, AWAITING_PARTS, DONE, RETURNED
+  priority        String   // LOW, MEDIUM, HIGH, CRITICAL
+  
+  // Problema
+  damageType      String   // STRUCTURAL, EQUIPMENT, COSMETIC, OTHER
+  severity        String   // LOW, MEDIUM, HIGH, CRITICAL
+  description     String
+  photos          String?  // JSON array de URLs
+  
+  // Atribuição
+  reportedById    String
+  reportedBy      User     @relation("MaintenanceReporter", fields: [reportedById], references: [id])
+  assignedToId    String?
+  assignedTo      User?    @relation("MaintenanceAssignee", fields: [assignedToId], references: [id])
+  
+  // Custos e tempo
+  estimatedCost   Float?
+  actualCost      Float?
+  estimatedDuration Int?   // horas
+  actualDuration    Int?
+  
+  // Workflow
+  openedAt        DateTime @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+  returnedToServiceAt DateTime?
+  
+  // Timeline (JSON)
+  timeline        String?  // JSON array de eventos
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([resourceId])
+  @@index([status])
+  @@index([priority])
+  @@map("maintenance_tickets")
+}
+
+// ════════════════════════════════════════════════════════════════
+// MÓDULO DE VOLUNTARIADO (EXPANDIDO)
+// ════════════════════════════════════════════════════════════════
+
+// Tarefas de voluntariado
+model VolunteerTask {
+  id              String   @id @default(cuid())
+  taskNumber      String   @unique
+  
+  title           String
+  description     String
+  area            String   // MIDIA, STORE, LIMPEZA, MANUTENCAO, TREINAMENTO, ATENDIMENTO
+  
+  // Localização
+  location        String   // CLUB, REMOTE
+  specificLocation String?
+  
+  // Timing
+  dueDate         DateTime
+  estimatedDuration Int    // horas
+  actualDuration    Int?
+  
+  // Atribuição
+  assignedToId    String
+  assignedTo      User     @relation("TasksAssigned", fields: [assignedToId], references: [id])
+  assignedById    String
+  assignedBy      User     @relation("TasksCreated", fields: [assignedById], references: [id])
+  assignedAt      DateTime @default(now())
+  
+  // Status
+  status          String   // ASSIGNED, ACCEPTED, IN_PROGRESS, SUBMITTED, APPROVED, REJECTED, CANCELLED
+  
+  // Execução
+  startedAt       DateTime?
+  submittedAt     DateTime?
+  completedAt     DateTime?
+  
+  // Evidências
+  submissionNotes String?
+  submissionPhotos String? // JSON array
+  submissionFiles  String? // JSON array
+  
+  // Review
+  reviewedById    String?
+  reviewedBy      User?    @relation("TasksReviewed", fields: [reviewedById], references: [id])
+  reviewedAt      DateTime?
+  reviewNotes     String?
+  reviewRating    Int?     // 1-5
+  
+  // Checklist (JSON)
+  checklist       String?
+  
+  // Gamificação
+  pointsAwarded   Int?
+  
+  // Metadata
+  priority        String   // LOW, MEDIUM, HIGH, URGENT
+  tags            String?  // JSON array
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([assignedToId, status])
+  @@index([status])
+  @@index([dueDate])
+  @@map("volunteer_tasks")
+}
+
+// Disponibilidade semanal do voluntário
+model VolunteerAvailability {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation("VolunteerAvailability", fields: [userId], references: [id], onDelete: Cascade)
+  
+  dayOfWeek       Int      // 0-6 (0=domingo)
+  startTime       String   // "09:00"
+  endTime         String   // "12:00"
+  
+  areas           String   // JSON array de VolunteerArea
+  isRemote        Boolean  @default(false)
+  
+  isActive        Boolean  @default(true)
+  notes           String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId, dayOfWeek])
+  @@map("volunteer_availability")
+}
+
+// Reputação do voluntário
+model VolunteerReputation {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation("VolunteerReputation", fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Métricas brutas
+  totalTasksAssigned   Int @default(0)
+  totalTasksCompleted  Int @default(0)
+  totalTasksApproved   Int @default(0)
+  totalTasksRejected   Int @default(0)
+  totalTasksCancelled  Int @default(0)
+  
+  // Taxas (calculadas)
+  completionRate  Float @default(0)
+  approvalRate    Float @default(0)
+  onTimeRate      Float @default(0)
+  
+  // Tempo médio
+  avgResponseTime Float @default(0)  // horas
+  avgCompletionTime Float @default(0)
+  
+  // Feedback
+  avgRating       Float @default(0)
+  totalFiveStars  Int   @default(0)
+  
+  // Pontuação global
+  reputationScore Int   @default(50)  // 0-100
+  reputationLevel String @default("REGULAR") // CRITICAL, REGULAR, BOA, EXCELENTE
+  
+  lastUpdatedAt   DateTime @default(now())
+  
+  @@map("volunteer_reputation")
+}
+
+// Banco de talentos
+model VolunteerTalent {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation("VolunteerTalent", fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Habilidades (JSON arrays)
+  mediaSkills     String?
+  technicalSkills String?
+  eventSkills     String?
+  otherSkills     String?
+  
+  // Links
+  portfolioUrl    String?
+  instagramHandle String?
+  linkedinUrl     String?
+  
+  // Preferências
+  preferredAreas  String?  // JSON array
+  canLead         Boolean  @default(false)
+  canTeach        Boolean  @default(false)
+  
+  // Equipamentos
+  hasOwnEquipment Boolean  @default(false)
+  equipmentList   String?  // JSON array
+  
+  updatedAt       DateTime @updatedAt
+  
+  @@map("volunteer_talents")
+}
