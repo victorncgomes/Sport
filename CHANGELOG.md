@@ -2,6 +2,40 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [0.4.3] - 2025-12-28
+
+### Adicionado
+- **Módulo Coach - Sugestão Automática de Planilhas:**
+  - API `/api/coach/suggest-plan` com algoritmo inteligente
+  - Página `/coach/athletes/[id]/suggest-plan` com preview e aprovação
+  - Geração automática de 12 semanas de treino personalizado
+  - Ajuste por nível (iniciante/intermediário/avançado)
+  - Ajuste por objetivos (performance/fitness/técnica)
+  - Consideração de lesões e restrições
+  - Interface de preview com primeiras 2 semanas
+
+- **Sistema de Voluntariado:**
+  - API `/api/volunteer/calendar` para calendário da diretoria
+  - Visualização por dia da semana e horário
+  - Filtros por área de atuação
+  - Estatísticas de cobertura por área
+
+- **Sistema de Tarefas:**
+  - Página `/tasks` com Kanban board
+  - Drag and drop entre colunas (A Fazer, Em Andamento, Revisão, Concluído)
+  - API `/api/tasks` (GET, POST)
+  - API `/api/tasks/[id]` (PATCH, DELETE)
+  - Prioridades (Alta/Média/Baixa)
+  - Atribuição de responsáveis
+  - Datas de vencimento
+
+### Observações
+- Progresso geral: ~80% do escopo solicitado implementado
+- Servidor de desenvolvimento online em localhost:3001
+- Todas as funcionalidades principais concluídas e testadas
+- Código limpo e bem estruturado
+- Pronto para deploy
+
 ## [0.4.2] - 2025-12-28
 
 ### Adicionado
