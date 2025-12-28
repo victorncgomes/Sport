@@ -308,16 +308,18 @@ export function ClubHeader() {
                         >
                             <User className="w-5 h-5" />
                         </button>
-                        <Link href="/notifications">
-                            <button className="text-white hover:opacity-70 transition-opacity relative" aria-label="Notificações">
-                                <Bell className="w-5 h-5" />
-                                {notificationCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-club-red text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                                        {notificationCount}
-                                    </span>
-                                )}
-                            </button>
-                        </Link>
+                        <button
+                            onClick={() => router.push('/profile/notices')}
+                            className="text-white hover:opacity-70 transition-opacity relative"
+                            aria-label="Notificações"
+                        >
+                            <Bell className="w-5 h-5" />
+                            {notificationCount > 0 && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-club-red text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                                    {notificationCount}
+                                </span>
+                            )}
+                        </button>
                         <button
                             onClick={() => setSearchOpen(!searchOpen)}
                             className="text-white hover:opacity-70 transition-opacity"

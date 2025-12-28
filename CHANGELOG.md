@@ -2,6 +2,29 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [0.4.1] - 2025-12-28
+
+### Adicionado
+- **Sistema de Garagem Aprimorado:**
+  - Página de reserva com intervalos de 15 minutos
+  - Opção de duração customizada (30min, 1h, 1h30, 2h, 2h30, 3h)
+  - Resumo da reserva com horário de término calculado
+
+- **Páginas de Perfil Completas:**
+  - Página de Pagamentos (`/profile/payments`) com histórico e pendências
+  - Página de Avisos (`/profile/notices`) com filtros e marcação de lido
+  - Página de Configurações (`/profile/settings`) com toggles e ações
+
+- **APIs de Perfil:**
+  - `/api/profile/payments` - Listar pagamentos e pendências
+  - `/api/profile/notices` - Listar avisos com filtros
+  - `/api/profile/notices/[id]/read` - Marcar aviso como lido
+
+### Corrigido
+- Sistema de notificações: sininho não redireciona mais para login
+- Sininho mobile agora direciona para `/profile/notices`
+- Sininho desktop direciona para `/notifications`
+
 ## [0.4.0] - 2025-12-28
 
 ### Adicionado
