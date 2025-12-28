@@ -74,6 +74,11 @@ model User {
   volunteerReputation     VolunteerReputation? @relation("VolunteerReputation")
   volunteerTalent         VolunteerTalent?  @relation("VolunteerTalent")
 
+  // Controle de Voluntariado
+  isVolunteer             Boolean           @default(false)
+  volunteerSince          DateTime?
+  volunteerTermAcceptance VolunteerTermAcceptance?
+
   @@map("users")
 
 }
@@ -1236,5 +1241,22 @@ model VolunteerTalent {
   updatedAt       DateTime @updatedAt
   
   @@map("volunteer_talents")
+}
+
+model VolunteerTermAcceptance {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  termVersion         String
+  termHash            String
+  termContentSnapshot String
+  acceptedAt          DateTime @default(now())
+  ipAddress           String
+  userAgent           String
+  areas               String   // JSON stringified
+  availability        String   // JSON stringified
+  status              String   @default("ACTIVE")
+  
+  @@map("volunteer_term_acceptances")
 }
 

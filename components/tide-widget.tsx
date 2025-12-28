@@ -103,8 +103,10 @@ const getFullData = (dayOffset: number) => {
 
     const weatherIdx = Math.abs(dayOffset) % weatherOptions.length;
 
-    // Dados de vento (simulados com variação)
-    const windSpeed = 15 + (Math.random() * 10); // 15-25 km/h
+    // Dados de vento (simulados com variação determinística baseada na data)
+    const seed = day * 100 + month * 10 + Math.abs(dayOffset);
+    const pseudoRandom = Math.abs(Math.sin(seed));
+    const windSpeed = 15 + (pseudoRandom * 10); // 15-25 km/h
     const windDirection = 45 + (dayOffset * 15) % 360; // Varia com o dia
     const windSpeedMs = CONVERSIONS.kmh_to_ms(windSpeed);
 

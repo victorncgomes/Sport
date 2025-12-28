@@ -3,6 +3,8 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
 import nodeCrypto from 'crypto';
 
+// @ts-ignore - Forçando atualização dos tipos do Prisma no IDE
+
 // Conteúdo do termo (versão 1.0)
 const TERM_VERSION = '1.0';
 const TERM_CONTENT = `

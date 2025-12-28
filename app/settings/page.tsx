@@ -13,7 +13,7 @@ import {
     Trash2,
     LogOut,
     ChevronRight,
-    Toggle,
+    ToggleLeft,
     User,
     Lock,
     Mail,
@@ -45,7 +45,7 @@ export default function SettingsPage() {
         setSettings(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
-    const settingSections = [
+    const settingSections: { title: string; items: SettingItem[] }[] = [
         {
             title: 'Conta',
             items: [
@@ -54,21 +54,21 @@ export default function SettingsPage() {
                     icon: <User className="w-5 h-5" />,
                     title: 'Editar Perfil',
                     description: 'Nome, foto, informações pessoais',
-                    type: 'link' as const
+                    type: 'link'
                 },
                 {
                     id: 'password',
                     icon: <Lock className="w-5 h-5" />,
                     title: 'Alterar Senha',
                     description: 'Atualize sua senha de acesso',
-                    type: 'link' as const
+                    type: 'link'
                 },
                 {
                     id: 'email',
                     icon: <Mail className="w-5 h-5" />,
                     title: 'E-mail',
                     description: 'usuario@email.com',
-                    type: 'link' as const
+                    type: 'link'
                 }
             ]
         },
@@ -80,7 +80,7 @@ export default function SettingsPage() {
                     icon: <Bell className="w-5 h-5" />,
                     title: 'Notificações',
                     description: 'Ativar todas as notificações',
-                    type: 'toggle' as const,
+                    type: 'toggle',
                     value: settings.notifications
                 },
                 {
@@ -88,7 +88,7 @@ export default function SettingsPage() {
                     icon: <Mail className="w-5 h-5" />,
                     title: 'Notificações por E-mail',
                     description: 'Receber atualizações por e-mail',
-                    type: 'toggle' as const,
+                    type: 'toggle',
                     value: settings.emailNotifications
                 },
                 {
@@ -96,7 +96,7 @@ export default function SettingsPage() {
                     icon: <Smartphone className="w-5 h-5" />,
                     title: 'Push Notifications',
                     description: 'Notificações em tempo real',
-                    type: 'toggle' as const,
+                    type: 'toggle',
                     value: settings.pushNotifications
                 }
             ]
@@ -109,7 +109,7 @@ export default function SettingsPage() {
                     icon: settings.darkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />,
                     title: 'Modo Escuro',
                     description: 'Alternar entre tema claro e escuro',
-                    type: 'toggle' as const,
+                    type: 'toggle',
                     value: settings.darkMode
                 },
                 {
@@ -117,7 +117,7 @@ export default function SettingsPage() {
                     icon: <Globe className="w-5 h-5" />,
                     title: 'Idioma',
                     description: 'Português (Brasil)',
-                    type: 'link' as const
+                    type: 'link'
                 }
             ]
         },
@@ -129,7 +129,7 @@ export default function SettingsPage() {
                     icon: <Shield className="w-5 h-5" />,
                     title: 'Login Biométrico',
                     description: 'Use digital ou Face ID',
-                    type: 'toggle' as const,
+                    type: 'toggle',
                     value: settings.biometricLogin
                 },
                 {
@@ -137,7 +137,7 @@ export default function SettingsPage() {
                     icon: <User className="w-5 h-5" />,
                     title: 'Mostrar Status Online',
                     description: 'Outros podem ver quando você está ativo',
-                    type: 'toggle' as const,
+                    type: 'toggle',
                     value: settings.showOnlineStatus
                 },
                 {
@@ -145,7 +145,7 @@ export default function SettingsPage() {
                     icon: <Globe className="w-5 h-5" />,
                     title: 'Perfil Público',
                     description: 'Seu perfil visível para outros sócios',
-                    type: 'toggle' as const,
+                    type: 'toggle',
                     value: settings.publicProfile
                 }
             ]
@@ -158,21 +158,21 @@ export default function SettingsPage() {
                     icon: <HelpCircle className="w-5 h-5" />,
                     title: 'Ajuda e Suporte',
                     description: 'FAQ, contato, reportar problema',
-                    type: 'link' as const
+                    type: 'link'
                 },
                 {
                     id: 'clearCache',
                     icon: <Trash2 className="w-5 h-5" />,
                     title: 'Limpar Cache',
                     description: 'Liberar espaço de armazenamento',
-                    type: 'action' as const
+                    type: 'action'
                 },
                 {
                     id: 'logout',
                     icon: <LogOut className="w-5 h-5" />,
                     title: 'Sair',
                     description: 'Encerrar sessão',
-                    type: 'action' as const,
+                    type: 'action',
                     danger: true
                 }
             ]

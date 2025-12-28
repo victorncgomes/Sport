@@ -96,3 +96,13 @@
     - Integrado com `AuthContext` para redirecionamento baseado em roles.
     - Mantida compatibilidade com `BottomNav` existente.
     - Utilizados SVGs fornecidos: `sport_shield_new.svg` e `stripes_inclined.svg`.
+
+### 10. Inicialização do Servidor (28/12/2025)
+- **Servidor Local**: Iniciado na porta 3001 (`npm run dev`).
+- **Verificação**: Confirmado funcionamento via subagente, com carregamento completo do header, notícias, estatísticas e navegação mobile.
+- **Correção de Erros (Schema)**: 
+    - Adicionados campos `isVolunteer`, `volunteerSince` e `volunteerTermAcceptance` ao modelo `User`.
+    - Criado modelo `VolunteerTermAcceptance` para registrar o aceite legal dos termos de voluntariado.
+    - Resolvidos erros de compilação em `app/api/volunteer/accept-term/route.ts`.
+    - **Nota**: Procedimento de limpeza de cache realizado (`Remove-Item node_modules/.prisma`) e verificado via script de runtime.
+

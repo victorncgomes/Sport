@@ -1,7 +1,7 @@
 // Background Jobs - Sport Club de Natal
 // Serviços que rodam em background para manutenção do sistema
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/db';
 import { POINT_RULES, getLevelByPoints, BADGES } from '@/lib/gamification/levels';
 
 // Job 1: Verificar reservas atrasadas (Overdue Checker)
@@ -69,8 +69,8 @@ export async function calculateVolunteerReputation() {
 
     for (const volunteer of volunteers) {
         const completedTasks = volunteer.volunteerTasks;
-        const totalHours = completedTasks.reduce((sum, t) => sum + (t.actualHours || t.estimatedHours), 0);
-        const avgRating = completedTasks.filter(t => t.rating).reduce((sum, t) => sum + (t.rating || 0), 0) /
+        const totalHours = completedTasks.reduce((sum: number, t: any) => sum + (t.actualHours || t.estimatedHours), 0);
+        const avgRating = completedTasks.filter(t => t.rating).reduce((sum: number, t: any) => sum + (t.rating || 0), 0) /
             (completedTasks.filter(t => t.rating).length || 1);
 
         // Calcular score de confiabilidade (tarefas no prazo / total * 100)
@@ -185,7 +185,7 @@ export async function autoUnlockBadges() {
     let badgesUnlocked = 0;
 
     for (const user of users) {
-        const unlockedBadgeIds = user.badges.map(b => b.badgeId);
+        const unlockedBadgeIds = user.badges.map((b: any) => b.badgeId);
 
         // Verificar cada badge
         for (const badge of BADGES) {

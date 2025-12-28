@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
         // Buscar todos os badges
         const allBadges = await prisma.badge.findMany({
-            orderBy: { category: 'asc' }
+            orderBy: { name: 'asc' }
         });
 
         // Buscar badges do usuário
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         const badgesWithStatus = allBadges.map(badge => ({
             ...badge,
             unlocked: userBadgeIds.has(badge.id),
-            unlockedAt: userBadges.find(ub => ub.badgeId === badge.id)?.unlockedAt || null
+            unlockedAt: userBadges.find(ub => ub.badgeId === badge.id)?.awardedAt || null
         }));
 
         return NextResponse.json({

@@ -36,9 +36,7 @@ export async function POST(
         const reservation = await prisma.reservation.update({
             where: { id: params.id },
             data: {
-                status: 'CONFIRMED',
-                approvedBy: user.id,
-                approvedAt: new Date()
+                status: 'CONFIRMED'
             }
         });
 

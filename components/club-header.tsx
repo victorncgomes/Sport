@@ -154,10 +154,47 @@ export function ClubHeader() {
                         </div>
 
                         {/* PARCEIROS */}
-                        <div className="flex items-center gap-3">
-                            <span className="text-white text-[15px] font-bold" title="Governo do Estado">GOV</span>
-                            <span className="text-white text-[15px] font-bold" title="Eureka">EUR</span>
-                            <span className="text-white text-[15px] font-bold" title="Potigas">PTG</span>
+                        <div className="flex items-center gap-4">
+                            <div className="relative h-[30px] w-[40px]" title="Governo do Estado do Rio Grande do Norte">
+                                <Image
+                                    src="/logos/svg/RN.svg"
+                                    alt="Governo do RN"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="relative h-[30px] w-[40px]" title="Prefeitura de Natal">
+                                <Image
+                                    src="/logos/svg/prefeitura.svg"
+                                    alt="Prefeitura de Natal"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="relative h-[30px] w-[40px]" title="Eureka">
+                                <Image
+                                    src="/logos/svg/ERK.svg"
+                                    alt="Eureka"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="relative h-[30px] w-[40px]" title="Confederação Brasileira de Remo">
+                                <Image
+                                    src="/logos/svg/CBR.svg"
+                                    alt="CBR"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="relative h-[30px] w-[40px]" title="Potigás">
+                                <Image
+                                    src="/logos/svg/POTIGAS.svg"
+                                    alt="Potigás"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
                         </div>
 
                         {/* SISTEMA/USUÁRIO */}
