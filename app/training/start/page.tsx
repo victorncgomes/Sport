@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { HeroSection } from '@/components/ui/hero-section';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { Button } from '@/components/ui/button';
-import { Waves, Dumbbell, Play, Timer, Loader2 } from 'lucide-react';
+import { Waves, Dumbbell, Play, Timer, Loader2, Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 

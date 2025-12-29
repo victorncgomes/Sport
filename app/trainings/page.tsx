@@ -111,6 +111,27 @@ export default function TrainingsPage() {
                     </Link>
                 </div>
 
+                {/* Card de Competição */}
+                <div className="mb-8">
+                    <Link href="/training/compete?distance=2000">
+                        <AnimatedCard variant="gradient" className="p-6 hover:border-purple-500/50 transition-all cursor-pointer group bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-purple-500/20">
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <Trophy className="w-7 h-7 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-bold text-white">Competição Virtual</h3>
+                                    <p className="text-white/60 text-sm">Desafie seu recorde pessoal</p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-1 rounded-full">NOVO</span>
+                                    <ChevronRight className="w-5 h-5 text-white/40 group-hover:text-purple-400 transition-colors" />
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                    </Link>
+                </div>
+
                 {/* Navigation Tabs */}
                 <div className="flex border-b border-white/10 mb-8 overflow-x-auto scrollbar-none">
                     <button
