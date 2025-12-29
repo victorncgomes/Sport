@@ -29,6 +29,14 @@ Histórico completo de versões do sistema de gestão do Sport Club de Natal.
   - `/training/live` - Timer hero 7xl, métricas em tempo real, GPS melhorado
   - `/training/cooldown` - Resumo do treino, XP ganho, modal de level up
   - API `/api/workouts/start` - Iniciar sessão de treino
+  - API `/api/workouts/[id]/complete` - Finalizar com verificação de level up
+  - API `/api/workouts/[id]/summary` - Resumo com records pessoais
+
+- **Audio Coaching:**
+  - `lib/utils/audio-coach.ts` - Sistema de Text-to-Speech
+  - Mensagens de motivação e técnica periódicas
+  - Anúncios de milestones (500m, 1km, 2km, 5km)
+  - Feedback de pace (muito rápido/lento)
 
 - **Calculador de Anamnese:**
   - `lib/utils/anamnese-calculator.ts` - Calcular nível inicial

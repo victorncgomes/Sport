@@ -7,6 +7,7 @@ import { HeroSection } from '@/components/ui/hero-section';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { Button } from '@/components/ui/button';
 import { XPGain, useXPGain } from '@/components/gamification';
+import { useAudioCoach } from '@/lib/utils/audio-coach';
 import {
     Play, Pause, Square, MapPin, Heart, Timer, TrendingUp,
     Activity, Waves, Volume2, VolumeX, Target, Zap
