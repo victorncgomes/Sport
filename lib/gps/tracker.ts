@@ -8,7 +8,7 @@ export interface GPSPoint {
     workoutId: string;
     lat: number;
     lng: number;
-    timestamp: string;
+    timestamp: number;
     accuracy: number;
     altitude?: number;
     speed?: number;
@@ -153,7 +153,7 @@ export class GPSTracker {
             workoutId: this.workoutId,
             lat: latitude,
             lng: longitude,
-            timestamp: new Date().toISOString(),
+            timestamp: Date.now(),
             accuracy,
             altitude: altitude || undefined,
             speed: speed || undefined,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { HeroSection } from '@/components/ui/hero-section';
 import { AnimatedCard } from '@/components/ui/animated-card';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Star, Send, Smile, Meh, Frown } from 'lucide-react';
 
-export default function FeedbackPage() {
+function FeedbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const sessionId = searchParams.get('sessionId');
@@ -89,8 +89,8 @@ export default function FeedbackPage() {
                                 key={level}
                                 onClick={() => setIntensity(level)}
                                 className={`flex-1 h-12 rounded-lg transition-all ${level <= intensity
-                                        ? 'bg-club-red text-white'
-                                        : 'bg-white/10 text-white/40'
+                                    ? 'bg-club-red text-white'
+                                    : 'bg-white/10 text-white/40'
                                     }`}
                             >
                                 {level}
@@ -116,8 +116,8 @@ export default function FeedbackPage() {
                                     key={f.id}
                                     onClick={() => setFeeling(f.id)}
                                     className={`p-6 rounded-xl transition-all ${isSelected
-                                            ? 'bg-club-red/20 ring-2 ring-club-red'
-                                            : 'bg-white/5 hover:bg-white/10'
+                                        ? 'bg-club-red/20 ring-2 ring-club-red'
+                                        : 'bg-white/5 hover:bg-white/10'
                                         }`}
                                 >
                                     <Icon className={`w-12 h-12 mx-auto mb-2 ${f.color}`} />
@@ -142,8 +142,8 @@ export default function FeedbackPage() {
                                     key={muscle}
                                     onClick={() => toggleMuscle(muscle)}
                                     className={`p-3 rounded-lg text-sm font-medium transition-all ${isSelected
-                                            ? 'bg-club-red text-white'
-                                            : 'bg-white/10 text-white/60 hover:bg-white/20'
+                                        ? 'bg-club-red text-white'
+                                        : 'bg-white/10 text-white/60 hover:bg-white/20'
                                         }`}
                                 >
                                     {muscle}
@@ -175,5 +175,17 @@ export default function FeedbackPage() {
                 </Button>
             </div>
         </div>
+    );
+}
+
+export default function FeedbackPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-club-black pb-24 flex items-center justify-center">
+                <p className="text-white/60">Carregando...</p>
+            </div>
+        }>
+            <FeedbackContent />
+        </Suspense>
     );
 }

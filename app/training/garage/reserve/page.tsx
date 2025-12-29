@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { HeroSection } from '@/components/ui/hero-section';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Timer, AlertCircle } from 'lucide-react';
 
-export default function ReserveResourcePage() {
+function ReserveResourceContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const resourceId = searchParams.get('resourceId');
@@ -169,8 +169,8 @@ export default function ReserveResourcePage() {
                                 key={d.value}
                                 onClick={() => setDuration(d.value)}
                                 className={`p-3 rounded-lg text-sm font-medium transition-all ${duration === d.value
-                                        ? 'bg-club-red text-white'
-                                        : 'bg-white/10 text-white/60 hover:bg-white/20'
+                                    ? 'bg-club-red text-white'
+                                    : 'bg-white/10 text-white/60 hover:bg-white/20'
                                     }`}
                             >
                                 {d.label}
@@ -222,5 +222,17 @@ export default function ReserveResourcePage() {
                 </Button>
             </div>
         </div>
+    );
+}
+
+export default function ReserveResourcePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-club-black pb-24 flex items-center justify-center">
+                <p className="text-white/60">Carregando...</p>
+            </div>
+        }>
+            <ReserveResourceContent />
+        </Suspense>
     );
 }

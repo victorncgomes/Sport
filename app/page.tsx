@@ -350,11 +350,47 @@ export default function HomePage() {
                             {/* Parceiros */}
                             <div className="mt-6">
                                 <p className="text-xs text-white/30 uppercase tracking-widest mb-3">Parceiros</p>
-                                <div className="flex flex-wrap gap-2">
-                                    <span className="text-[10px] px-2 py-1 bg-white/5 text-white/50">Governo do RN</span>
-                                    <span className="text-[10px] px-2 py-1 bg-white/5 text-white/50">Prefeitura de Natal</span>
-                                    <span className="text-[10px] px-2 py-1 bg-white/5 text-white/50">Potiguás</span>
-                                    <span className="text-[10px] px-2 py-1 bg-white/5 text-white/50">Eureka</span>
+                                <div className="flex flex-wrap gap-4 items-center">
+                                    <a href="https://www.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[96px] w-[120px] hover:opacity-70 transition-opacity">
+                                        <Image
+                                            src="/logos/svg/RN.svg"
+                                            alt="Governo do RN"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </a>
+                                    <a href="https://www.natal.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[53px] w-[66px] hover:opacity-70 transition-opacity">
+                                        <Image
+                                            src="/logos/svg/prefeitura.svg"
+                                            alt="Prefeitura de Natal"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </a>
+                                    <a href="https://www.potigas.com.br/" target="_blank" rel="noopener noreferrer" className="relative h-[48px] w-[60px] hover:opacity-70 transition-opacity">
+                                        <Image
+                                            src="/logos/svg/POTIGAS.svg"
+                                            alt="Potigás"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </a>
+                                    <a href="https://www.instagram.com/eurekaerk/" target="_blank" rel="noopener noreferrer" className="relative h-[48px] w-[60px] hover:opacity-70 transition-opacity">
+                                        <Image
+                                            src="/logos/svg/ERK.svg"
+                                            alt="Eureka"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </a>
+                                    <a href="https://www.remobrasil.com/" target="_blank" rel="noopener noreferrer" className="relative h-[48px] w-[60px] hover:opacity-70 transition-opacity">
+                                        <Image
+                                            src="/logos/svg/CBR.svg"
+                                            alt="CBR"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </a>
                                 </div>
                             </div>
                         </div>

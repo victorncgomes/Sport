@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/db';
 
 // POST /api/gamification/unlock-badge - Desbloquear badge (SYSTEM)
 export async function POST(request: NextRequest) {

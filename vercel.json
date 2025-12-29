@@ -1,8 +1,8 @@
 {
     "framework": "nextjs",
-    "installCommand": "npm install && npx prisma generate",
+    "installCommand": "npm install --legacy-peer-deps",
     "env": {
-        "DATABASE_URL": "file:./placeholder.db"
+        "DATABASE_URL": "file:./dev.db"
     },
     "crons": [
         {

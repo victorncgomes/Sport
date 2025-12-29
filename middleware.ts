@@ -15,6 +15,7 @@ export default auth((req) => {
         "/store",
         "/ranking",
         "/login",
+        "/register",
         "/member/login",
         "/coach/login",
         "/trial-booking",
@@ -27,10 +28,12 @@ export default auth((req) => {
         "/events",
         "/social-actions",
         "/trainings",
+        "/training",
         "/nautical",
         "/reservations",
         "/garage",
-        "/finance"
+        "/finance",
+        "/volunteer"
     ]
 
     // Check if the current path is public

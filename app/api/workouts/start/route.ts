@@ -1,15 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/db';
 
-const prisma = new PrismaClient();
+interface StartWorkoutRequest {
+    mode: 'OUTDOOR' | 'INDOOR' | 'GYM' | 'INDOOR_TANK' | 'INDOOR_GENERAL';
+    workoutType?: string;
+    boatId?: string;
+}
 
-// POST /api/workouts/start - Iniciar nova sessão de treino
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
     try {
         const session = await auth();
+
         if (!session?.user?.email) {
-            return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
+            return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
         }
 
         const user = await prisma.user.findUnique({
@@ -20,39 +24,34 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
         }
 
-        const body = await request.json();
-        const { templateId, mode } = body;
+        const body: StartWorkoutRequest = await request.json();
+        const { mode, workoutType, boatId } = body;
 
-        // Validar mode
-        const validModes = ['OUTDOOR', 'INDOOR_TANK', 'INDOOR_GENERAL'];
-        if (!validModes.includes(mode)) {
-            return NextResponse.json({ error: 'Modo inválido' }, { status: 400 });
-        }
+        // Normalizar modo
+        const normalizedMode = mode.replace('_TANK', '').replace('_GENERAL', '');
 
         // Criar sessão de treino
         const workoutSession = await prisma.workoutSession.create({
             data: {
                 userId: user.id,
-                templateId: templateId || null,
-                mode,
+                mode: normalizedMode,
                 status: 'IN_PROGRESS',
-                startedAt: new Date()
-            },
-            include: {
-                template: true
+                startedAt: new Date(),
+                metadata: JSON.stringify({
+                    workoutType: workoutType || mode,
+                    boatId,
+                    startedVia: 'app'
+                })
             }
         });
 
         return NextResponse.json({
             success: true,
+            sessionId: workoutSession.id,
             session: workoutSession
         });
-
     } catch (error) {
         console.error('Error starting workout:', error);
-        return NextResponse.json(
-            { error: 'Erro ao iniciar treino' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
     }
 }

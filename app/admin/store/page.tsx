@@ -114,7 +114,7 @@ export default function StoreAdminPage() {
                                 </div>
                             </div>
                             <div className="w-full h-full pb-10">
-                                <ResponsiveContainer width="100%" height="100%">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={300}>
                                     <BarChart data={salesData}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
                                         <XAxis dataKey="name" stroke="#ffffff20" fontSize={10} axisLine={false} tickLine={false} />
@@ -173,7 +173,7 @@ export default function StoreAdminPage() {
                                                 </td>
                                                 <td className="px-4 py-4 border-y border-white/5 group-hover:border-white/10">
                                                     <span className={`text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest ${order.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-400' :
-                                                            order.status === 'PENDING' ? 'bg-amber-500/10 text-amber-500' : 'bg-white/10 text-white/40'
+                                                        order.status === 'PENDING' ? 'bg-amber-500/10 text-amber-500' : 'bg-white/10 text-white/40'
                                                         }`}>
                                                         {order.status === 'PAID' ? 'Pago' : order.status === 'PENDING' ? 'Pendente' : 'Cancelado'}
                                                     </span>

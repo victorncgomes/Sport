@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/db';
 import { convertToTideDay, saveTideDataToDatabase } from '@/lib/api/tides';
-
-const prisma = new PrismaClient();
 
 interface TideCSVRow {
     date: string;
@@ -44,8 +42,6 @@ export async function POST(request: NextRequest) {
             { error: 'Internal server error' },
             { status: 500 }
         );
-    } finally {
-        await prisma.$disconnect();
     }
 }
 
@@ -74,7 +70,5 @@ export async function GET(request: NextRequest) {
             { error: 'Internal server error' },
             { status: 500 }
         );
-    } finally {
-        await prisma.$disconnect();
     }
 }

@@ -156,7 +156,7 @@ export default function TrainingsPage() {
                                 <AnimatedCard variant="carbon" className="p-6 h-[350px]">
                                     <h3 className="text-sm font-bold text-white/40 uppercase mb-6">Evolução Ergômetro (2000m)</h3>
                                     <div className="w-full h-full">
-                                        <ResponsiveContainer width="100%" height="80%">
+                                        <ResponsiveContainer width="100%" height="80%" minWidth={300}>
                                             <LineChart data={athleteData.performance}>
                                                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                                                 <XAxis dataKey="date" stroke="#ffffff40" fontSize={10} />

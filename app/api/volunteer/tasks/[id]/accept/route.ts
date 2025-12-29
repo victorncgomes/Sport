@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/db';
 
 // POST /api/volunteer/tasks/[id]/accept - Aceitar tarefa
 export async function POST(
@@ -54,7 +52,7 @@ export async function POST(
             data: {
                 assignedToId: user.id,
                 status: 'IN_PROGRESS',
-                acceptedAt: new Date()
+                startedAt: new Date()
             }
         });
 

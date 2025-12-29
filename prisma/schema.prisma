@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -78,6 +79,9 @@ model User {
   isVolunteer             Boolean           @default(false)
   volunteerSince          DateTime?
   volunteerTermAcceptance VolunteerTermAcceptance?
+  
+  // Progressão de Barcos
+  boatUnlocks             UserBoatUnlock[]
 
   @@map("users")
 
@@ -1097,26 +1101,26 @@ model VolunteerTask {
   
   title           String
   description     String
-  area            String   // MIDIA, STORE, LIMPEZA, MANUTENCAO, TREINAMENTO, ATENDIMENTO
+  category        String   // MIDIA, STORE, LIMPEZA, MANUTENCAO, TREINAMENTO, ATENDIMENTO
   
   // Localização
-  location        String   // CLUB, REMOTE
+  location        String   @default("CLUB") // CLUB, REMOTE
   specificLocation String?
   
   // Timing
-  dueDate         DateTime
-  estimatedDuration Int    // horas
-  actualDuration    Int?
+  deadline        DateTime
+  estimatedHours  Int    // horas
+  hoursWorked     Int?
   
   // Atribuição
-  assignedToId    String
-  assignedTo      User     @relation("TasksAssigned", fields: [assignedToId], references: [id])
-  assignedById    String
-  assignedBy      User     @relation("TasksCreated", fields: [assignedById], references: [id])
+  assignedToId    String?
+  assignedTo      User?    @relation("TasksAssigned", fields: [assignedToId], references: [id])
+  createdById     String
+  createdBy       User     @relation("TasksCreated", fields: [createdById], references: [id])
   assignedAt      DateTime @default(now())
   
   // Status
-  status          String   // ASSIGNED, ACCEPTED, IN_PROGRESS, SUBMITTED, APPROVED, REJECTED, CANCELLED
+  status          String   // OPEN, ASSIGNED, ACCEPTED, IN_PROGRESS, PENDING_REVIEW, COMPLETED, REJECTED, CANCELLED
   
   // Execução
   startedAt       DateTime?
@@ -1144,13 +1148,15 @@ model VolunteerTask {
   // Metadata
   priority        String   // LOW, MEDIUM, HIGH, URGENT
   tags            String?  // JSON array
+  requiredTalents String?  // JSON array
+  maxVolunteers   Int      @default(1)
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
   @@index([assignedToId, status])
   @@index([status])
-  @@index([dueDate])
+  @@index([deadline])
   @@map("volunteer_tasks")
 }
 
@@ -1189,6 +1195,7 @@ model VolunteerReputation {
   totalTasksApproved   Int @default(0)
   totalTasksRejected   Int @default(0)
   totalTasksCancelled  Int @default(0)
+  totalHours           Float @default(0)
   
   // Taxas (calculadas)
   completionRate  Float @default(0)
@@ -1206,6 +1213,7 @@ model VolunteerReputation {
   // Pontuação global
   reputationScore Int   @default(50)  // 0-100
   reputationLevel String @default("REGULAR") // CRITICAL, REGULAR, BOA, EXCELENTE
+  reliabilityScore Int   @default(100)
   
   lastUpdatedAt   DateTime @default(now())
   
@@ -1260,3 +1268,22 @@ model VolunteerTermAcceptance {
   @@map("volunteer_term_acceptances")
 }
 
+// ════════════════════════════════════════════════════════════════
+// PROGRESSÃO DE BARCOS
+// ════════════════════════════════════════════════════════════════
+
+model UserBoatUnlock {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  boatType    String   // TANQUE, CANOE, DOUBLE_CANOE, OITO, FOUR_SKIFF, QUATRO_SEM, DOUBLE_SKIFF, SINGLE_SKIFF, DOIS_SEM
+  unlockedAt  DateTime @default(now())
+  
+  // Como foi desbloqueado
+  unlockedBy  String   @default("CRITERIA") // CRITERIA, COACH_APPROVAL, ADMIN
+  
+  @@unique([userId, boatType])
+  @@index([userId])
+  @@map("user_boat_unlocks")
+}

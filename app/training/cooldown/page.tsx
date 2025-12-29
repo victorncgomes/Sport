@@ -1,272 +1,267 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { HeroSection } from '@/components/ui/hero-section';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Check, Clock } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { XPBar, LevelUpModal, useXPGain } from '@/components/gamification';
+import {
+    Trophy, Clock, MapPin, TrendingUp, Activity, Zap,
+    Star, ChevronRight, Share2, Camera, SaveAll
+} from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
-interface Exercise {
-    id: string;
-    name: string;
+interface WorkoutSummary {
     duration: number;
-    description: string;
-    focusAreas: string[];
+    distance: number;
+    avgPace: string;
+    calories: number;
+    xpEarned: number;
+    personalRecords: string[];
 }
 
-const COOLDOWN_EXERCISES: Exercise[] = [
-    {
-        id: '1',
-        name: 'Alongamento de Ombros',
-        duration: 30,
-        description: 'Cruze o braço na frente do corpo e puxe com o outro braço. Mantenha 30s cada lado.',
-        focusAreas: ['Ombros', 'Deltoides']
-    },
-    {
-        id: '2',
-        name: 'Alongamento de Costas',
-        duration: 45,
-        description: 'Sentado, gire o tronco para um lado segurando o joelho oposto. 30s cada lado.',
-        focusAreas: ['Lombar', 'Oblíquos']
-    },
-    {
-        id: '3',
-        name: 'Alongamento de Quadríceps',
-        duration: 30,
-        description: 'Em pé, segure o pé atrás e puxe em direção ao glúteo. 30s cada perna.',
-        focusAreas: ['Quadríceps', 'Flexores do Quadril']
-    },
-    {
-        id: '4',
-        name: 'Alongamento de Posterior',
-        duration: 45,
-        description: 'Sentado com pernas estendidas, alcance os pés mantendo as costas retas.',
-        focusAreas: ['Isquiotibiais', 'Lombar']
-    },
-    {
-        id: '5',
-        name: 'Alongamento de Braços',
-        duration: 30,
-        description: 'Estenda o braço à frente e puxe os dedos para baixo. 30s cada braço.',
-        focusAreas: ['Antebraços', 'Punhos']
-    },
-    {
-        id: '6',
-        name: 'Respiração Profunda',
-        duration: 60,
-        description: 'Inspire profundamente pelo nariz (4s), segure (4s), expire pela boca (6s). Repita 5x.',
-        focusAreas: ['Recuperação', 'Relaxamento']
-    }
-];
+function CooldownContent() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const sessionId = searchParams.get('sessionId');
+    const { data: session } = useSession();
 
-export default function CooldownPage() {
-    const [currentExercise, setCurrentExercise] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(COOLDOWN_EXERCISES[0].duration);
-    const [isRunning, setIsRunning] = useState(false);
-    const [completed, setCompleted] = useState<Set<string>>(new Set());
+    const [summary, setSummary] = useState<WorkoutSummary | null>(null);
+    const [showLevelUp, setShowLevelUp] = useState(false);
+    const [levelUpInfo, setLevelUpInfo] = useState({ oldLevel: 1, newLevel: 2, rewards: [] as string[] });
+    const [stretching, setStretching] = useState(false);
+
+    const { showXPGain, XPGainComponent } = useXPGain();
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
-
-        if (isRunning && timeLeft > 0) {
-            interval = setInterval(() => {
-                setTimeLeft(prev => {
-                    if (prev <= 1) {
-                        setIsRunning(false);
-                        // Auto-avançar
-                        if (currentExercise < COOLDOWN_EXERCISES.length - 1) {
-                            setTimeout(() => {
-                                handleNext();
-                            }, 1000);
-                        }
-                        return 0;
-                    }
-                    return prev - 1;
+        async function fetchSummary() {
+            if (!sessionId) {
+                // Dados demo se não houver sessão
+                setSummary({
+                    duration: 2700, // 45 min
+                    distance: 8500, // 8.5km
+                    avgPace: '2:38',
+                    calories: 420,
+                    xpEarned: 25,
+                    personalRecords: []
                 });
-            }, 1000);
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/workouts/${sessionId}/summary`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setSummary(data);
+
+                    // Verificar level up
+                    if (data.leveledUp) {
+                        setTimeout(() => {
+                            setLevelUpInfo({
+                                oldLevel: data.oldLevel,
+                                newLevel: data.newLevel,
+                                rewards: data.rewards || []
+                            });
+                            setShowLevelUp(true);
+                        }, 1500);
+                    }
+
+                    // Mostrar XP ganho
+                    setTimeout(() => showXPGain(data.xpEarned || 25), 500);
+                }
+            } catch (error) {
+                console.error('Error fetching summary:', error);
+            }
         }
 
-        return () => clearInterval(interval);
-    }, [isRunning, timeLeft, currentExercise]);
+        fetchSummary();
+    }, [sessionId, showXPGain]);
 
-    const handleStart = () => setIsRunning(true);
-    const handlePause = () => setIsRunning(false);
-
-    const handleComplete = () => {
-        const newCompleted = new Set(completed);
-        newCompleted.add(COOLDOWN_EXERCISES[currentExercise].id);
-        setCompleted(newCompleted);
-        setIsRunning(false);
+    const formatTime = (seconds: number) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        if (hrs > 0) {
+            return `${hrs}h ${mins}min`;
+        }
+        return `${mins}min ${secs}s`;
     };
 
-    const handleNext = () => {
-        if (currentExercise < COOLDOWN_EXERCISES.length - 1) {
-            setCurrentExercise(prev => prev + 1);
-            setTimeLeft(COOLDOWN_EXERCISES[currentExercise + 1].duration);
-            setIsRunning(false);
+    const handleFinish = () => {
+        router.push('/training');
+    };
+
+    const handleShare = () => {
+        if (navigator.share && summary) {
+            navigator.share({
+                title: 'Treino Concluído! 🚣',
+                text: `Remei ${(summary.distance / 1000).toFixed(1)}km em ${formatTime(summary.duration)} com pace médio de ${summary.avgPace}/500m. #SportClub #Remo`,
+                url: window.location.href
+            });
         }
     };
 
-    const handlePrevious = () => {
-        if (currentExercise > 0) {
-            setCurrentExercise(prev => prev - 1);
-            setTimeLeft(COOLDOWN_EXERCISES[currentExercise - 1].duration);
-            setIsRunning(false);
-        }
-    };
-
-    const exercise = COOLDOWN_EXERCISES[currentExercise];
-    const progress = ((currentExercise + 1) / COOLDOWN_EXERCISES.length) * 100;
+    if (!summary) {
+        return (
+            <div className="min-h-screen bg-club-black flex items-center justify-center">
+                <motion.div
+                    className="w-16 h-16 border-4 border-club-red border-t-transparent rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-club-black pb-24">
-            <HeroSection
-                title="Alongamento"
-                subtitle="Cool Down"
-                description="Recupere seus músculos após o treino"
-                compact
+            <XPGainComponent />
+            <LevelUpModal
+                isOpen={showLevelUp}
+                onClose={() => setShowLevelUp(false)}
+                {...levelUpInfo}
             />
 
-            <div className="container mx-auto px-4 py-8">
-                {/* Progress */}
-                <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-white/60">
-                            Exercício {currentExercise + 1} de {COOLDOWN_EXERCISES.length}
-                        </span>
-                        <span className="text-sm text-white/60">
-                            {Math.round(progress)}% completo
-                        </span>
+            {/* Hero de sucesso */}
+            <div className="bg-gradient-to-b from-emerald-600/30 to-transparent p-8 text-center">
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', delay: 0.2 }}
+                >
+                    <div className="w-20 h-20 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-4">
+                        <Trophy className="w-10 h-10 text-white" />
                     </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                        <motion.div
-                            className="h-full bg-emerald-500"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progress}%` }}
-                            transition={{ duration: 0.3 }}
-                        />
-                    </div>
-                </div>
+                </motion.div>
+                <motion.h1
+                    className="text-3xl font-bold text-white mb-2"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                >
+                    Treino Concluído!
+                </motion.h1>
+                <motion.p
+                    className="text-white/60"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                >
+                    Excelente trabalho! Descanse e hidrate-se.
+                </motion.p>
+            </div>
 
-                {/* Exercício Atual */}
-                <AnimatedCard variant="gradient" className="p-6 mb-6">
-                    <div className="text-center mb-6">
-                        <h2 className="text-3xl font-bold text-white mb-2">
-                            {exercise.name}
-                        </h2>
-                        <div className="flex items-center justify-center gap-2 flex-wrap">
-                            {exercise.focusAreas.map(area => (
-                                <Badge key={area} className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-                                    {area}
-                                </Badge>
-                            ))}
+            <div className="container mx-auto px-4 py-6 space-y-4">
+                {/* XP ganho */}
+                <AnimatedCard variant="gradient" className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <Zap className="w-5 h-5 text-yellow-400" />
+                            <span className="text-yellow-400 font-bold">+{summary.xpEarned} XP</span>
                         </div>
+                        <Star className="w-5 h-5 text-yellow-400" />
                     </div>
-
-                    {/* Timer */}
-                    <div className="text-center mb-6">
-                        <div className="text-6xl font-bold text-white mb-2">
-                            {timeLeft}s
-                        </div>
-                    </div>
-
-                    {/* Descrição */}
-                    <p className="text-white/80 text-center mb-6">
-                        {exercise.description}
-                    </p>
-
-                    {/* Controles */}
-                    <div className="flex gap-3">
-                        {!isRunning ? (
-                            <Button
-                                onClick={handleStart}
-                                className="flex-1 bg-emerald-600 hover:bg-emerald-700 h-12"
-                            >
-                                <Clock className="w-5 h-5 mr-2" />
-                                Iniciar
-                            </Button>
-                        ) : (
-                            <Button
-                                onClick={handlePause}
-                                variant="outline"
-                                className="flex-1 h-12"
-                            >
-                                Pausar
-                            </Button>
-                        )}
-                        <Button
-                            onClick={handleComplete}
-                            variant="outline"
-                            className="flex-1 h-12"
-                        >
-                            <Check className="w-5 h-5 mr-2" />
-                            Concluir
-                        </Button>
-                    </div>
+                    <XPBar xp={(session?.user as any)?.points || 0} size="sm" />
                 </AnimatedCard>
 
-                {/* Navegação */}
-                <div className="flex gap-3 mb-6">
-                    <Button
-                        onClick={handlePrevious}
-                        disabled={currentExercise === 0}
-                        variant="outline"
-                        className="flex-1"
-                    >
-                        Anterior
-                    </Button>
-                    <Button
-                        onClick={handleNext}
-                        disabled={currentExercise === COOLDOWN_EXERCISES.length - 1}
-                        variant="outline"
-                        className="flex-1"
-                    >
-                        Próximo
-                    </Button>
+                {/* Métricas do treino */}
+                <div className="grid grid-cols-2 gap-3">
+                    <AnimatedCard variant="glass" className="p-4 text-center">
+                        <Clock className="w-6 h-6 text-blue-400 mx-auto mb-2" />
+                        <div className="text-2xl font-bold text-white">{formatTime(summary.duration)}</div>
+                        <div className="text-xs text-white/60">Duração</div>
+                    </AnimatedCard>
+
+                    <AnimatedCard variant="glass" className="p-4 text-center">
+                        <MapPin className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
+                        <div className="text-2xl font-bold text-white">{(summary.distance / 1000).toFixed(2)} km</div>
+                        <div className="text-xs text-white/60">Distância</div>
+                    </AnimatedCard>
+
+                    <AnimatedCard variant="glass" className="p-4 text-center">
+                        <TrendingUp className="w-6 h-6 text-purple-400 mx-auto mb-2" />
+                        <div className="text-2xl font-bold text-white">{summary.avgPace}</div>
+                        <div className="text-xs text-white/60">Pace Médio /500m</div>
+                    </AnimatedCard>
+
+                    <AnimatedCard variant="glass" className="p-4 text-center">
+                        <Activity className="w-6 h-6 text-orange-400 mx-auto mb-2" />
+                        <div className="text-2xl font-bold text-white">{summary.calories}</div>
+                        <div className="text-xs text-white/60">Calorias</div>
+                    </AnimatedCard>
                 </div>
 
-                {/* Lista de Exercícios */}
-                <div className="space-y-2">
-                    {COOLDOWN_EXERCISES.map((ex, i) => (
-                        <button
-                            key={ex.id}
-                            onClick={() => {
-                                setCurrentExercise(i);
-                                setTimeLeft(ex.duration);
-                                setIsRunning(false);
-                            }}
-                            className="w-full text-left"
-                        >
-                            <AnimatedCard
-                                variant="glass"
-                                className={`p-3 transition-all ${i === currentExercise ? 'ring-2 ring-emerald-500' : ''
-                                    }`}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${completed.has(ex.id)
-                                                ? 'bg-emerald-500'
-                                                : 'bg-white/10'
-                                            }`}>
-                                            {completed.has(ex.id) ? (
-                                                <Check className="w-5 h-5 text-white" />
-                                            ) : (
-                                                <span className="text-white text-sm">{i + 1}</span>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <p className="text-white font-medium">{ex.name}</p>
-                                            <p className="text-white/40 text-xs">{ex.duration}s</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </AnimatedCard>
-                        </button>
-                    ))}
+                {/* Records pessoais */}
+                {summary.personalRecords.length > 0 && (
+                    <AnimatedCard variant="gradient" className="p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                            <span className="text-yellow-400 font-bold">Novos Records!</span>
+                        </div>
+                        <ul className="space-y-2">
+                            {summary.personalRecords.map((record, i) => (
+                                <li key={i} className="flex items-center gap-2 text-white/80 text-sm">
+                                    <Trophy className="w-4 h-4 text-yellow-500" />
+                                    {record}
+                                </li>
+                            ))}
+                        </ul>
+                    </AnimatedCard>
+                )}
+
+                {/* Alongamento sugerido */}
+                <AnimatedCard variant="glass" className="p-4">
+                    <h3 className="text-white font-bold mb-2">Alongamento Recomendado</h3>
+                    <p className="text-white/60 text-sm mb-3">
+                        5-10 minutos de alongamento para recuperação muscular.
+                    </p>
+                    <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => router.push('/training/stretching')}
+                    >
+                        Iniciar Alongamento
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                    </Button>
+                </AnimatedCard>
+
+                {/* Ações */}
+                <div className="flex gap-3">
+                    <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={handleShare}
+                    >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Compartilhar
+                    </Button>
+                    <Button
+                        className="flex-1 bg-club-red hover:bg-club-red/90"
+                        onClick={handleFinish}
+                    >
+                        Finalizar
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                    </Button>
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function CooldownPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-club-black flex items-center justify-center">
+                <motion.div
+                    className="w-16 h-16 border-4 border-club-red border-t-transparent rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                />
+            </div>
+        }>
+            <CooldownContent />
+        </Suspense>
     );
 }

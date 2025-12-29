@@ -50,7 +50,7 @@ export const TideChart: React.FC<TideChartProps> = ({ data }) => {
                 </div>
             </div>
 
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={300} minWidth={300} minHeight={300}>
                 <AreaChart data={chartData}>
                     <defs>
                         <linearGradient id="tideGradient" x1="0" y1="0" x2="0" y2="1">

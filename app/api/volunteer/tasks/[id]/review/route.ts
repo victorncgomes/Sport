@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/db';
 
 // POST /api/volunteer/tasks/[id]/review - Revisar tarefa (BOARD)
 export async function POST(
@@ -55,8 +53,9 @@ export async function POST(
 
         // Calcular pontos baseado em prioridade e horas
         let points = 0;
+        const taskEstimatedHours = task.estimatedHours ?? 1;
         if (approved) {
-            const basePoints = hoursWorked || task.estimatedHours;
+            const basePoints = hoursWorked || taskEstimatedHours;
             const priorityMultiplier = {
                 'LOW': 1,
                 'MEDIUM': 1.5,
@@ -74,8 +73,7 @@ export async function POST(
                 status: approved ? 'COMPLETED' : 'REJECTED',
                 reviewedById: user.id,
                 reviewedAt: new Date(),
-                feedback: feedback || null,
-                hoursWorked: hoursWorked || task.estimatedHours,
+                reviewNotes: feedback || null,
                 pointsAwarded: approved ? points : 0
             }
         });
@@ -109,14 +107,11 @@ export async function POST(
                 where: { userId: task.assignedTo.id },
                 create: {
                     userId: task.assignedTo.id,
-                    tasksCompleted: 1,
-                    totalHours: hoursWorked || task.estimatedHours,
-                    averageRating: 5,
-                    reliabilityScore: 100
+                    totalTasksCompleted: 1,
+                    avgRating: 5
                 },
                 update: {
-                    tasksCompleted: { increment: 1 },
-                    totalHours: { increment: hoursWorked || task.estimatedHours }
+                    totalTasksCompleted: { increment: 1 }
                 }
             });
         }

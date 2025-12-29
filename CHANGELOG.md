@@ -1,337 +1,356 @@
-# CHANGELOG
+# CHANGELOG - Sport Club de Natal
 
-Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+Histórico completo de versões do sistema de gestão do Sport Club de Natal.
 
-## [0.4.3] - 2025-12-28
+**Padrão SemVer:**
+- `0.x.0`: Mudança significativa (nova funcionalidade principal)
+- `0.0.x`: Correções, melhorias e ajustes menores
+
+---
+
+## [0.5.0] - 2025-12-29 _(Versão Atual)_
 
 ### Adicionado
-- **Módulo Coach - Sugestão Automática de Planilhas:**
-  - API `/api/coach/suggest-plan` com algoritmo inteligente
-  - Página `/coach/athletes/[id]/suggest-plan` com preview e aprovação
-  - Geração automática de 12 semanas de treino personalizado
-  - Ajuste por nível (iniciante/intermediário/avançado)
-  - Ajuste por objetivos (performance/fitness/técnica)
-  - Consideração de lesões e restrições
-  - Interface de preview com primeiras 2 semanas
+- **Sistema de Gamificação Completo:**
+  - `lib/utils/xp-system.ts` - Sistema de XP com fórmula `100 * nível^1.5`
+  - Componente `XPBar.tsx` - Barra de progresso animada
+  - Componente `LevelUpModal.tsx` - Modal de level up com confete
+  - Componente `XPGain.tsx` - Animação de ganho de XP flutuante
+  - API `/api/gamification/xp` - Adicionar/consultar XP
 
-- **Sistema de Voluntariado:**
-  - API `/api/volunteer/calendar` para calendário da diretoria
-  - Visualização por dia da semana e horário
-  - Filtros por área de atuação
-  - Estatísticas de cobertura por área
+- **Sistema de Progressão de Barcos:**
+  - `lib/utils/boat-progression.ts` - Hierarquia de 9 barcos com critérios
+  - Modelo `UserBoatUnlock` no Prisma
+  - Componente `BoatCard.tsx` - Cards isométricos SVG
+  - Página `/boats` - Galeria de barcos com progresso
+  - APIs `/api/boats/my-boats` e `/api/boats/unlock`
+
+- **Módulo de Treino Melhorado:**
+  - `/training/live` - Timer hero 7xl, métricas em tempo real, GPS melhorado
+  - `/training/cooldown` - Resumo do treino, XP ganho, modal de level up
+  - API `/api/workouts/start` - Iniciar sessão de treino
+
+- **Calculador de Anamnese:**
+  - `lib/utils/anamnese-calculator.ts` - Calcular nível inicial
+
+---
+
+## [0.4.5] - 2025-12-29
+
+### Corrigido
+- **Módulo de Voluntariado:**
+  - Sincronização total entre Prisma Schema e API Routes.
+  - Correção de campos inexistentes (`acceptedAt`, `feedback`, `tasksCompleted`).
+  - Padronização de nomes de campos (`category`, `deadline`, `estimatedHours`, `hoursWorked`).
+  - Geração automática de `taskNumber` (TSK-XXXXX) na criação de tarefas.
+  - Tornou `assignedToId` opcional em `VolunteerTask` para permitir tarefas abertas.
+  - Adicionados campos `requiredTalents` e `maxVolunteers` ao modelo de tarefas.
+  - Atualização do modelo `VolunteerReputation` com `totalHours` e `reliabilityScore`.
+
+- **GPS Tracking:**
+  - Correção de tipo no `GPSPoint` (timestamp de string para number) para compatibilidade com IndexedDB.
+
+---
+
+## [0.4.4] - 2024-12-28
+
+### Adicionado
+- **Sistema de Registro de Usuários:**
+  - API `/api/auth/register` com validação completa
+  - Página `/register` com formulário de cadastro
+  - Validação de email duplicado
+  - Hash de senha com bcrypt
+  - Redirecionamento para login após sucesso
+
+- **Banco de Dados Completo:**
+  - Seed com dados de exemplo
+  - 3 usuários (admin, coach, membro)
+  - Barcos, produtos, badges, notificações
+  - Todas as APIs integradas com Prisma
+
+### Corrigido
+- Erro de sintaxe em `app/api/tides/upload/route.ts`
+- Suspense boundary em 4 páginas com useSearchParams
+- ResponsiveContainer do Recharts com minWidth
+
+---
+
+## [0.4.3] - 2024-12-28
+
+### Adicionado
+- **Módulo Coach - Sugestão de Planilhas:**
+  - API `/api/coach/suggest-plan` com algoritmo inteligente
+  - Geração automática de 12 semanas de treino personalizado
 
 - **Sistema de Tarefas:**
-  - Página `/tasks` com Kanban board
-  - Drag and drop entre colunas (A Fazer, Em Andamento, Revisão, Concluído)
-  - API `/api/tasks` (GET, POST)
-  - API `/api/tasks/[id]` (PATCH, DELETE)
-  - Prioridades (Alta/Média/Baixa)
-  - Atribuição de responsáveis
-  - Datas de vencimento
+  - Kanban board com drag and drop
+  - API `/api/tasks` (CRUD completo)
 
-### Observações
-- Progresso geral: ~80% do escopo solicitado implementado
-- Servidor de desenvolvimento online em localhost:3001
-- Todas as funcionalidades principais concluídas e testadas
-- Código limpo e bem estruturado
-- Pronto para deploy
-
-## [0.4.2] - 2025-12-28
-
-### Adicionado
-- **Módulo Coach:**
-  - API `/api/coach/athletes` para listar atletas e estatísticas
-  - Dashboard do coach já existia e está funcional
-
-### Observações
-- Progresso geral: ~70% do escopo solicitado implementado
-- Funcionalidades principais concluídas e testadas
-- Código limpo e bem estruturado
-- Pronto para próxima fase de desenvolvimento
-
-## [0.4.1] - 2025-12-28
-
-### Adicionado
-- **Sistema de Garagem Aprimorado:**
-  - Página de reserva com intervalos de 15 minutos
-  - Opção de duração customizada (30min, 1h, 1h30, 2h, 2h30, 3h)
-  - Resumo da reserva com horário de término calculado
-
-- **Páginas de Perfil Completas:**
-  - Página de Pagamentos (`/profile/payments`) com histórico e pendências
-  - Página de Avisos (`/profile/notices`) com filtros e marcação de lido
-  - Página de Configurações (`/profile/settings`) com toggles e ações
-
-- **APIs de Perfil:**
-  - `/api/profile/payments` - Listar pagamentos e pendências
-  - `/api/profile/notices` - Listar avisos com filtros
-  - `/api/profile/notices/[id]/read` - Marcar aviso como lido
-
-### Corrigido
-- Sistema de notificações: sininho não redireciona mais para login
-- Sininho mobile agora direciona para `/profile/notices`
-- Sininho desktop direciona para `/notifications`
-
-## [0.4.0] - 2025-12-28
-
-### Adicionado
-- **Correções de UI:**
-  - Logos SVG dos parceiros adicionados no header desktop com links funcionais
-  - Logos SVG adicionados no menu inferior mobile
-  - Links de redes sociais atualizados para Instagram do Sport Club
-  - Links dos parceiros: Governo RN, Prefeitura Natal, Potigás, ERK, CBR
-
-- **Sistema de Treinamento Aprimorado:**
-  - Página de treino ativo (`/training/live`) com GPS tracking em tempo real
-  - Cronômetro, métricas de distância, pace e frequência cardíaca
-  - Controles de pausa/retomar/finalizar
-  - Página de feedback pós-treino (`/training/feedback/[id]`)
-  - Avaliação de intensidade, sensação, grupos musculares
-  - API de feedback (`/api/workouts/[id]/feedback`)
-  - API de relatórios (`/api/workouts/[id]/report`)
-  - Preparação para integração Bluetooth (estrutura de dados)
-
-- **Controle de Versão:**
-  - Histórico completo de versões simuladas (0.1.1 até 0.4.1)
-  - Repositório GitHub configurado e backup realizado
-  - Tag v0.3.6 criada
-
-### Modificado
-- Bottom navigation agora inclui logos dos parceiros no mobile
-- Sistema de GPS tracking aprimorado com cálculo de distância e pace
-
-## [0.3.6] - 2025-12-27
-
-### Adicionado
-- **Store Completa:**
-  - 8 APIs da store implementadas
-  - CRUD de produtos (ADMIN)
-  - Sistema de carrinho
-  - Checkout com validação de estoque
-  - Listagem de pedidos
-  - Gamificação integrada (pontos por compra)
-
-## [0.4.2] - 2025-12-27
-
-### Adicionado
-- **Sistema de Notificações:**
-  - 3 APIs de notificações
-  - Listagem de notificações com filtro
-  - Marcar como lida
-  - Subscribe para web push (preparado)
-
-## [0.4.1] - 2025-12-27
-
-### Adicionado
-- **Gamificação Completa:**
-  - 5 APIs de gamificação
-  - Sistema de pontos manual (BOARD)
-  - Leaderboard com períodos (all-time, monthly, weekly)
-  - Sistema de badges
-  - Desbloquear badges
-  - Estatísticas completas de usuário
-
-## [0.4.0] - 2025-12-27
-
-### Adicionado
-- **Voluntariado Expandido:**
-  - 8 APIs de voluntariado implementadas
-  - Sistema de tarefas completo (criar, aceitar, submeter, revisar)
-  - Sistema de disponibilidade semanal
-  - Banco de talentos/habilidades
-  - Sistema de reputação de voluntários
-  - Heatmap de disponibilidade para diretoria
-  - Cálculo automático de pontos por tarefa (baseado em prioridade e horas)
-
-## [0.3.9] - 2025-12-27
-
-### Adicionado
-- **Módulo de Garagem Completo**
-  - Página principal (`/training/garage`) com lista de recursos e filtros
-  - Página de minhas reservas (`/training/garage/my-reservations`)
-  - Sistema de check-in e check-out
-  
-- **APIs Backend - Garagem (7 endpoints)**
-  - `GET /api/resources` - Listar barcos e tanque
-  - `POST /api/resources` - Criar recurso (apenas BOARD)
-  - `POST /api/reservations` - Criar reserva com validação de regras
-  - `GET /api/reservations` - Listar reservas do usuário
-  - `POST /api/reservations/[id]/check-in` - Check-in com validação de horário
-  - `POST /api/reservations/[id]/check-out` - Check-out com checklist e gamificação
-  - `POST /api/waitlist` - Entrar na fila de espera
-  - `GET /api/waitlist` - Ver fila de espera
-  - `POST /api/maintenance/tickets` - Criar ticket de manutenção
-  - `GET /api/maintenance/tickets` - Listar tickets
-
-- **Regras de Negócio**
-  - Regra do tanque: 5 treinos indoor completados antes de reservar
-  - Detecção de conflitos de horário
-  - Sistema de pontos no check-out (guardou +5, lavou +5, no prazo +3, reportou avaria +3)
-  - Penalidades (-5 pontos se não guardou ou lavou)
-  - Criação automática de tickets de manutenção ao reportar avarias
-  - Bloqueio de recurso se avaria crítica
-  - Notificação automática da fila de espera
+- **Calendário de Voluntariado:**
+  - API `/api/volunteer/calendar`
+  - Visualização por dia/horário
 
 ---
 
-## [0.3.8] - 2025-12-27
+## [0.4.2] - 2024-12-28
 
 ### Adicionado
-- **GPS Tracking Completo**
-  - GPS Tracker (`lib/gps/tracker.ts`) com watchPosition, auto-pause e buffer IndexedDB
-  - Filtro de accuracy (> 50m descartado)
-  - Detecção automática de pausa (velocidade < 0.5 m/s por 30s)
+- API `/api/coach/athletes` para listar atletas
+- Dashboard do coach funcional
+
+---
+
+## [0.4.1] - 2024-12-27
+
+### Adicionado
+- Página de reserva com intervalos de 15 minutos
+- Páginas de Pagamentos, Avisos e Configurações
+- APIs de perfil completas
+
+### Corrigido
+- Sistema de notificações (sininho)
+
+---
+
+## [0.4.0] - 2024-12-27
+
+### Adicionado
+- **Logos de Parceiros:**
+  - SVGs no header e bottom nav
+  - Links para Governo RN, Prefeitura, Potigás, ERK, CBR
+
+- **Sistema de Treino Ativo:**
+  - Página `/training/live` com GPS tracking
+  - Cronômetro, métricas, controles
+  - Página de feedback pós-treino
+
+---
+
+## [0.3.9] - 2024-12-27
+
+### Adicionado
+- **Módulo de Garagem Completo:**
+  - 10 APIs de recursos e reservas
+  - Sistema de check-in/check-out
+  - Fila de espera
+  - Regras de negócio (5 treinos indoor antes do tanque)
+
+---
+
+## [0.3.8] - 2024-12-27
+
+### Adicionado
+- **GPS Tracking:**
+  - GPS Tracker com filtro de accuracy
   - Cálculo de distância com Haversine
-  
-- **Utilitários de Cálculo**
-  - `lib/utils/workout-calculations.ts` com funções para:
-    - Cálculo de pace (MM:SS/500m)
-    - Splits de 500m
-    - Estimativa de calorias (baseado em MET)
-    - Estimativa de SPM (Strokes Per Minute)
-    - Formatações de tempo e distância
+  - Auto-pause
 
-- **Página de Aquecimento**
-  - `/training/warmup` com 5 exercícios de core activation
+- **Página de Aquecimento:**
+  - 5 exercícios de core
   - Timer por exercício
-  - Checklist de conclusão
-  - Navegação entre exercícios
-
-- **APIs Backend - GPS e Analytics**
-  - `POST /api/workouts/[id]/gps-points` - Salvar pontos GPS em batch
-  - `GET /api/workouts/[id]/gps-points` - Obter track GPS completo
-  - `GET /api/workouts/history` - Histórico com filtros e paginação
-  - `GET /api/workouts/analytics` - Métricas e progressão (volume semanal, pace, etc)
 
 ---
 
-## [0.3.7] - 2025-12-27
+## [0.3.7] - 2024-12-27
 
 ### Adicionado
-- **Módulo de Treinos - Base**
-  - Dashboard de treinos em `/training` com treino do dia e últimos treinos
-  - Seletor de tipo de treino em `/training/start` (Outdoor, Tanque, Indoor Geral)
-  - Bottom Navigation atualizado com ícone de Treinos
-  
-- **APIs Backend - Treinos**
-  - `POST /api/workouts/start` - Iniciar nova sessão de treino
-  - `POST /api/workouts/[id]/complete` - Finalizar treino com cálculo de pontos e gamificação
-  - `GET /api/workouts/templates` - Listar planilhas de treino aprovadas
-  - `POST /api/workouts/templates` - Criar planilha de treino (apenas COACH/BOARD)
-
-### Modificado
-- Bottom Navigation: rotas de treinos atualizadas de `/trainings` para `/training`
+- Dashboard de treinos
+- Seletor de tipo de treino
+- APIs de treinos (start, complete, templates)
 
 ---
 
-## [0.3.6] - 2025-12-27
+## [0.3.6] - 2024-12-27
 
 ### Adicionado
-- **PWA Offline-First Completo**
-  - Service Worker (`public/sw.js`) com estratégias de cache:
-    - Network First para APIs
-    - Cache First para assets estáticos
-    - Stale-While-Revalidate para dados de maré
-  - Manifest PWA (`public/manifest.json`) com ícones e shortcuts
-  - IndexedDB Manager (`lib/db/indexed-db.ts`) para armazenamento offline
-  - Background Sync preparado para sincronização de dados
-  - Página offline (`/offline`) para quando não há conexão
-  - PWA Utils (`lib/pwa/install-prompt.ts`) com prompt inteligente de instalação
+- **PWA Offline-First:**
+  - Service Worker
+  - IndexedDB Manager
+  - Manifest PWA
 
-- **Schema Prisma Expandido (15+ modelos)**
-  - **Módulo de Treinos:**
-    - `WorkoutTemplate` - Planilhas de treino criadas por COACH
-    - `WorkoutStage` - Etapas de um treino
-    - `WorkoutSession` - Sessões de treino executadas
-    - `GPSTrackPoint` - Pontos GPS coletados durante treino outdoor
-  
-  - **Módulo de Garagem:**
-    - `Resource` - Barcos e tanque
-    - `Reservation` - Reservas de recursos
-    - `WaitlistEntry` - Fila de espera
-    - `MaintenanceTicket` - Tickets de manutenção
-  
-  - **Módulo de Voluntariado Expandido:**
-    - `VolunteerTask` - Tarefas de voluntariado
-    - `VolunteerAvailability` - Disponibilidade semanal
-    - `VolunteerReputation` - Sistema de reputação
-    - `VolunteerTalent` - Banco de talentos
-
-### Modificado
-- Modelo `User` expandido com relações para todos os novos módulos
+- **Schema Prisma Expandido:**
+  - 15+ modelos (Treinos, Garagem, Voluntariado)
 
 ---
 
-## [0.3.5] - 2025-12-27
+## [0.3.5] - 2024-12-26
 
 ### Adicionado
-- **Ficha de Anamnese Completa**
-  - Formulário multi-etapas (5 estágios) em `/profile/anamnese`
-  - API de submissão e consulta (`/api/profile/anamnese`)
-  - Gamificação: +100 pontos ao completar
-  
-- **Termo de Voluntariado Redesenhado**
-  - Formulário de 5 seções: Áreas, Disponibilidade, LGPD, Normas, Assinatura
-  - Implementado em `/volunteer/term`
-  - API de submissão (`/api/volunteer/submit-form`)
-  - Gamificação: +50 pontos ao aceitar
-  
-- **Sistema EAD (Escola de Remo)**
-  - Página inicial em `/ead` com categorias de vídeos
-  - Busca e filtros
-  - Sistema de progresso
-  - Gamificação: +25 XPs por vídeo assistido
-
-### Modificado
-- Calendário de voluntariado na diretoria (`/diretoria/voluntariado`)
-- Download direto do Estatuto em `/mural`
-- Padding inferior em `/trainings` e `/garage` para evitar sobreposição com Bottom Nav
-
-### Corrigido
-- Autenticação atualizada para `auth()` do NextAuth v5
-- Schema Prisma: removidas anotações `@db.Text` incompatíveis com SQLite
+- Ficha de Anamnese completa (5 etapas)
+- Termo de Voluntariado
+- Sistema EAD (Escola de Remo)
 
 ---
 
-## [0.3.4] - 2025-12-26
+## [0.3.4] - 2024-12-26
 
 ### Adicionado
-- Sistema de notícias com listagem e detalhes
-- Widget de marés e condições de remo
-- Estrutura base de perfis (Visitante, Sócio, Coach, Diretoria)
-
-### Modificado
-- Melhorias na UI/UX geral
-- Otimizações de performance
+- Sistema de notícias
+- Widget de marés e condições
 
 ---
 
-## Versões Anteriores
+## [0.3.3] - 2024-12-25
 
-Versões 0.3.3 e anteriores não documentadas neste changelog.
+### Adicionado
+- Estrutura base de perfis
+- Carteirinha digital com QR Code
 
 ---
 
-## Roadmap
+## [0.3.2] - 2024-12-25
 
-### v0.3.8 (Próxima)
-- Treinos GPS + Indoor
-- Aquecimento e alongamento
-- 5 APIs adicionais
+### Adicionado
+- Portal do Voluntariado
+- Login via dropdown
+- Proposta de Sócio
 
-### v0.3.9
-- Módulo Garagem completo
-- 9 APIs de recursos e reservas
+---
 
-### v0.4.0
-- Voluntariado expandido
-- 10 APIs de tarefas e reputação
+## [0.3.1] - 2024-12-24
 
-### v0.4.1
-- Gamificação completa
-- 5 APIs de pontos e badges
+### Adicionado
+- Dashboard do Treinador
+- Ficha do Associado
+- Sistema de Presença
 
-### v0.4.2 (Final)
-- Notificações
-- Testes completos
-- Documentação
+---
+
+## [0.3.0] - 2024-12-24
+
+### Repaginação
+- **Identidade Visual 2.0:**
+  - Vermelho, Preto, Ouro
+  - Glassmorphism
+- **Gamificação:**
+  - Níveis e pontos
+  - Conquistas
+
+---
+
+## [0.2.14] - 2024-12-23
+
+### Adicionado
+- Autenticação NextAuth
+- Integração Prisma + SQLite
+- Dashboard dinâmico
+
+---
+
+## [0.2.12] - 2024-12-22
+
+### Melhorado
+- Performance de carregamento
+- Responsividade mobile
+
+---
+
+## [0.2.10] - 2024-12-21
+
+### Adicionado
+- Loja oficial (Store)
+- Galeria de imagens
+
+---
+
+## [0.2.8] - 2024-12-20
+
+### Adicionado
+- Sistema de eventos
+- RSVP de participação
+
+---
+
+## [0.2.5] - 2024-12-19
+
+### Adicionado
+- Reserva de barcos
+- Painel de notícias
+
+---
+
+## [0.2.3] - 2024-12-18
+
+### Adicionado
+- Sistema de pagamentos (mock)
+- Histórico financeiro
+
+---
+
+## [0.2.0] - 2024-12-17
+
+### Repaginação
+- Transição para Next.js 14 App Router
+- Arquitetura Mobile-First
+
+---
+
+## [0.1.12] - 2024-12-16
+
+### Adicionado
+- Estrutura de permissões
+- Componentes UI fundamentais
+
+---
+
+## [0.1.10] - 2024-12-15
+
+### Melhorado
+- Sistema de navegação
+- Estilização de cards
+
+---
+
+## [0.1.8] - 2024-12-14
+
+### Adicionado
+- Header com logo
+- Footer responsivo
+
+---
+
+## [0.1.5] - 2024-12-13
+
+### Adicionado
+- Protótipo da Landing Page
+- Seção de eventos
+
+---
+
+## [0.1.3] - 2024-12-12
+
+### Adicionado
+- Configuração Tailwind
+- Tema base (cores, fontes)
+
+---
+
+## [0.1.1] - 2024-12-11
+
+### Inicial
+- Criação do repositório
+- Estrutura base Next.js
+
+---
+
+## [0.0.5] - 2024-12-10
+
+### Setup
+- Configuração inicial de dependências
+- ESLint e Prettier
+
+---
+
+## [0.0.3] - 2024-12-09
+
+### Setup
+- Definição de arquitetura
+- Documentação inicial
+
+---
+
+## [0.0.1] - 2024-12-08
+
+### Início
+- Criação do projeto
+- Estrutura de diretórios

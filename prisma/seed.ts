@@ -179,18 +179,29 @@ async function main() {
 
     console.log('✅ Loja populada')
 
-    // Notícias
-    await prisma.news.create({
+    // Mais produtos
+    await prisma.product.create({
         data: {
-            title: 'Sport Club de Natal completa 110 anos',
-            slug: 'sport-club-110-anos',
-            content: 'O Sport Club de Natal, fundado em 25 de novembro de 1915, completa 110 anos de história e tradição náutica...',
-            excerpt: 'Clube celebra mais de um século de tradição no remo',
-            authorName: admin.name,
-            isPublished: true,
-            publishedAt: new Date(),
-        },
+            name: 'Unisuit Elite Pro',
+            description: 'Macacão de competição profissional, aerodinâmico.',
+            price: 280.00,
+            stock: 15,
+            categoryId: catUniforms.id,
+            images: JSON.stringify(['https://placehold.co/400x400?text=Unisuit']),
+        }
     })
+    await prisma.product.create({
+        data: {
+            name: 'Garrafa Térmica SCN',
+            description: 'Garrafa térmica 750ml com logo do clube.',
+            price: 45.00,
+            stock: 40,
+            categoryId: catAccessories.id,
+            images: JSON.stringify(['https://placehold.co/400x400?text=Garrafa']),
+        }
+    })
+
+    console.log('✅ Produtos adicionais criados')
 
     // Notificações
     await prisma.notification.createMany({

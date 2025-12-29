@@ -155,9 +155,9 @@ export function BottomNav() {
             </nav>
 
             {/* Logos dos Parceiros - Mobile */}
-            <div className="lg:hidden fixed bottom-[70px] left-0 right-0 bg-black/90 backdrop-blur-sm border-t border-white/10 py-2 z-40">
-                <div className="flex items-center justify-center gap-4 px-4">
-                    <a href="https://www.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[20px] w-[25px] hover:opacity-80 transition-opacity">
+            <div className="lg:hidden fixed bottom-[60px] left-0 right-0 bg-black/95 backdrop-blur-md border-t border-white/10 py-3 z-50">
+                <div className="flex items-center justify-center gap-6 px-4">
+                    <a href="https://www.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[96px] w-[120px] hover:opacity-80 transition-opacity">
                         <Image
                             src="/logos/svg/RN.svg"
                             alt="Governo do RN"
@@ -165,7 +165,7 @@ export function BottomNav() {
                             className="object-contain"
                         />
                     </a>
-                    <a href="https://www.natal.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[20px] w-[25px] hover:opacity-80 transition-opacity">
+                    <a href="https://www.natal.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[53px] w-[66px] hover:opacity-80 transition-opacity">
                         <Image
                             src="/logos/svg/prefeitura.svg"
                             alt="Prefeitura de Natal"
@@ -173,7 +173,7 @@ export function BottomNav() {
                             className="object-contain"
                         />
                     </a>
-                    <a href="https://www.instagram.com/eurekaerk/" target="_blank" rel="noopener noreferrer" className="relative h-[20px] w-[25px] hover:opacity-80 transition-opacity">
+                    <a href="https://www.instagram.com/eurekaerk/" target="_blank" rel="noopener noreferrer" className="relative h-[48px] w-[60px] hover:opacity-80 transition-opacity">
                         <Image
                             src="/logos/svg/ERK.svg"
                             alt="Eureka"
@@ -181,7 +181,7 @@ export function BottomNav() {
                             className="object-contain"
                         />
                     </a>
-                    <a href="https://www.remobrasil.com/" target="_blank" rel="noopener noreferrer" className="relative h-[20px] w-[25px] hover:opacity-80 transition-opacity">
+                    <a href="https://www.remobrasil.com/" target="_blank" rel="noopener noreferrer" className="relative h-[48px] w-[60px] hover:opacity-80 transition-opacity">
                         <Image
                             src="/logos/svg/CBR.svg"
                             alt="CBR"
@@ -189,7 +189,7 @@ export function BottomNav() {
                             className="object-contain"
                         />
                     </a>
-                    <a href="https://www.potigas.com.br/" target="_blank" rel="noopener noreferrer" className="relative h-[20px] w-[25px] hover:opacity-80 transition-opacity">
+                    <a href="https://www.potigas.com.br/" target="_blank" rel="noopener noreferrer" className="relative h-[48px] w-[60px] hover:opacity-80 transition-opacity">
                         <Image
                             src="/logos/svg/POTIGAS.svg"
                             alt="Potigás"

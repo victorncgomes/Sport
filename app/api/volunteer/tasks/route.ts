@@ -38,15 +38,20 @@ export async function POST(request: NextRequest) {
             maxVolunteers
         } = body;
 
+        // Gerar número da tarefa TSK-XXXXX
+        const taskNumber = `TSK-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+
         // Criar tarefa
         const task = await prisma.volunteerTask.create({
             data: {
+                taskNumber,
                 title,
                 description,
                 category,
+                location: 'CLUB', // Default
                 priority: priority || 'MEDIUM',
                 estimatedHours: estimatedHours || 1,
-                deadline: deadline ? new Date(deadline) : null,
+                deadline: deadline ? new Date(deadline) : new Date(),
                 requiredTalents: requiredTalents ? JSON.stringify(requiredTalents) : null,
                 maxVolunteers: maxVolunteers || 1,
                 createdById: user.id,

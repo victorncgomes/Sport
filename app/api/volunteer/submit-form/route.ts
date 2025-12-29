@@ -18,23 +18,77 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
+        const { termVersion, termHash, termContent, areas, availability, ipAddress, userAgent } = body;
 
-        // Registrar o aceite do termo
-        // Note: I'll check if VolunteerTerm model exists, or create a simple record in User or a new model.
-        // For now, I'll use a generic approach or check schema again.
+        // Validar dados obrigatórios
+        if (!termVersion || !termHash || !termContent || !areas || !availability) {
+            return NextResponse.json(
+                { error: 'Dados incompletos' },
+                { status: 400 }
+            );
+        }
 
-        // Assuming we have a field or model for this. 
-        // In the absence of a specific model in the truncated context, 
-        // I will create a simple response and later adjust the schema if needed.
+        // Verificar se já existe um termo aceito
+        const existingTerm = await prisma.volunteerTermAcceptance.findUnique({
+            where: { userId: user.id }
+        });
 
-        // Let's assume there's a UserSocialAction or similar, 
-        // but for now, I'll just return success to unblock the UI.
+        if (existingTerm) {
+            // Atualizar termo existente
+            await prisma.volunteerTermAcceptance.update({
+                where: { userId: user.id },
+                data: {
+                    termVersion,
+                    termHash,
+                    termContentSnapshot: termContent,
+                    areas: JSON.stringify(areas),
+                    availability: JSON.stringify(availability),
+                    ipAddress: ipAddress || 'unknown',
+                    userAgent: userAgent || 'unknown',
+                    acceptedAt: new Date(),
+                    status: 'ACTIVE'
+                }
+            });
+        } else {
+            // Criar novo termo
+            await prisma.volunteerTermAcceptance.create({
+                data: {
+                    userId: user.id,
+                    termVersion,
+                    termHash,
+                    termContentSnapshot: termContent,
+                    areas: JSON.stringify(areas),
+                    availability: JSON.stringify(availability),
+                    ipAddress: ipAddress || 'unknown',
+                    userAgent: userAgent || 'unknown',
+                    status: 'ACTIVE'
+                }
+            });
+        }
 
-        console.log('Volunteer submission:', { userId: user.id, ...body });
+        // Atualizar status de voluntário do usuário
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                isVolunteer: true,
+                volunteerSince: user.volunteerSince || new Date(),
+                points: { increment: 50 }
+            }
+        });
+
+        // Registrar atividade
+        await prisma.activityLog.create({
+            data: {
+                userId: user.id,
+                activityType: 'VOLUNTEER',
+                description: 'Aceitou o termo de voluntariado',
+                xpEarned: 50
+            }
+        });
 
         return NextResponse.json({
             success: true,
-            message: 'Termo de voluntariado registrado!',
+            message: 'Termo de voluntariado registrado com sucesso!',
             pointsEarned: 50
         });
     } catch (error) {

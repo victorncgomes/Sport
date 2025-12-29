@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/db';
 
 // POST /api/volunteer/tasks/[id]/submit - Submeter tarefa concluída
 export async function POST(
@@ -57,8 +55,8 @@ export async function POST(
             data: {
                 status: 'PENDING_REVIEW',
                 completedAt: new Date(),
-                notes: notes || null,
-                attachments: attachments ? JSON.stringify(attachments) : null
+                submissionNotes: notes || null,
+                submissionFiles: attachments ? JSON.stringify(attachments) : null
             }
         });
 
