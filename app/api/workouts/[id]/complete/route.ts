@@ -96,13 +96,31 @@ export async function POST(
             }
         });
 
-        // Atualizar pontos do usuário
+        // Buscar XP atual antes de atualizar
+        const oldXP = user.points;
+        const newXP = oldXP + Math.max(0, points);
+
+        // Calcular level up
+        const oldLevel = user.level;
+        let newLevel = oldLevel;
+        let leveledUp = false;
+        const rewards: string[] = [];
+
+        // Fórmula: XP para próximo nível = 100 * nível^1.5
+        const getXPForLevel = (level: number) => Math.floor(100 * Math.pow(level, 1.5));
+
+        // Verificar se subiu de nível
+        while (newXP >= getXPForLevel(newLevel)) {
+            newLevel++;
+            leveledUp = true;
+        }
+
+        // Atualizar pontos e nível do usuário
         await prisma.user.update({
             where: { id: user.id },
             data: {
-                points: {
-                    increment: Math.max(0, points)
-                }
+                points: newXP,
+                level: newLevel
             }
         });
 
@@ -117,7 +135,9 @@ export async function POST(
                     sessionId: params.id,
                     mode: workoutSession.mode,
                     distance,
-                    duration
+                    duration,
+                    leveledUp,
+                    newLevel: leveledUp ? newLevel : undefined
                 })
             }
         });
@@ -128,7 +148,12 @@ export async function POST(
         return NextResponse.json({
             success: true,
             session: updatedSession,
-            pointsEarned: Math.max(0, points)
+            xpEarned: Math.max(0, points),
+            totalXP: newXP,
+            leveledUp,
+            oldLevel,
+            newLevel,
+            rewards
         });
 
     } catch (error) {
