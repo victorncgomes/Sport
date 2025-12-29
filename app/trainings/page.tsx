@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { HeroSection } from '@/components/ui/hero-section';
 import { athleteData } from '@/lib/data/athlete-performance';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { Button } from '@/components/ui/button';
-import { Trophy, Activity, Heart, Calendar, ArrowRight, Table, FileText, User, ChevronRight, Zap, Ship, Anchor, AlertCircle } from 'lucide-react';
+import { Trophy, Activity, Heart, Calendar, ArrowRight, Table, FileText, User, ChevronRight, Zap, Ship, Anchor, AlertCircle, Play, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { garageBoats, Boat, BoatType } from '@/lib/data/garage-boats';
@@ -75,6 +76,39 @@ export default function TrainingsPage() {
                             Relatório PDF
                         </Button>
                     </div>
+                </div>
+
+                {/* Ações Rápidas */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <Link href="/training/start">
+                        <AnimatedCard variant="gradient" className="p-6 hover:border-club-red/50 transition-all cursor-pointer group">
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-xl bg-club-red flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <Play className="w-7 h-7 text-white fill-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-bold text-white">Iniciar Treino</h3>
+                                    <p className="text-white/60 text-sm">Comece seu treino agora</p>
+                                </div>
+                                <ChevronRight className="w-5 h-5 text-white/40 group-hover:text-club-red transition-colors" />
+                            </div>
+                        </AnimatedCard>
+                    </Link>
+
+                    <Link href="/boats">
+                        <AnimatedCard variant="glass" className="p-6 hover:border-yellow-500/50 transition-all cursor-pointer group">
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <Award className="w-7 h-7 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-bold text-white">Progressão de Barcos</h3>
+                                    <p className="text-white/60 text-sm">Desbloqueie novos barcos</p>
+                                </div>
+                                <ChevronRight className="w-5 h-5 text-white/40 group-hover:text-yellow-400 transition-colors" />
+                            </div>
+                        </AnimatedCard>
+                    </Link>
                 </div>
 
                 {/* Navigation Tabs */}
