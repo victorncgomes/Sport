@@ -33,7 +33,8 @@ export default auth((req) => {
         "/reservations",
         "/garage",
         "/finance",
-        "/volunteer"
+        "/volunteer",
+        "/boats"
     ]
 
     // Check if the current path is public
