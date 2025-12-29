@@ -53,7 +53,7 @@ export async function POST(
 
         // Calcular pontos baseado em prioridade e horas
         let points = 0;
-        const taskEstimatedHours = task.estimatedHours ?? 1;
+        const taskEstimatedHours = task.estimatedDuration ?? 1;
         if (approved) {
             const basePoints = hoursWorked || taskEstimatedHours;
             const priorityMultiplier = {
