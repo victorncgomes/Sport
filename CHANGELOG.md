@@ -38,6 +38,12 @@ Histórico completo de versões do sistema de gestão do Sport Club de Natal.
   - Anúncios de milestones (500m, 1km, 2km, 5km)
   - Feedback de pace (muito rápido/lento)
 
+- **Competição Virtual:**
+  - `/training/compete` - Modo corrida contra ghost
+  - Pista visual animada com posição em tempo real
+  - Countdown 3-2-1 com integração de áudio
+  - Card na `/trainings` com badge "NOVO"
+
 - **Calculador de Anamnese:**
   - `lib/utils/anamnese-calculator.ts` - Calcular nível inicial
 
