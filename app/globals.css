@@ -411,3 +411,228 @@ h6 {
     inset: 0;
     pointer-events: none;
 }
+
+/* ========================================
+   ESCALA 80% PARA DESKTOP FULL HD+
+   Aplicado em telas ≥1440px (modo expandido)
+======================================== */
+
+@media screen and (min-width: 1440px) {
+    html {
+        font-size: 80%;
+    }
+
+    body:not(.theme-light) {
+        /* Mantém proporções ajustadas */
+    }
+
+    /* Reduz tamanho de fontes proporcionalmente */
+    h1 {
+        font-size: 2.4rem !important;
+    }
+
+    h2 {
+        font-size: 1.9rem !important;
+    }
+
+    h3 {
+        font-size: 1.5rem !important;
+    }
+
+    h4 {
+        font-size: 1.25rem !important;
+    }
+
+    /* Cards e componentes menores */
+    .glass-card,
+    .card-light {
+        padding: 1rem;
+    }
+
+    /* Botões mais compactos */
+    .btn-primary,
+    .btn-secondary,
+    button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    /* Badges menores */
+    .badge {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.625rem;
+    }
+
+    /* Header compacto */
+    header {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    /* Container com max-width menor */
+    .container {
+        max-width: 1200px;
+    }
+}
+
+
+/* ========================================
+   TEMA CLARO (ACESSIBILIDADE)
+   Ativado via classe .theme-light no body
+======================================== */
+
+body.theme-light {
+    --club-black: #FAFAFA;
+    --bg-primary: #F4F4F5;
+    --bg-secondary: #E4E4E7;
+    --bg-card: #FFFFFF;
+    --bg-hover: #D4D4D8;
+    --club-white: #171717;
+
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    color: var(--club-white);
+}
+
+/* Tema claro - fontes maiores para acessibilidade */
+body.theme-light {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+body.theme-light h1 {
+    font-size: 2.75rem;
+}
+
+body.theme-light h2 {
+    font-size: 2.2rem;
+}
+
+body.theme-light h3 {
+    font-size: 1.75rem;
+}
+
+body.theme-light h4 {
+    font-size: 1.4rem;
+}
+
+body.theme-light p {
+    font-size: 1.1rem;
+}
+
+/* Cards no tema claro */
+body.theme-light .glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+body.theme-light .glass-card:hover {
+    border-color: var(--club-red);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Textos no tema claro */
+body.theme-light .text-white {
+    color: #171717 !important;
+}
+
+body.theme-light .text-white\/50,
+body.theme-light .text-white\/60,
+body.theme-light .text-white\/70,
+body.theme-light .text-white\/80 {
+    color: rgba(23, 23, 23, 0.7) !important;
+}
+
+body.theme-light .text-white\/30,
+body.theme-light .text-white\/40 {
+    color: rgba(23, 23, 23, 0.5) !important;
+}
+
+/* Backgrounds no tema claro */
+body.theme-light .bg-club-black,
+body.theme-light .bg-black {
+    background-color: #FAFAFA !important;
+}
+
+body.theme-light .bg-white\/5,
+body.theme-light .bg-white\/10 {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Bordas no tema claro */
+body.theme-light .border-white\/10,
+body.theme-light .border-white\/20 {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Inputs no tema claro */
+body.theme-light .input-field,
+body.theme-light input,
+body.theme-light select,
+body.theme-light textarea {
+    background: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #171717;
+}
+
+body.theme-light .input-field::placeholder,
+body.theme-light input::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+/* Header no tema claro mantém cores originais para identidade */
+body.theme-light header {
+    background-color: #000000;
+}
+
+/* Bottom nav no tema claro */
+body.theme-light .bottom-nav {
+    background: #FFFFFF;
+    border-top-color: rgba(0, 0, 0, 0.1);
+}
+
+body.theme-light .bottom-nav-item {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+body.theme-light .bottom-nav-item.active {
+    color: var(--club-red);
+}
+
+/* ========================================
+   CONFIGURAÇÕES DE ACESSIBILIDADE
+======================================== */
+
+/* Alto contraste */
+body.high-contrast {
+    filter: contrast(1.2);
+}
+
+/* Redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Fonte grande */
+body.font-large {
+    font-size: 1.25rem;
+}
+
+body.font-large h1 {
+    font-size: 3rem;
+}
+
+body.font-large h2 {
+    font-size: 2.4rem;
+}
+
+body.font-large h3 {
+    font-size: 1.9rem;
+}

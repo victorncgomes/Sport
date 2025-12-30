@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { prisma } from '@/lib/db';
+import { mockSessions } from '../history/mock-data';
 
-// GET /api/workouts/analytics - Métricas e progressão do usuário
+// GET /api/workouts/analytics - Estatísticas gerais
 export async function GET(request: NextRequest) {
     try {
         const session = await auth();
@@ -10,49 +10,35 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
         }
 
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email }
-        });
+        // Mock implementation for simulation
+        const totalWorkouts = mockSessions.length;
+        const totalDistance = mockSessions.reduce((acc, curr) => acc + (curr.distance || 0), 0);
+        const totalDuration = mockSessions.reduce((acc, curr) => acc + (curr.duration || 0), 0);
 
-        if (!user) {
-            return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
-        }
+        // Calculate average pace (very simplified)
+        const sessionsWithPace = mockSessions.filter(s => s.avgPace && s.avgPace !== '-');
+        const avgPace = sessionsWithPace.length > 0 ? sessionsWithPace[0].avgPace : '--:--';
 
-        // Buscar todos os treinos concluídos
-        const workouts = await prisma.workoutSession.findMany({
-            where: {
-                userId: user.id,
-                status: 'COMPLETED'
-            },
-            orderBy: { completedAt: 'asc' }
-        });
-
-        // Calcular métricas
-        const totalWorkouts = workouts.length;
-        const totalDistance = workouts.reduce((sum, w) => sum + (w.distance || 0), 0);
-        const totalDuration = workouts.reduce((sum, w) => sum + (w.duration || 0), 0);
-
-        // Pace médio (apenas workouts com pace)
-        const workoutsWithPace = workouts.filter(w => w.avgPace);
-        const avgPace = workoutsWithPace.length > 0
-            ? calculateAveragePace(workoutsWithPace.map(w => w.avgPace!))
-            : null;
-
-        // Workouts por tipo
         const workoutsByType: Record<string, number> = {};
-        workouts.forEach(w => {
-            workoutsByType[w.mode] = (workoutsByType[w.mode] || 0) + 1;
+        mockSessions.forEach(s => {
+            workoutsByType[s.sport] = (workoutsByType[s.sport] || 0) + 1;
         });
 
-        // Volume semanal (últimas 12 semanas)
-        const weeklyVolume = calculateWeeklyVolume(workouts);
+        // Mock weekly volume (last 4 weeks)
+        const weeklyVolume = [
+            { week: '2025-W48', km: 25 },
+            { week: '2025-W49', km: 32 },
+            { week: '2025-W50', km: 45 },
+            { week: '2025-W51', km: 28 }, // Current partial
+        ];
 
-        // Progressão de pace (últimos 10 treinos com pace)
-        const paceProgression = workoutsWithPace
-            .slice(-10)
-            .map(w => ({
-                date: w.completedAt?.toISOString().split('T')[0],
-                pace: w.avgPace
+        const paceProgression = mockSessions
+            .filter(s => s.sport === 'ROWING' && s.avgPace)
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .slice(-5)
+            .map(s => ({
+                date: new Date(s.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+                pace: s.avgPace
             }));
 
         return NextResponse.json({
@@ -66,43 +52,7 @@ export async function GET(request: NextRequest) {
         });
 
     } catch (error) {
-        console.error('Error fetching analytics:', error);
-        return NextResponse.json(
-            { error: 'Erro ao buscar analytics' },
-            { status: 500 }
-        );
+        console.error('Erro ao calcular analytics:', error);
+        return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
     }
-}
-
-function calculateAveragePace(paces: string[]): string {
-    // Converter paces "MM:SS" para segundos
-    const seconds = paces.map(pace => {
-        const [min, sec] = pace.split(':').map(Number);
-        return min * 60 + sec;
-    });
-
-    const avgSeconds = seconds.reduce((sum, s) => sum + s, 0) / seconds.length;
-    const minutes = Math.floor(avgSeconds / 60);
-    const secs = Math.floor(avgSeconds % 60);
-
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
-}
-
-function calculateWeeklyVolume(workouts: any[]): { week: string; km: number }[] {
-    const weeks: Record<string, number> = {};
-
-    workouts.forEach(workout => {
-        if (!workout.completedAt || !workout.distance) return;
-
-        const date = new Date(workout.completedAt);
-        const weekStart = new Date(date);
-        weekStart.setDate(date.getDate() - date.getDay()); // Domingo
-        const weekKey = weekStart.toISOString().split('T')[0];
-
-        weeks[weekKey] = (weeks[weekKey] || 0) + (workout.distance / 1000);
-    });
-
-    return Object.entries(weeks)
-        .map(([week, km]) => ({ week, km: Math.round(km * 100) / 100 }))
-        .slice(-12); // Últimas 12 semanas
 }

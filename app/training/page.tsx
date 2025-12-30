@@ -5,20 +5,36 @@ import { HeroSection } from '@/components/ui/hero-section';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { StreakDisplay } from '@/components/gamification';
 import {
     Play,
-    Calendar,
     TrendingUp,
     Clock,
     MapPin,
     Award,
-    ChevronRight
+    ChevronRight,
+    Ship,
+    History,
+    CalendarDays,
+    Waves,
+    Dumbbell,
+    Bike,
+    PersonStanding
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+// Modalidades de treino
+const sports = [
+    { id: 'ROWING', title: 'Remo', icon: Waves, color: 'from-blue-600 to-cyan-600' },
+    { id: 'RUNNING', title: 'Corrida', icon: PersonStanding, color: 'from-green-600 to-emerald-600' },
+    { id: 'CYCLING', title: 'Bike', icon: Bike, color: 'from-orange-600 to-amber-600' },
+    { id: 'GYM', title: 'Musculação', icon: Dumbbell, color: 'from-purple-600 to-pink-600' }
+];
 
 export default function TrainingDashboard() {
-    const [todayWorkout, setTodayWorkout] = useState<any>(null);
+    const router = useRouter();
     const [recentWorkouts, setRecentWorkouts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -28,19 +44,6 @@ export default function TrainingDashboard() {
 
     async function loadDashboardData() {
         try {
-            // TODO: Buscar da API
-            // const response = await fetch('/api/workouts/dashboard');
-            // const data = await response.json();
-
-            // Mock data por enquanto
-            setTodayWorkout({
-                id: '1',
-                title: 'Treino de Base - 10km',
-                type: 'BASE',
-                duration: 60,
-                distance: 10000
-            });
-
             setRecentWorkouts([
                 {
                     id: '1',
@@ -67,89 +70,84 @@ export default function TrainingDashboard() {
         }
     }
 
+    const handleSportSelect = (sportId: string) => {
+        router.push(`/training/start?sport=${sportId}`);
+    };
+
     return (
         <div className="min-h-screen bg-club-black pb-24">
             <HeroSection
                 title="Treinos"
                 subtitle="Sport Club de Natal"
-                description="Acompanhe seu progresso e melhore sua performance"
+                description="Escolha uma modalidade e comece a treinar"
                 compact
             />
 
-            <div className="container mx-auto px-4 py-8 space-y-8">
+            <div className="container mx-auto px-4 py-6 space-y-6">
 
-                {/* Treino de Hoje */}
-                {todayWorkout && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                    >
-                        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                            <Calendar className="w-5 h-5 text-club-red" />
-                            Meu Treino Hoje
-                        </h2>
-                        <AnimatedCard variant="gradient" className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                                <div>
-                                    <h3 className="text-2xl font-bold text-white mb-2">
-                                        {todayWorkout.title}
-                                    </h3>
-                                    <div className="flex items-center gap-4 text-sm text-white/60">
-                                        <span className="flex items-center gap-1">
-                                            <Clock className="w-4 h-4" />
-                                            {todayWorkout.duration} min
-                                        </span>
-                                        {todayWorkout.distance && (
-                                            <span className="flex items-center gap-1">
-                                                <MapPin className="w-4 h-4" />
-                                                {(todayWorkout.distance / 1000).toFixed(1)} km
-                                            </span>
-                                        )}
+                {/* Streak Display */}
+                <StreakDisplay variant="compact" />
+
+                {/* Seleção de Modalidade - Cards Compactos */}
+                <div>
+                    <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                        <Play className="w-5 h-5 text-club-red" />
+                        Iniciar Treino
+                    </h2>
+                    <div className="grid grid-cols-4 gap-2">
+                        {sports.map((sport, index) => {
+                            const Icon = sport.icon;
+                            return (
+                                <motion.button
+                                    key={sport.id}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    onClick={() => handleSportSelect(sport.id)}
+                                    className="w-full"
+                                >
+                                    <div className={`bg-gradient-to-br ${sport.color} rounded-xl p-3 text-center hover:scale-105 transition-transform aspect-square flex flex-col items-center justify-center`}>
+                                        <Icon className="w-8 h-8 text-white mb-1" />
+                                        <span className="text-xs font-bold text-white">{sport.title}</span>
                                     </div>
-                                </div>
-                                <Badge className="bg-club-red/20 text-club-red border-club-red/30">
-                                    {todayWorkout.type}
-                                </Badge>
-                            </div>
-                            <Link href="/training/start">
-                                <Button className="w-full bg-club-red hover:bg-club-red/90 gap-2 h-12">
-                                    <Play className="w-5 h-5 fill-white" />
-                                    Iniciar Treino
-                                </Button>
-                            </Link>
-                        </AnimatedCard>
-                    </motion.div>
-                )}
+                                </motion.button>
+                            );
+                        })}
+                    </div>
+                </div>
 
-                {/* CTA se não tem treino hoje */}
-                {!todayWorkout && !loading && (
-                    <AnimatedCard variant="glass" className="p-8 text-center">
-                        <Play className="w-12 h-12 text-white/30 mx-auto mb-4" />
-                        <h3 className="text-lg font-bold text-white mb-2">
-                            Nenhum treino programado para hoje
-                        </h3>
-                        <p className="text-white/60 mb-6">
-                            Comece um treino livre ou veja as planilhas disponíveis
-                        </p>
-                        <div className="flex gap-3 justify-center">
-                            <Link href="/training/start">
-                                <Button className="bg-club-red hover:bg-club-red/90">
-                                    Treino Livre
-                                </Button>
-                            </Link>
-                            <Link href="/training/plans">
-                                <Button variant="outline">
-                                    Ver Planilhas
-                                </Button>
-                            </Link>
-                        </div>
-                    </AnimatedCard>
-                )}
+                {/* Atalhos Rápidos */}
+                <div className="grid grid-cols-4 gap-2">
+                    <Link href="/training/my-program">
+                        <AnimatedCard variant="glass" className="p-3 text-center hover:bg-white/10 transition-colors">
+                            <CalendarDays className="w-6 h-6 text-purple-400 mx-auto mb-1" />
+                            <p className="text-[10px] font-bold text-white">Programa</p>
+                        </AnimatedCard>
+                    </Link>
+                    <Link href="/boats">
+                        <AnimatedCard variant="glass" className="p-3 text-center hover:bg-white/10 transition-colors">
+                            <Ship className="w-6 h-6 text-club-red mx-auto mb-1" />
+                            <p className="text-[10px] font-bold text-white">Barcos</p>
+                        </AnimatedCard>
+                    </Link>
+                    <Link href="/training/history">
+                        <AnimatedCard variant="glass" className="p-3 text-center hover:bg-white/10 transition-colors">
+                            <History className="w-6 h-6 text-blue-400 mx-auto mb-1" />
+                            <p className="text-[10px] font-bold text-white">Histórico</p>
+                        </AnimatedCard>
+                    </Link>
+                    <Link href="/training/analytics">
+                        <AnimatedCard variant="glass" className="p-3 text-center hover:bg-white/10 transition-colors">
+                            <TrendingUp className="w-6 h-6 text-club-gold mx-auto mb-1" />
+                            <p className="text-[10px] font-bold text-white">Analytics</p>
+                        </AnimatedCard>
+                    </Link>
+                </div>
 
                 {/* Treinos Recentes */}
                 <div>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <div className="flex items-center justify-between mb-3">
+                        <h2 className="text-lg font-bold text-white flex items-center gap-2">
                             <TrendingUp className="w-5 h-5 text-club-gold" />
                             Últimos Treinos
                         </h2>
@@ -161,7 +159,7 @@ export default function TrainingDashboard() {
                         </Link>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                         {recentWorkouts.map((workout, i) => (
                             <motion.div
                                 key={workout.id}
@@ -169,10 +167,10 @@ export default function TrainingDashboard() {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: i * 0.1 }}
                             >
-                                <AnimatedCard variant="glass" className="p-4">
+                                <AnimatedCard variant="glass" className="p-3">
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-2">
+                                            <div className="flex items-center gap-2 mb-1">
                                                 <Badge className="text-[10px] font-black uppercase">
                                                     {workout.mode}
                                                 </Badge>
@@ -180,7 +178,7 @@ export default function TrainingDashboard() {
                                                     {new Date(workout.completedAt).toLocaleDateString('pt-BR')}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-4 text-sm">
+                                            <div className="flex items-center gap-3 text-sm">
                                                 {workout.distance && (
                                                     <span className="text-white">
                                                         <strong>{(workout.distance / 1000).toFixed(1)}</strong> km
@@ -201,29 +199,13 @@ export default function TrainingDashboard() {
                                                 <Award className="w-4 h-4" />
                                                 +{workout.pointsEarned}
                                             </div>
-                                            <ChevronRight className="w-5 h-5 text-white/30" />
+                                            <ChevronRight className="w-4 h-4 text-white/30" />
                                         </div>
                                     </div>
                                 </AnimatedCard>
                             </motion.div>
                         ))}
                     </div>
-                </div>
-
-                {/* Atalhos */}
-                <div className="grid grid-cols-2 gap-3">
-                    <Link href="/training/plans">
-                        <AnimatedCard variant="glass" className="p-4 text-center hover:bg-white/10 transition-colors">
-                            <Calendar className="w-8 h-8 text-club-red mx-auto mb-2" />
-                            <p className="text-sm font-bold text-white">Planilhas</p>
-                        </AnimatedCard>
-                    </Link>
-                    <Link href="/training/analytics">
-                        <AnimatedCard variant="glass" className="p-4 text-center hover:bg-white/10 transition-colors">
-                            <TrendingUp className="w-8 h-8 text-club-gold mx-auto mb-2" />
-                            <p className="text-sm font-bold text-white">Analytics</p>
-                        </AnimatedCard>
-                    </Link>
                 </div>
             </div>
         </div>

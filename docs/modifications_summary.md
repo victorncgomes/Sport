@@ -106,3 +106,126 @@
     - Resolvidos erros de compilação em `app/api/volunteer/accept-term/route.ts`.
     - **Nota**: Procedimento de limpeza de cache realizado (`Remove-Item node_modules/.prisma`) e verificado via script de runtime.
 
+### 11. Sistema de Treinos - Finalização (29/12/2025)
+- **Revisão Completa**: Identificadas 12 páginas e 10 APIs funcionais no módulo Training.
+- **Bug Fix**: Corrigido erro ao finalizar treino onde `sessionId=null` causava falha na página cooldown.
+    - `app/training/live/page.tsx`: Adicionada verificação de sessionId antes de redirecionar.
+    - `app/training/cooldown/page.tsx`: Tratamento para string 'null'.
+- **Nova Página**: Criada `app/training/analytics/page.tsx` com:
+    - Cards de estatísticas (treinos, distância, tempo, pace)
+    - Gráfico de volume semanal
+    - Progressão de pace
+    - Distribuição por tipo de treino
+    - Conquistas/marcos alcançados
+
+### 12. Funcionalidades Avançadas (29/12/2025)
+- **Bug Fix SessionProvider**: Removido `useSession` da página cooldown que causava erro.
+- **Sistema de Streak**: 
+    - API `/api/gamification/streak` para calcular dias consecutivos de treino
+    - Componente `StreakDisplay` com versões compact e full
+    - Integração no dashboard de treinos
+- **Web Bluetooth - Monitores Cardíacos**:
+    - `lib/bluetooth/heart-rate.ts` - API para conectar monitores via Web Bluetooth
+    - `lib/bluetooth/use-heart-rate.ts` - Hook React para gerenciar conexão
+    - `components/training/HeartRateDisplay.tsx` - UI com coração pulsante e zonas cardíacas
+    - Modo simulado como fallback quando Bluetooth não disponível
+- **Coach Module**: Verificado existente com 6 páginas frontend e 8 APIs backend
+
+### 13. Intervalos de 5 Minutos na Garagem (29/12/2025)
+- **Alteração Solicitada**: Horários de reserva de barcos alterados de intervalos de 1 hora para 5 minutos.
+- **Arquivos Modificados**: 
+    - `components/garage/reservation-modal.tsx` - Select com 192 opções (05:00 às 20:55)
+    - Horários especiais: Nascer do Sol 🌅, Popular ⭐, Pôr do Sol 🌇
+
+### 14. Correção Tábua de Marés - Valores Inconsistentes (29/12/2025)
+- **Problema**: Widget da home e página de detalhes `/tides` mostravam valores diferentes.
+- **Causa**: Widget usava `tide-data-official.ts`, página usava mockData hardcoded.
+- **Solução**: Página `/tides/page.tsx` agora importa e usa `getTidesForDate()` e `isHighTide()` do mesmo módulo oficial.
+
+### 15. Redesign Sistema de Treinos - Inspirado em EXA/ErgData (29/12/2025)
+- **Motivação**: Screenshots de apps profissionais de remo (EXA, ErgData) analisados para melhorar UX.
+- **Arquivos Modificados**:
+    - `app/training/live/page.tsx` - Redesign completo:
+        - Timer gigante (72-96px) no formato dark
+        - Pace e SPM lado a lado em grande destaque (48-56px)
+        - Gráfico de intensidade em tempo real (Recharts)
+        - Layout vertical centralizado
+        - Fundo preto puro (como apps profissionais)
+    - `app/training/start/page.tsx` - Modos de treino avançados:
+        - Interface em 3 etapas (Local → Modo → Configuração)
+        - Modo Livre (sem meta)
+        - Modo Por Tempo (10, 20, 30, 45, 60 min)
+        - Modo Por Distância (500m, 1km, 2km, 5km, 10km)
+        - Modo Intervalado (4x500m, 6x500m, 5x1000m, 8x250m)
+
+### 16. Correções de Bugs e UX - Sistema de Treinos (29/12/2025)
+- **Página de Barcos (`/boats`)**:
+    - Removido `useSession()` que causava erro fora do SessionProvider
+    - Agora usa dados mock/API direta sem dependência de sessão
+- **Dashboard de Treinos (`/training`)**:
+    - Removidos links de planilhas confusas
+    - Grid de atalhos agora mostra: Barcos, Histórico, Analytics
+- **Botão de Feedback**:
+    - Adicionado botão visível no cooldown que redireciona para `/training/feedback/session`
+- **Seletor de Horário Garagem**:
+    - Criado `TimePickerWheel` com interface estilo rodinha/alarm de smartphone
+    - Substituído select com 192 opções por seletor interativo
+    - Arquivo: `components/ui/time-picker-wheel.tsx`
+
+### 17. Marcador de Voga (Stroke Coach) via Acelerômetro (29/12/2025)
+- **Motivação**: Funcionar como SpeedCoach GPS 2, CoxBox ou Concept2 PM5
+- **Arquivos Criados**:
+    - `lib/sensors/accelerometer-stroke-detector.ts`:
+        - Classe `StrokeDetector` usando DeviceMotion API
+        - Detecta picos de aceleração para identificar remadas
+        - Filtro de ruído configurável
+        - Calcula SPM (Stroke Rate / VOGA)
+        - Modo simulado para testes (`SimulatedStrokeDetector`)
+    - `lib/sensors/use-stroke-detector.ts`:
+        - Hook React para integração com componentes
+        - Hook `useDistancePerStroke` para DPS
+    - `lib/sensors/index.ts`: Exports
+- **Tela Live Atualizada** (`app/training/live/page.tsx`):
+    - SPM agora vem do acelerômetro real
+    - Nova métrica: DPS (Distance Per Stroke) em metros
+    - Nova métrica: Total de Strokes
+    - Indicador de modo (Acelerômetro / Simulado)
+- **Métricas Estilo SpeedCoach**:
+    - Split/500m + SPM grandes
+    - DPS, Distância, Calorias, Strokes, BPM em grid
+
+### 18. Sistema Multi-Esporte (29/12/2025)
+- **Página Start Refatorada** (`app/training/start/page.tsx`):
+    - Fluxo em 4 etapas: Esporte → Local → Modo → Configuração
+    - 4 modalidades suportadas:
+        - 🚣 **Remo**: Rio, Tanque, Ergômetro
+        - 🏃 **Corrida**: Outdoor, Esteira
+        - 🚴 **Bicicleta**: Outdoor, Spinning
+        - 🏋️ **Musculação**: Academia
+    - Presets de distância específicos por esporte
+    - Interface com cards coloridos por modalidade
+- **Página de Musculação** (`app/training/live/gym/page.tsx`):
+    - Timer de treino
+    - Adicionar exercícios por grupo muscular
+    - Registro de séries: reps × peso
+    - Timer de descanso entre séries (60s)
+    - Cálculo de volume total (kg)
+    - Biblioteca de exercícios: Peito, Costas, Ombros, Bíceps, Tríceps, Pernas, Core
+
+### 19. Programas de Treinamento (29/12/2025)
+- **Página do Coach** (`app/coach/programs/page.tsx`):
+    - Lista de programas do sistema e personalizados
+    - Filtros: Todos, Sistema, Meus
+    - Visualização de sessões semanais com emojis por tipo
+    - Modal para atribuir programas a atletas
+    - Estatísticas: total programas, atletas ativos, personalizados
+- **Página Meu Programa** (`app/training/my-program/page.tsx`):
+    - Progresso do programa atual (semana X de Y)
+    - Barra de progresso animada
+    - Treino de Hoje em destaque
+    - Calendário semanal com status das sessões
+    - Lista completa de sessões com botão de início
+    - Estatísticas de adesão e XP
+- **Dashboard Atualizado** (`app/training/page.tsx`):
+    - Grid de atalhos agora com 4 colunas: Programa, Barcos, Histórico, Analytics
+

@@ -75,14 +75,18 @@ export default async function CoachPainelPage() {
                         </div>
                     </div>
                     <div className="flex gap-3">
-                        <Button className="gap-2 bg-club-red hover:bg-club-red-700 text-xs font-black uppercase tracking-widest py-6 px-8 shadow-glow-red">
-                            <Plus className="w-4 h-4" />
-                            Novo Plano
-                        </Button>
-                        <Button variant="outline" className="gap-2 border-white/10 text-white text-xs font-black uppercase tracking-widest py-6 px-8 hover:bg-white/5">
-                            <BookOpen className="w-4 h-4" />
-                            Diário
-                        </Button>
+                        <Link href="/coach/new-plan">
+                            <Button className="gap-2 bg-club-red hover:bg-club-red-700 text-xs font-black uppercase tracking-widest py-6 px-8 shadow-glow-red">
+                                <Plus className="w-4 h-4" />
+                                Novo Plano
+                            </Button>
+                        </Link>
+                        <Link href="/coach/diary">
+                            <Button variant="outline" className="gap-2 border-white/10 text-white text-xs font-black uppercase tracking-widest py-6 px-8 hover:bg-white/5">
+                                <BookOpen className="w-4 h-4" />
+                                Diário
+                            </Button>
+                        </Link>
                     </div>
                 </div>
 

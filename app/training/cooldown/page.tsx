@@ -9,9 +9,8 @@ import { Button } from '@/components/ui/button';
 import { XPBar, LevelUpModal, useXPGain } from '@/components/gamification';
 import {
     Trophy, Clock, MapPin, TrendingUp, Activity, Zap,
-    Star, ChevronRight, Share2, Camera, SaveAll
+    Star, ChevronRight, Share2, Camera, SaveAll, MessageSquare
 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 
 interface WorkoutSummary {
     duration: number;
@@ -26,7 +25,6 @@ function CooldownContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const sessionId = searchParams.get('sessionId');
-    const { data: session } = useSession();
 
     const [summary, setSummary] = useState<WorkoutSummary | null>(null);
     const [showLevelUp, setShowLevelUp] = useState(false);
@@ -37,7 +35,8 @@ function CooldownContent() {
 
     useEffect(() => {
         async function fetchSummary() {
-            if (!sessionId) {
+            // Se não há sessão válida (null, undefined, ou string 'null'), usar dados demo
+            if (!sessionId || sessionId === 'null') {
                 // Dados demo se não houver sessão
                 setSummary({
                     duration: 2700, // 45 min
@@ -51,6 +50,7 @@ function CooldownContent() {
             }
 
             try {
+
                 const res = await fetch(`/api/workouts/${sessionId}/summary`);
                 if (res.ok) {
                     const data = await res.json();
@@ -163,7 +163,7 @@ function CooldownContent() {
                         </div>
                         <Star className="w-5 h-5 text-yellow-400" />
                     </div>
-                    <XPBar xp={(session?.user as any)?.points || 0} size="sm" />
+                    <XPBar xp={summary.xpEarned || 0} size="sm" />
                 </AnimatedCard>
 
                 {/* Métricas do treino */}
@@ -228,22 +228,34 @@ function CooldownContent() {
                 </AnimatedCard>
 
                 {/* Ações */}
-                <div className="flex gap-3">
+                <div className="space-y-3">
+                    {/* Botão de Feedback */}
                     <Button
                         variant="outline"
-                        className="flex-1"
-                        onClick={handleShare}
+                        className="w-full border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10"
+                        onClick={() => router.push(`/training/feedback/session?sessionId=${sessionId || 'demo'}`)}
                     >
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Compartilhar
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Dar Feedback sobre o Treino
                     </Button>
-                    <Button
-                        className="flex-1 bg-club-red hover:bg-club-red/90"
-                        onClick={handleFinish}
-                    >
-                        Finalizar
-                        <ChevronRight className="w-4 h-4 ml-2" />
-                    </Button>
+
+                    <div className="flex gap-3">
+                        <Button
+                            variant="outline"
+                            className="flex-1"
+                            onClick={handleShare}
+                        >
+                            <Share2 className="w-4 h-4 mr-2" />
+                            Compartilhar
+                        </Button>
+                        <Button
+                            className="flex-1 bg-club-red hover:bg-club-red/90"
+                            onClick={handleFinish}
+                        >
+                            Finalizar
+                            <ChevronRight className="w-4 h-4 ml-2" />
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

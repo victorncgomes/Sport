@@ -1,103 +1,84 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import { prisma } from '@/lib/db';
+import { auth } from "@/auth"
+import { prisma } from "@/lib/db"
+import { NextResponse } from "next/server"
 
-// GET - Listar tarefas
-export async function GET(request: NextRequest) {
+export async function GET() {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+    }
+
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email }
-        });
-
-        if (!user) {
-            return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
-        }
-
-        // Buscar tarefas (todas para diretoria, apenas atribuídas para outros)
-        const where: any = user.role === 'diretoria' || user.role === 'admin'
-            ? {}
-            : { assignedToId: user.id };
-
-        const tasks = await prisma.task.findMany({
-            where,
-            include: {
-                assignedTo: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true
-                    }
-                },
-                createdBy: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                }
-            },
+        const tasks = await prisma.volunteerTask.findMany({
             orderBy: { createdAt: 'desc' }
-        });
+        })
 
-        return NextResponse.json({ tasks });
+        // Mapear campos do banco para o formato esperado pelo frontend se necessário
+        const formattedTasks = tasks.map(task => ({
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            status: task.status === 'OPEN' ? 'TODO' :
+                (task.status === 'IN_PROGRESS' || task.status === 'ASSIGNED' ? 'IN_PROGRESS' : 'DONE'),
+            priority: (task.priority === 'URGENT' || task.priority === 'HIGH') ? 'HIGH' :
+                (task.priority === 'MEDIUM' ? 'MEDIUM' : 'LOW'),
+            assignee: task.assignedToId || "Não atribuído",
+            dueDate: task.deadline ? task.deadline.toISOString() : undefined
+        }))
+
+        return NextResponse.json(formattedTasks)
     } catch (error) {
-        console.error('Error fetching tasks:', error);
-        return NextResponse.json(
-            { error: 'Erro ao buscar tarefas' },
-            { status: 500 }
-        );
+        console.error("Erro ao buscar tarefas:", error)
+        return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
     }
 }
 
-// POST - Criar tarefa
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+    }
+
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
-        }
+        const body = await request.json()
+        const { title, description, priority, category, deadline, assigneeId } = body
 
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email }
-        });
+        // Gerar número de tarefa único (simulado)
+        const taskNumber = `TASK-${Date.now()}`
 
-        if (!user || (user.role !== 'diretoria' && user.role !== 'admin')) {
-            return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
-        }
-
-        const { title, description, priority, dueDate, assignedToId } = await request.json();
-
-        const task = await prisma.task.create({
+        const newTask = await prisma.volunteerTask.create({
             data: {
+                taskNumber,
                 title,
-                description,
-                priority: priority || 'MEDIUM',
-                status: 'TODO',
-                dueDate: dueDate ? new Date(dueDate) : null,
-                assignedToId,
-                createdById: user.id
-            },
-            include: {
-                assignedTo: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true
-                    }
-                }
+                description: description || "",
+                category: category || "OUTROS",
+                status: assigneeId ? "ASSIGNED" : "OPEN",
+                priority: priority || "MEDIUM",
+                deadline: deadline ? new Date(deadline) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default 7 dias
+                createdById: session.user.id,
+                assignedToId: assigneeId || null,
+                estimatedHours: 1
             }
-        });
+        })
 
-        return NextResponse.json({ success: true, task }, { status: 201 });
+        // Enviar notificação se houver um responsável
+        if (assigneeId) {
+            await prisma.notification.create({
+                data: {
+                    userId: assigneeId,
+                    title: "Nova tarefa atribuída",
+                    message: `Você recebeu uma nova tarefa: ${title}`,
+                    type: "INFO",
+                    link: "/diretoria/tarefas"
+                }
+            })
+        }
+
+        return NextResponse.json(newTask)
     } catch (error) {
-        console.error('Error creating task:', error);
-        return NextResponse.json(
-            { error: 'Erro ao criar tarefa' },
-            { status: 500 }
-        );
+        console.error("Erro ao criar tarefa:", error)
+        return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
     }
 }

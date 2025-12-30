@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
     Waves,
@@ -28,9 +28,35 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { getTidesForDate, isHighTide } from '@/lib/data/tide-data-official';
 
 export default function TidesPage() {
-    // Dados simulados (em produção, viriam de API com integração real)
+    // Usar mesma fonte de dados que o widget da home
+    const tideData = useMemo(() => {
+        const today = new Date();
+        const officialDay = getTidesForDate(today);
+
+        const high: { time: string; height: number }[] = [];
+        const low: { time: string; height: number }[] = [];
+
+        if (officialDay) {
+            officialDay.tides.forEach(tide => {
+                if (isHighTide(tide.height)) {
+                    high.push({ time: tide.time, height: tide.height });
+                } else {
+                    low.push({ time: tide.time, height: tide.height });
+                }
+            });
+        } else {
+            // Fallback se não houver dados oficiais
+            high.push({ time: '06:00', height: 2.3 }, { time: '18:30', height: 2.4 });
+            low.push({ time: '00:15', height: 0.4 }, { time: '12:15', height: 0.3 });
+        }
+
+        return { high, low, source: officialDay ? 'Marinha do Brasil' : 'Simulado' };
+    }, []);
+
+    // Dados simulados complementares (em produção, viriam de API)
     const mockData = {
         date: new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }),
         current: {
@@ -63,16 +89,7 @@ export default function TidesPage() {
             percentage: -18.3,
             description: 'Ganho de 14.5s/500m'
         },
-        tides: {
-            high: [
-                { time: '06:57', height: 2.12 },
-                { time: '19:27', height: 2.14 }
-            ],
-            low: [
-                { time: '01:57', height: 0.31 },
-                { time: '13:32', height: 0.43 }
-            ]
-        },
+        tides: tideData, // Usar dados reais
         sun: {
             sunrise: '05:18',
             sunset: '17:45'
@@ -93,6 +110,7 @@ export default function TidesPage() {
             { time: '21:00', temp: 25, condition: 'Nublado', wind: 14, rain: 15 }
         ]
     };
+
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">

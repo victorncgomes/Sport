@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Boat } from '@/lib/data/garage-boats';
 import { Button } from '@/components/ui/button';
+import { TimePickerWheel } from '@/components/ui/time-picker-wheel';
 import { Calendar, Clock, Ship, User, X } from 'lucide-react';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,7 +20,30 @@ export function ReservationModal({ boat, onClose }: ReservationModalProps) {
 
     if (!boat) return null;
 
+    // Gerar horários com intervalos de 5 minutos (05:00 às 20:00)
+    const generateTimeSlots = () => {
+        const slots: { value: string; label: string }[] = [];
+        for (let hour = 5; hour <= 20; hour++) {
+            for (let minute = 0; minute < 60; minute += 5) {
+                const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                let label = timeStr;
+
+                // Horários especiais
+                if (timeStr === '05:00') label = '05:00 - Nascer do Sol 🌅';
+                else if (timeStr === '06:00') label = '06:00 - Popular ⭐';
+                else if (timeStr === '07:00') label = '07:00 - Popular ⭐';
+                else if (timeStr === '17:00') label = '17:00 - Pôr do Sol 🌇';
+
+                slots.push({ value: timeStr, label });
+            }
+        }
+        return slots;
+    };
+
+    const timeSlots = generateTimeSlots();
+
     const handleReserve = () => {
+
         setStep(2);
         // Simulate API call
         setTimeout(() => {
@@ -95,17 +119,18 @@ export function ReservationModal({ boat, onClose }: ReservationModalProps) {
                                                 <Clock className="w-4 h-4 text-club-gold" />
                                                 Horário de Saída
                                             </label>
-                                            <select
-                                                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-club-gold/50"
-                                                onChange={(e) => setTime(e.target.value)}
-                                            >
-                                                <option value="" className="bg-gray-900">Selecione um horário</option>
-                                                <option value="05:00" className="bg-gray-900">05:00 - Nascer do Sol</option>
-                                                <option value="06:00" className="bg-gray-900">06:00</option>
-                                                <option value="07:00" className="bg-gray-900">07:00</option>
-                                                <option value="15:00" className="bg-gray-900">15:00</option>
-                                                <option value="16:00" className="bg-gray-900">16:00</option>
-                                            </select>
+                                            <TimePickerWheel
+                                                value={time}
+                                                onChange={setTime}
+                                                minHour={5}
+                                                maxHour={20}
+                                                minuteStep={5}
+                                            />
+                                            {time && (
+                                                <div className="text-center text-white/60 text-sm">
+                                                    Horário selecionado: <span className="text-club-gold font-bold">{time}</span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 

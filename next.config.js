@@ -17,6 +17,15 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
+    // Desabilitar indicador N de desenvolvimento
+    devIndicators: {
+        buildActivity: false,
+        buildActivityPosition: 'bottom-right',
+    },
+    // Otimizações de performance
+    compiler: {
+        removeConsole: process.env.NODE_ENV === 'production',
+    },
     // PWA será configurado posteriormente
 }
 

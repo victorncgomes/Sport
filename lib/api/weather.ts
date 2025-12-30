@@ -1,7 +1,7 @@
 // Weather API Integration using Open-Meteo (free, no API key required)
 
 import axios from 'axios';
-import type { OpenMeteoResponse, WeatherCurrent, WeatherHour, WeatherDay, WeatherCondition } from '@/types/tides';
+import type { OpenMeteoResponse, WeatherCurrent, WeatherHour, WeatherDay, WeatherCondition, WaveConditions } from '@/types/tides';
 
 const NATAL_LAT = -5.7945;
 const NATAL_LON = -35.2110;
@@ -47,6 +47,19 @@ export async function fetchWeatherData(): Promise<OpenMeteoResponse> {
             params: {
                 latitude: NATAL_LAT,
                 longitude: NATAL_LON,
+                current: [
+                    'temperature_2m',
+                    'relative_humidity_2m',
+                    'apparent_temperature',
+                    'is_day',
+                    'precipitation',
+                    'weather_code',
+                    'cloud_cover',
+                    'pressure_msl',
+                    'wind_speed_10m',
+                    'wind_direction_10m',
+                    'wind_gusts_10m'
+                ].join(','),
                 hourly: [
                     'temperature_2m',
                     'apparent_temperature',
@@ -79,6 +92,55 @@ export async function fetchWeatherData(): Promise<OpenMeteoResponse> {
     } catch (error) {
         console.error('Error fetching weather data:', error);
         throw new Error('Failed to fetch weather data');
+    }
+}
+
+export async function fetchMarineData(): Promise<WaveConditions> {
+    try {
+        const response = await axios.get('https://marine-api.open-meteo.com/v1/marine', {
+            params: {
+                latitude: NATAL_LAT,
+                longitude: NATAL_LON,
+                current: [
+                    'wave_height',
+                    'wave_period',
+                    'wave_direction'
+                ].join(','),
+                timezone: TIMEZONE
+            }
+        });
+
+        const current = response.data.current;
+        const deg = current.wave_direction;
+        const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        const dirText = directions[Math.round(deg / 45) % 8];
+
+        let seaState: 'calm' | 'moderate' | 'rough' | 'very-rough' = 'calm';
+        if (current.wave_height < 0.3) seaState = 'calm';
+        else if (current.wave_height < 1.0) seaState = 'moderate';
+        else if (current.wave_height < 2.0) seaState = 'rough';
+        else seaState = 'very-rough';
+
+        return {
+            datetime: new Date(current.time),
+            height: current.wave_height,
+            period: current.wave_period,
+            direction: dirText,
+            directionDegrees: deg,
+            waterTemp: 27.5, // Fallback ou extrair de outra fonte se disponível
+            seaState
+        };
+    } catch (error) {
+        console.error('Error fetching marine data:', error);
+        return {
+            datetime: new Date(),
+            height: 0.5,
+            period: 6,
+            direction: 'E',
+            directionDegrees: 90,
+            waterTemp: 27,
+            seaState: 'moderate'
+        };
     }
 }
 

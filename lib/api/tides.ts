@@ -2,6 +2,7 @@
 
 import type { TideDay, TidePoint, TideType } from '@/types/tides';
 import { getAstronomyData, formatTime } from './astronomy';
+import { getTidesForDate, isHighTide } from '@/lib/data/tide-data-official';
 
 export interface TideCSVRow {
     date: string; // DD/MM/YYYY
@@ -177,6 +178,64 @@ export function convertToTideDay(row: TideCSVRow): TideDay {
         moonset: formatTime(astro.moonset),
         bestRowingTime
     };
+}
+
+/**
+ * Obtém dados de marés reais para N dias
+ */
+export async function getRealTideData(days: number = 7, astroSource?: { daily: { sunrise: string[], sunset: string[] } }): Promise<TideDay[]> {
+    const tideData: TideDay[] = [];
+    const today = new Date();
+
+    for (let i = 0; i < days; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+
+        const officialData = getTidesForDate(date);
+        const tides: TidePoint[] = officialData
+            ? officialData.tides.map(t => ({
+                time: t.time,
+                height: t.height,
+                type: isHighTide(t.height) ? 'HIGH' : 'LOW'
+            }))
+            : [];
+
+        // Astronomy from source or fallback
+        let sunriseStr = '--:--';
+        let sunsetStr = '--:--';
+        let astro = getAstronomyData(date);
+
+        if (astroSource && astroSource.daily.sunrise[i] && astroSource.daily.sunset[i]) {
+            sunriseStr = astroSource.daily.sunrise[i].split('T')[1];
+            sunsetStr = astroSource.daily.sunset[i].split('T')[1];
+        } else {
+            sunriseStr = formatTime(astro.sunrise);
+            sunsetStr = formatTime(astro.sunset);
+        }
+
+        const highTide = tides.find(t => t.type === 'HIGH');
+        const lowTide = tides.find(t => t.type === 'LOW');
+        const coefficient = (highTide && lowTide)
+            ? calculateTideCoefficient(highTide.height, lowTide.height)
+            : 50;
+
+        const bestRowingTime = getBestRowingTime(tides, astro.sunrise, astro.sunset);
+
+        tideData.push({
+            date,
+            coefficient,
+            tides,
+            sunrise: sunriseStr,
+            sunset: sunsetStr,
+            moonPhase: astro.moonPhase,
+            moonIllumination: astro.moonIllumination,
+            moonrise: formatTime(astro.moonrise),
+            moonset: formatTime(astro.moonset),
+            bestRowingTime
+        });
+    }
+
+    return tideData;
 }
 
 /**

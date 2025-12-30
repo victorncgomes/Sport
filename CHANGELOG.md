@@ -8,46 +8,41 @@ Histórico completo de versões do sistema de gestão do Sport Club de Natal.
 
 ---
 
-## [0.5.0] - 2025-12-29 _(Versão Atual)_
+## [0.4.5] - 2025-12-30 _(Versão Atual)_
 
 ### Adicionado
-- **Sistema de Gamificação Completo:**
-  - `lib/utils/xp-system.ts` - Sistema de XP com fórmula `100 * nível^1.5`
-  - Componente `XPBar.tsx` - Barra de progresso animada
-  - Componente `LevelUpModal.tsx` - Modal de level up com confete
-  - Componente `XPGain.tsx` - Animação de ganho de XP flutuante
-  - API `/api/gamification/xp` - Adicionar/consultar XP
+- **Verificação de Treino Curto (<3min):**
+  - Modal de confirmação com opções "Armazenar" ou "Descartar"
+  - XP reduzido (5 pts) para treinos curtos
+  - Função `handleDiscard` para excluir sessões descartadas
 
-- **Sistema de Progressão de Barcos:**
-  - `lib/utils/boat-progression.ts` - Hierarquia de 9 barcos com critérios
-  - Modelo `UserBoatUnlock` no Prisma
-  - Componente `BoatCard.tsx` - Cards isométricos SVG
-  - Página `/boats` - Galeria de barcos com progresso
-  - APIs `/api/boats/my-boats` e `/api/boats/unlock`
+- **Página de Alongamento (`/training/stretching`):**
+  - 3 níveis: Básico (5min), Moderado (10min), Profundo (15min)
+  - 21 exercícios específicos para remadores
+  - Timer circular com contagem regressiva
+  - Fullscreen toggle e dicas por exercício
 
-- **Módulo de Treino Melhorado:**
-  - `/training/live` - Timer hero 7xl, métricas em tempo real, GPS melhorado
-  - `/training/cooldown` - Resumo do treino, XP ganho, modal de level up
-  - API `/api/workouts/start` - Iniciar sessão de treino
-  - API `/api/workouts/[id]/complete` - Finalizar com verificação de level up
-  - API `/api/workouts/[id]/summary` - Resumo com records pessoais
+- **Módulo Coach Completo:**
+  - `/coach/active-workouts` - Monitoramento em tempo real
+  - `/coach/pending-reservations` - Aprovar/Rejeitar reservas
+  - `/coach/diary` - Diário do treinador
+  - `/coach/new-plan` - Criar planos de treino
+  - `/coach/calendar` - Calendário com 5 aulas experimentais simuladas
 
-- **Audio Coaching:**
-  - `lib/utils/audio-coach.ts` - Sistema de Text-to-Speech
-  - Mensagens de motivação e técnica periódicas
-  - Anúncios de milestones (500m, 1km, 2km, 5km)
-  - Feedback de pace (muito rápido/lento)
+- **Ficha Individual de Sócio (`/diretoria/socios/[id]`):**
+  - Dados pessoais, estatísticas de treino
+  - Histórico de pagamentos, barcos habilitados
+  - Contato de emergência
+  - Links clicáveis na lista de sócios
 
-- **Competição Virtual:**
-  - `/training/compete` - Modo corrida contra ghost
-  - Pista visual animada com posição em tempo real
-  - Countdown 3-2-1 com integração de áudio
-  - Card na `/trainings` com badge "NOVO"
-
-- **Calculador de Anamnese:**
-  - `lib/utils/anamnese-calculator.ts` - Calcular nível inicial
+### Corrigido
+- Erro de comentário de bloco não fechado em `route.ts`
+- Estrutura JSX no painel do coach
+- Links do painel do coach para new-plan e diary
 
 ---
+
+## [0.5.0] - 2025-12-29 _(Preview - Não Publicada)_
 
 ## [0.4.5] - 2025-12-29
 

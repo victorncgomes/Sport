@@ -36,7 +36,7 @@ const baseMenuItems = [
 // Menus adicionais por role
 const socioMenuItems = [
     { href: '/trainings', label: 'TREINOS' },
-    { href: '/diretoria/voluntariado', label: 'VOLUNTARIADO' },
+    { href: '/voluntariado', label: 'VOLUNTARIADO' },
 ];
 
 const treinadorMenuItems = [
@@ -69,13 +69,35 @@ function getMenuItems(role: string) {
 export function ClubHeader() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
-    const [notificationCount] = useState(3);
+    const [notificationCount, setNotificationCount] = useState(0);
     const pathname = usePathname();
     const router = useRouter();
     const { role, logout } = useAuth();
 
     const isAuthenticated = role !== 'visitante';
     const menuItems = getMenuItems(role);
+
+    // Dynamic notification count
+    useEffect(() => {
+        const fetchNotificationCount = async () => {
+            try {
+                const response = await fetch('/api/notifications/unread-count');
+                if (response.ok) {
+                    const data = await response.json();
+                    setNotificationCount(data.count);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar contador de notificações:", error);
+            }
+        };
+
+        if (isAuthenticated) {
+            fetchNotificationCount();
+            // Refresh every 30 seconds
+            const interval = setInterval(fetchNotificationCount, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [isAuthenticated, pathname]);
 
     // Close mobile menu on route change
     useEffect(() => {
@@ -106,11 +128,11 @@ export function ClubHeader() {
         <>
             {/* ========== DESKTOP HEADER (>=992px) ========== */}
             <header className="hidden lg:block fixed top-0 left-0 right-0 z-50">
-                {/* FAIXA SUPERIOR - PRETA (80px) */}
-                <div className="bg-[#000000] h-[80px] flex items-center justify-between px-5 relative">
-                    {/* Logo Esquerdo - SOBREPOSTO ÀS BARRAS */}
-                    <Link href="/" className="absolute left-5 -bottom-[80px] z-50">
-                        <div className="relative w-[140px] h-[140px] drop-shadow-2xl">
+                {/* FAIXA SUPERIOR - PRETA (64px - reduzido 20%) */}
+                <div className="bg-[#000000] h-[64px] flex items-center justify-between px-5 relative">
+                    {/* Logo Esquerdo - SOBREPOSTO ÀS BARRAS (112px - reduzido 20%) */}
+                    <Link href="/" className="absolute left-5 -bottom-[64px] z-50">
+                        <div className="relative w-[112px] h-[112px] drop-shadow-2xl">
                             <Image
                                 src="/sport_shield_new.svg"
                                 alt="Sport Club de Natal"
@@ -121,25 +143,25 @@ export function ClubHeader() {
                         </div>
                     </Link>
 
-                    {/* Texto 'SPORT CLUB' acima */}
-                    <div className="absolute left-[155px] top-[4px] z-40">
-                        <span className="text-white font-saira-condensed font-bold text-[65px] tracking-tight">
+                    {/* Texto 'SPORT CLUB' acima (52px - reduzido 20%) */}
+                    <div className="absolute left-[124px] top-[2px] z-40">
+                        <span className="text-white font-saira-condensed font-bold text-[52px] tracking-tight">
                             SPORT CLUB
                         </span>
                     </div>
 
-                    {/* Texto 'DE NATAL' - posição original */}
-                    <div className="absolute left-[180px] top-[54px] z-40">
-                        <span className="text-black font-saira-condensed font-bold text-[65px] tracking-tight">
+                    {/* Texto 'DE NATAL' - posição ajustada */}
+                    <div className="absolute left-[144px] top-[43px] z-40">
+                        <span className="text-black font-saira-condensed font-bold text-[52px] tracking-tight">
                             DE NATAL
                         </span>
                     </div>
 
                     {/* Espaçador para compensar o logo */}
-                    <div className="w-[140px]"></div>
+                    <div className="w-[112px]"></div>
 
                     {/* Blocos Funcionais - Direita (com margem para respeitar área das stripes) */}
-                    <div className="flex items-center gap-6 mr-[160px]">
+                    <div className="flex items-center gap-5 mr-[130px]">
                         {/* REDES SOCIAIS */}
                         <div className="flex items-center gap-4">
                             <a href="https://www.instagram.com/sportclubdenatal/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80 transition-opacity" aria-label="Facebook">
@@ -154,7 +176,7 @@ export function ClubHeader() {
                         </div>
 
                         {/* PARCEIROS */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                             <a href="https://www.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[30px] w-[40px] hover:opacity-80 transition-opacity" title="Governo do Estado do Rio Grande do Norte">
                                 <Image
                                     src="/logos/svg/RN.svg"
@@ -233,31 +255,31 @@ export function ClubHeader() {
                     </div>
                 </div>
 
-                {/* FAIXA INFERIOR - VERMELHA (45px) */}
-                <div className="bg-[#DC2626] h-[45px] flex items-center justify-between px-5 relative">
+                {/* FAIXA INFERIOR - VERMELHA (36px - reduzido 20%) */}
+                <div className="bg-[#DC2626] h-[36px] flex items-center justify-between px-5 relative">
                     {/* Espaçador invisível à esquerda para proteger área do texto */}
-                    <div className="w-[380px] flex-shrink-0"></div>
+                    <div className="w-[304px] flex-shrink-0"></div>
 
                     {/* Menu Central */}
-                    <nav className="flex items-center justify-center gap-12 flex-1">
+                    <nav className="flex items-center justify-center gap-10 flex-1">
                         {menuItems.map((item) => (
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className="relative group font-sans text-sm font-bold tracking-wider text-black hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] active:scale-95 active:drop-shadow-[0_0_12px_rgba(255,255,255,1)] transition-all duration-150"
+                                className="relative group font-sans text-xs font-bold tracking-wider text-black hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] active:scale-95 active:drop-shadow-[0_0_12px_rgba(255,255,255,1)] transition-all duration-150"
                             >
                                 {item.label}
                                 {/* Retângulo preto no hover - alinhado com fundo da barra vermelha */}
-                                <span className="absolute left-0 right-0 bottom-[-15px] h-[4px] bg-black opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
+                                <span className="absolute left-0 right-0 bottom-[-12px] h-[3px] bg-black opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
                             </Link>
                         ))}
                     </nav>
 
                     {/* Espaçador invisível à direita para proteger área das stripes */}
-                    <div className="w-[140px] flex-shrink-0"></div>
+                    <div className="w-[112px] flex-shrink-0"></div>
 
                     {/* Recorte Inclinado Decorativo - Direita */}
-                    <div className="absolute right-0 top-0 h-full w-[180px] pointer-events-none overflow-visible">
+                    <div className="absolute right-0 top-0 h-full w-[144px] pointer-events-none overflow-visible">
                         <Image
                             src="/stripes_inclined.svg"
                             alt=""
@@ -309,7 +331,7 @@ export function ClubHeader() {
                             <User className="w-5 h-5" />
                         </button>
                         <button
-                            onClick={() => router.push('/profile/notices')}
+                            onClick={() => router.push('/notifications')}
                             className="text-white hover:opacity-70 transition-opacity relative"
                             aria-label="Notificações"
                         >
@@ -441,8 +463,8 @@ export function ClubHeader() {
                 )}
             </AnimatePresence>
 
-            {/* Spacer to prevent content from going under fixed header */}
-            <div className="h-[125px]" />
+            {/* Spacer to prevent content from going under fixed header (100px - reduzido 20%) */}
+            <div className="h-[100px] lg:h-[100px]" />
         </>
     );
 }

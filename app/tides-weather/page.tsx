@@ -4,8 +4,8 @@ import { TideTimesCard } from '@/components/tides/TideTimesCard';
 import { WeatherWidget } from '@/components/weather/WeatherWidget';
 import { WaveWidget } from '@/components/tides/WaveWidget';
 import { RowingAlert } from '@/components/tides/RowingAlert';
-import { generateMockTideData } from '@/lib/api/tides';
-import { fetchWeatherData, parseWeatherCurrent } from '@/lib/api/weather';
+import { getRealTideData } from '@/lib/api/tides';
+import { fetchWeatherData, parseWeatherCurrent, fetchMarineData } from '@/lib/api/weather';
 import { withCache } from '@/lib/cache/cache';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -19,60 +19,30 @@ export const metadata = {
 export const revalidate = 1800;
 
 export default async function TidesWeatherPage() {
-    // Buscar dados de marés (com cache de 24h)
+    // 1. Buscar clima (com cache de 30min) - Precisamos dele para o pôr do sol
+    const weatherRaw = await withCache(
+        'weather:natal:full',
+        1800,
+        async () => fetchWeatherData()
+    );
+
+    const currentWeather = parseWeatherCurrent(weatherRaw);
+
+    // 2. Buscar dados de marés (com cache de 24h) - Usando os dados oficiais e astronomia da API
     const tideData = await withCache(
-        'tides:natal:7',
+        'tides:natal:real:7',
         86400, // 24h
         async () => {
-            // TODO: Buscar do banco quando houver dados reais
-            // const dbTides = await prisma.tideData.findMany({...});
-            // return dbTides;
-            return generateMockTideData(7);
+            return getRealTideData(7, weatherRaw);
         }
     );
 
-    // Buscar clima (com cache de 30min)
-    const currentWeather = await withCache(
-        'weather:natal:current',
-        1800, // 30min
-        async () => {
-            try {
-                const weatherData = await fetchWeatherData();
-                return parseWeatherCurrent(weatherData);
-            } catch (error) {
-                console.error('Weather API error:', error);
-                // Fallback data
-                return {
-                    datetime: new Date(),
-                    temperature: 28,
-                    feelsLike: 30,
-                    humidity: 75,
-                    pressure: 1013,
-                    visibility: 10000,
-                    uvIndex: 8,
-                    windSpeed: 15,
-                    windDirection: 'NE',
-                    windDirDegrees: 45,
-                    precipitation: 0,
-                    cloudCover: 20,
-                    condition: 'clear' as const,
-                    conditionText: 'Céu limpo',
-                    icon: '01d'
-                };
-            }
-        }
+    // 3. Buscar dados de ondas e vento em tempo real (sem cache longo para ser "exato momento")
+    const waves = await withCache(
+        'waves:natal:current',
+        600, // 10 min
+        async () => fetchMarineData()
     );
-
-    // Mock wave data (TODO: integrar com API real)
-    const waves = {
-        datetime: new Date(),
-        height: 0.8,
-        period: 6.5,
-        direction: 'NE',
-        directionDegrees: 45,
-        waterTemp: 26.5,
-        seaState: 'moderate' as const
-    };
 
     return (
         <div className="min-h-screen bg-club-black pb-24">

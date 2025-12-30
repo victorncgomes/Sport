@@ -6,15 +6,16 @@ import { HeroSection } from '@/components/ui/hero-section';
 import { athleteData } from '@/lib/data/athlete-performance';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { Button } from '@/components/ui/button';
-import { Trophy, Activity, Heart, Calendar, ArrowRight, Table, FileText, User, ChevronRight, Zap, Ship, Anchor, AlertCircle, Play, Award } from 'lucide-react';
+import { Trophy, Activity, Heart, Calendar, ArrowRight, Table, FileText, User, ChevronRight, Zap, Ship, Anchor, AlertCircle, Award, Waves, PersonStanding, Bike, Dumbbell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { garageBoats, Boat, BoatType } from '@/lib/data/garage-boats';
 import { BoatCard } from '@/components/garage/boat-card';
 import { ReservationModal } from '@/components/garage/reservation-modal';
+import { WorkoutAnalyticsDashboard } from '@/components/training/analytics-dashboard';
 
 export default function TrainingsPage() {
-    const [activeTab, setActiveTab] = useState<'plan' | 'performance' | 'anamnesis' | 'garage'>('plan');
+    const [activeTab, setActiveTab] = useState<'performance' | 'anamnesis' | 'garage'>('performance');
     const [selectedBoatType, setSelectedBoatType] = useState<BoatType | 'all'>('all');
     const [bookingBoat, setBookingBoat] = useState<Boat | null>(null);
 
@@ -41,7 +42,7 @@ export default function TrainingsPage() {
             <HeroSection
                 title="Painel do Atleta"
                 subtitle="Performance & Evolução"
-                description="Acompanhe sua planilha de treinos, índices físicos e histórico de saúde em um só lugar."
+                description="Acompanhe seus treinos, índices físicos e histórico de saúde em um só lugar."
                 compact
             />
 
@@ -72,29 +73,92 @@ export default function TrainingsPage() {
                     </div>
 
                     <div className="md:ml-auto flex gap-4">
-                        <Button variant="outline" className="border-white/10 text-white/60 hover:text-white">
-                            Relatório PDF
+                        <Link href="/training/plans">
+                            <Button variant="outline" className="border-white/10 text-white/60 hover:text-white">
+                                Meu Programa de Treinamento
+                            </Button>
+                        </Link>
+                        <Button
+                            variant="outline"
+                            onClick={() => setActiveTab('garage')}
+                            className={cn(
+                                "border-white/10 text-white/60 hover:text-white gap-2",
+                                activeTab === 'garage' && "border-club-gold text-club-gold"
+                            )}
+                        >
+                            <Ship className="w-4 h-4" /> Garagem Náutica
                         </Button>
                     </div>
                 </div>
 
-                {/* Ações Rápidas */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                    <Link href="/training/start">
-                        <AnimatedCard variant="gradient" className="p-6 hover:border-club-red/50 transition-all cursor-pointer group">
-                            <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 rounded-xl bg-club-red flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Play className="w-7 h-7 text-white fill-white" />
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-bold text-white">Iniciar Treino</h3>
-                                    <p className="text-white/60 text-sm">Comece seu treino agora</p>
-                                </div>
-                                <ChevronRight className="w-5 h-5 text-white/40 group-hover:text-club-red transition-colors" />
+                {/* Analytics Dashboard */}
+                <WorkoutAnalyticsDashboard />
+
+                {/* Ações Rápidas - Modalidades */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
+                    <Link href="/training/start?sport=rowing">
+                        <AnimatedCard variant="gradient" className="p-6 hover:border-blue-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
+                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                                <Waves className="w-7 h-7 text-white" />
                             </div>
+                            <h3 className="text-lg font-bold text-white text-center">Remo</h3>
+                            <p className="text-white/60 text-xs text-center mt-1">Rio ou tanque</p>
                         </AnimatedCard>
                     </Link>
 
+                    <Link href="/training/start?sport=running">
+                        <AnimatedCard variant="gradient" className="p-6 hover:border-green-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
+                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                                <PersonStanding className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-lg font-bold text-white text-center">Corrida</h3>
+                            <p className="text-white/60 text-xs text-center mt-1">Outdoor ou esteira</p>
+                        </AnimatedCard>
+                    </Link>
+
+                    <Link href="/training/start?sport=cycling">
+                        <AnimatedCard variant="gradient" className="p-6 hover:border-orange-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
+                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-600 to-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                                <Bike className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-lg font-bold text-white text-center">Bicicleta</h3>
+                            <p className="text-white/60 text-xs text-center mt-1">Pedal ou spinning</p>
+                        </AnimatedCard>
+                    </Link>
+
+                    <Link href="/training/start?sport=gym">
+                        <AnimatedCard variant="gradient" className="p-6 hover:border-purple-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
+                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                                <Dumbbell className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-lg font-bold text-white text-center">Musculação</h3>
+                            <p className="text-white/60 text-xs text-center mt-1">Academia</p>
+                        </AnimatedCard>
+                    </Link>
+
+                    <Link href="/training/start?sport=other">
+                        <AnimatedCard variant="gradient" className="p-6 hover:border-gray-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
+                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-gray-600 to-slate-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                                <Activity className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-lg font-bold text-white text-center">Outra Atividade</h3>
+                            <p className="text-white/60 text-xs text-center mt-1">Tempo + Intensidade</p>
+                        </AnimatedCard>
+                    </Link>
+
+                    <Link href="/training/warmup">
+                        <AnimatedCard variant="gradient" className="p-6 hover:border-red-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center border-red-500/20 bg-gradient-to-br from-red-900/20 to-orange-900/20">
+                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                                <Heart className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-lg font-bold text-white text-center">Aquecimento</h3>
+                            <p className="text-white/60 text-xs text-center mt-1">Core & Preparação</p>
+                        </AnimatedCard>
+                    </Link>
+                </div>
+
+                {/* Card de Progressão de Barcos */}
+                <div className="mb-8">
                     <Link href="/boats">
                         <AnimatedCard variant="glass" className="p-6 hover:border-yellow-500/50 transition-all cursor-pointer group">
                             <div className="flex items-center gap-4">
@@ -111,37 +175,8 @@ export default function TrainingsPage() {
                     </Link>
                 </div>
 
-                {/* Card de Competição */}
-                <div className="mb-8">
-                    <Link href="/training/compete?distance=2000">
-                        <AnimatedCard variant="gradient" className="p-6 hover:border-purple-500/50 transition-all cursor-pointer group bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-purple-500/20">
-                            <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Trophy className="w-7 h-7 text-white" />
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-bold text-white">Competição Virtual</h3>
-                                    <p className="text-white/60 text-sm">Desafie seu recorde pessoal</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-1 rounded-full">NOVO</span>
-                                    <ChevronRight className="w-5 h-5 text-white/40 group-hover:text-purple-400 transition-colors" />
-                                </div>
-                            </div>
-                        </AnimatedCard>
-                    </Link>
-                </div>
-
                 {/* Navigation Tabs */}
                 <div className="flex border-b border-white/10 mb-8 overflow-x-auto scrollbar-none">
-                    <button
-                        onClick={() => setActiveTab('plan')}
-                        className={cn("px-6 py-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap",
-                            activeTab === 'plan' ? "border-club-red text-white" : "border-transparent text-white/40 hover:text-white"
-                        )}
-                    >
-                        Planilha de Treino
-                    </button>
                     <button
                         onClick={() => setActiveTab('performance')}
                         className={cn("px-6 py-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap",
@@ -158,52 +193,10 @@ export default function TrainingsPage() {
                     >
                         Ficha (Anamnese)
                     </button>
-                    <button
-                        onClick={() => setActiveTab('garage')}
-                        className={cn("px-6 py-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap flex items-center gap-2",
-                            activeTab === 'garage' ? "border-club-gold text-club-gold" : "border-transparent text-white/40 hover:text-white"
-                        )}
-                    >
-                        <Ship className="w-4 h-4" /> Garagem Náutica
-                    </button>
                 </div>
 
                 {/* Tab Content */}
                 <div className="min-h-[400px]">
-                    {activeTab === 'plan' && (
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between mb-2">
-                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                    <Calendar className="w-5 h-5 text-club-red" />
-                                    Semana {athleteData.currentPlan.weekNumber}
-                                </h2>
-                                <span className="text-xs text-white/40 italic">Ciclo: Base / Intensidade 2</span>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {athleteData.currentPlan.sessions.map((session, idx) => (
-                                    <AnimatedCard key={idx} variant="metal" className="p-5 border border-white/5">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <span className="text-xs font-black text-club-gold uppercase">{session.day}</span>
-                                            <span className={cn("px-2 py-0.5 rounded text-[10px] font-bold uppercase",
-                                                session.intensity === 'Baixa' ? "bg-green-500/20 text-green-500" :
-                                                    session.intensity === 'Moderada' ? "bg-blue-500/20 text-blue-500" :
-                                                        session.intensity === 'Alta' ? "bg-orange-500/20 text-orange-500" : "bg-red-500/20 text-red-500"
-                                            )}>
-                                                {session.intensity}
-                                            </span>
-                                        </div>
-                                        <h3 className="text-lg font-bold text-white mb-2">{session.target}</h3>
-                                        <p className="text-sm text-white/60 mb-6">{session.description}</p>
-                                        <Button size="sm" variant="ghost" className="w-full text-xs text-white/40 hover:text-white gap-2">
-                                            Lançar Feedback <ArrowRight className="w-3 h-3" />
-                                        </Button>
-                                    </AnimatedCard>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
                     {activeTab === 'performance' && (
                         <div className="space-y-8">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

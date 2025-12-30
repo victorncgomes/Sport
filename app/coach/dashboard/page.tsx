@@ -270,12 +270,16 @@ export default async function CoachDashboardPage() {
                         <AnimatedCard variant="glass" className="p-6">
                             <h4 className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Atalhos do Treinador</h4>
                             <div className="grid grid-cols-2 gap-2">
-                                <Button variant="outline" className="h-20 flex-col gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest">
-                                    <Target className="w-5 h-5 text-club-red" /> Metas
-                                </Button>
-                                <Button variant="outline" className="h-20 flex-col gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest">
-                                    <Settings className="w-5 h-5 text-blue-500" /> Ajustes
-                                </Button>
+                                <Link href="/coach/metas">
+                                    <Button variant="outline" className="h-20 w-full flex-col gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest">
+                                        <Target className="w-5 h-5 text-club-red" /> Metas
+                                    </Button>
+                                </Link>
+                                <Link href="/coach/ajustes">
+                                    <Button variant="outline" className="h-20 w-full flex-col gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest">
+                                        <Settings className="w-5 h-5 text-blue-500" /> Ajustes
+                                    </Button>
+                                </Link>
                             </div>
                         </AnimatedCard>
                     </div>

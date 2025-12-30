@@ -26,66 +26,36 @@ import {
 import { motion } from 'framer-motion';
 
 const members = [
-    {
-        id: '1',
-        name: 'João Paulo Silva',
-        email: 'joaopaulo@email.com',
-        phone: '(84) 99999-1234',
-        category: 'Remador',
-        status: 'ACTIVE',
-        memberSince: '2020-03-15',
-        lastPayment: '2025-01-05',
-        paymentStatus: 'PAID',
-        avatar: 'JP',
-    },
-    {
-        id: '2',
-        name: 'Maria Clara Costa',
-        email: 'mariaclara@email.com',
-        phone: '(84) 99888-5678',
-        category: 'Remadora',
-        status: 'ACTIVE',
-        memberSince: '2021-06-20',
-        lastPayment: '2025-01-10',
-        paymentStatus: 'PAID',
-        avatar: 'MC',
-    },
-    {
-        id: '3',
-        name: 'Carlos Eduardo Melo',
-        email: 'carloseduardo@email.com',
-        phone: '(84) 99777-9012',
-        category: 'Contribuinte',
-        status: 'ACTIVE',
-        memberSince: '2019-01-10',
-        lastPayment: '2024-12-15',
-        paymentStatus: 'PENDING',
-        avatar: 'CE',
-    },
-    {
-        id: '4',
-        name: 'Ana Beatriz Lima',
-        email: 'anabeatriz@email.com',
-        phone: '(84) 99666-3456',
-        category: 'Remadora',
-        status: 'INACTIVE',
-        memberSince: '2022-08-01',
-        lastPayment: '2024-08-20',
-        paymentStatus: 'OVERDUE',
-        avatar: 'AB',
-    },
-    {
-        id: '5',
-        name: 'Roberto Ferreira',
-        email: 'roberto@email.com',
-        phone: '(84) 99555-7890',
-        category: 'Benemérito',
-        status: 'ACTIVE',
-        memberSince: '2010-05-22',
-        lastPayment: null,
-        paymentStatus: 'EXEMPT',
-        avatar: 'RF',
-    },
+    { id: '1', name: 'João Paulo Silva', email: 'joaopaulo@email.com', phone: '(84) 99999-1234', category: 'Remador', status: 'ACTIVE', memberSince: '2020-03-15', lastPayment: '2025-01-05', paymentStatus: 'PAID', avatar: 'JP' },
+    { id: '2', name: 'Maria Clara Costa', email: 'mariaclara@email.com', phone: '(84) 99888-5678', category: 'Remadora', status: 'ACTIVE', memberSince: '2021-06-20', lastPayment: '2025-01-10', paymentStatus: 'PAID', avatar: 'MC' },
+    { id: '3', name: 'Carlos Eduardo Melo', email: 'carloseduardo@email.com', phone: '(84) 99777-9012', category: 'Contribuinte', status: 'ACTIVE', memberSince: '2019-01-10', lastPayment: '2024-12-15', paymentStatus: 'PENDING', avatar: 'CE' },
+    { id: '4', name: 'Ana Beatriz Lima', email: 'anabeatriz@email.com', phone: '(84) 99666-3456', category: 'Remadora', status: 'INACTIVE', memberSince: '2022-08-01', lastPayment: '2024-08-20', paymentStatus: 'OVERDUE', avatar: 'AB' },
+    { id: '5', name: 'Roberto Ferreira', email: 'roberto@email.com', phone: '(84) 99555-7890', category: 'Benemérito', status: 'ACTIVE', memberSince: '2010-05-22', lastPayment: null, paymentStatus: 'EXEMPT', avatar: 'RF' },
+    { id: '6', name: 'Fernanda Santos', email: 'fernanda.santos@email.com', phone: '(84) 99444-1111', category: 'Remadora', status: 'ACTIVE', memberSince: '2023-02-14', lastPayment: '2025-01-08', paymentStatus: 'PAID', avatar: 'FS' },
+    { id: '7', name: 'Lucas Oliveira', email: 'lucas.oliveira@email.com', phone: '(84) 99333-2222', category: 'Remador', status: 'ACTIVE', memberSince: '2022-11-30', lastPayment: '2025-01-03', paymentStatus: 'PAID', avatar: 'LO' },
+    { id: '8', name: 'Juliana Pereira', email: 'juliana.pereira@email.com', phone: '(84) 99222-3333', category: 'Remadora', status: 'ACTIVE', memberSince: '2021-09-18', lastPayment: '2024-12-28', paymentStatus: 'PAID', avatar: 'JP' },
+    { id: '9', name: 'Marcos Almeida', email: 'marcos.almeida@email.com', phone: '(84) 99111-4444', category: 'Contribuinte', status: 'ACTIVE', memberSince: '2020-07-25', lastPayment: '2024-12-20', paymentStatus: 'PENDING', avatar: 'MA' },
+    { id: '10', name: 'Patrícia Souza', email: 'patricia.souza@email.com', phone: '(84) 99000-5555', category: 'Remadora', status: 'ACTIVE', memberSince: '2023-04-10', lastPayment: '2025-01-12', paymentStatus: 'PAID', avatar: 'PS' },
+    { id: '11', name: 'Ricardo Nascimento', email: 'ricardo.nasc@email.com', phone: '(84) 98888-6666', category: 'Remador', status: 'ACTIVE', memberSince: '2019-12-05', lastPayment: '2025-01-02', paymentStatus: 'PAID', avatar: 'RN' },
+    { id: '12', name: 'Camila Rodrigues', email: 'camila.rod@email.com', phone: '(84) 98777-7777', category: 'Remadora', status: 'INACTIVE', memberSince: '2022-03-22', lastPayment: '2024-09-15', paymentStatus: 'OVERDUE', avatar: 'CR' },
+    { id: '13', name: 'Bruno Carvalho', email: 'bruno.carv@email.com', phone: '(84) 98666-8888', category: 'Remador', status: 'ACTIVE', memberSince: '2021-01-08', lastPayment: '2025-01-06', paymentStatus: 'PAID', avatar: 'BC' },
+    { id: '14', name: 'Amanda Martins', email: 'amanda.mart@email.com', phone: '(84) 98555-9999', category: 'Contribuinte', status: 'ACTIVE', memberSince: '2023-07-14', lastPayment: '2024-12-30', paymentStatus: 'PAID', avatar: 'AM' },
+    { id: '15', name: 'Diego Barbosa', email: 'diego.barb@email.com', phone: '(84) 98444-0000', category: 'Remador', status: 'ACTIVE', memberSince: '2020-10-20', lastPayment: '2024-12-18', paymentStatus: 'PENDING', avatar: 'DB' },
+    { id: '16', name: 'Larissa Gomes', email: 'larissa.gom@email.com', phone: '(84) 98333-1111', category: 'Remadora', status: 'ACTIVE', memberSince: '2022-06-08', lastPayment: '2025-01-09', paymentStatus: 'PAID', avatar: 'LG' },
+    { id: '17', name: 'Felipe Ribeiro', email: 'felipe.rib@email.com', phone: '(84) 98222-2222', category: 'Remador', status: 'ACTIVE', memberSince: '2021-04-16', lastPayment: '2025-01-04', paymentStatus: 'PAID', avatar: 'FR' },
+    { id: '18', name: 'Natália Araújo', email: 'natalia.ara@email.com', phone: '(84) 98111-3333', category: 'Remadora', status: 'ACTIVE', memberSince: '2023-01-25', lastPayment: '2024-12-22', paymentStatus: 'PAID', avatar: 'NA' },
+    { id: '19', name: 'Gustavo Lima', email: 'gustavo.lim@email.com', phone: '(84) 98000-4444', category: 'Contribuinte', status: 'ACTIVE', memberSince: '2019-08-30', lastPayment: '2025-01-07', paymentStatus: 'PAID', avatar: 'GL' },
+    { id: '20', name: 'Beatriz Fernandes', email: 'beatriz.fer@email.com', phone: '(84) 97999-5555', category: 'Remadora', status: 'INACTIVE', memberSince: '2022-12-12', lastPayment: '2024-07-10', paymentStatus: 'OVERDUE', avatar: 'BF' },
+    { id: '21', name: 'Pedro Henrique', email: 'pedro.hen@email.com', phone: '(84) 97888-6666', category: 'Remador', status: 'ACTIVE', memberSince: '2020-05-18', lastPayment: '2024-12-29', paymentStatus: 'PAID', avatar: 'PH' },
+    { id: '22', name: 'Isabela Cruz', email: 'isabela.cruz@email.com', phone: '(84) 97777-7777', category: 'Remadora', status: 'ACTIVE', memberSince: '2023-03-05', lastPayment: '2025-01-11', paymentStatus: 'PAID', avatar: 'IC' },
+    { id: '23', name: 'Rafael Moreira', email: 'rafael.mor@email.com', phone: '(84) 97666-8888', category: 'Remador', status: 'ACTIVE', memberSince: '2021-08-22', lastPayment: '2024-12-25', paymentStatus: 'PENDING', avatar: 'RM' },
+    { id: '24', name: 'Carolina Dias', email: 'carolina.dias@email.com', phone: '(84) 97555-9999', category: 'Contribuinte', status: 'ACTIVE', memberSince: '2022-02-28', lastPayment: '2025-01-01', paymentStatus: 'PAID', avatar: 'CD' },
+    { id: '25', name: 'Thiago Nunes', email: 'thiago.nunes@email.com', phone: '(84) 97444-0000', category: 'Remador', status: 'ACTIVE', memberSince: '2020-09-10', lastPayment: '2024-12-27', paymentStatus: 'PAID', avatar: 'TN' },
+    { id: '26', name: 'Letícia Cardoso', email: 'leticia.card@email.com', phone: '(84) 97333-1111', category: 'Remadora', status: 'ACTIVE', memberSince: '2023-05-20', lastPayment: '2025-01-10', paymentStatus: 'PAID', avatar: 'LC' },
+    { id: '27', name: 'André Teixeira', email: 'andre.teix@email.com', phone: '(84) 97222-2222', category: 'Benemérito', status: 'ACTIVE', memberSince: '2015-04-01', lastPayment: null, paymentStatus: 'EXEMPT', avatar: 'AT' },
+    { id: '28', name: 'Mariana Rocha', email: 'mariana.rocha@email.com', phone: '(84) 97111-3333', category: 'Remadora', status: 'ACTIVE', memberSince: '2021-11-15', lastPayment: '2024-12-26', paymentStatus: 'PAID', avatar: 'MR' },
+    { id: '29', name: 'Vinícius Castro', email: 'vinicius.cast@email.com', phone: '(84) 97000-4444', category: 'Remador', status: 'ACTIVE', memberSince: '2022-07-08', lastPayment: '2024-12-31', paymentStatus: 'PAID', avatar: 'VC' },
+    { id: '30', name: 'Gabriela Lopes', email: 'gabriela.lop@email.com', phone: '(84) 96999-5555', category: 'Honorário', status: 'ACTIVE', memberSince: '2018-12-01', lastPayment: null, paymentStatus: 'EXEMPT', avatar: 'GL' },
 ];
 
 const categoryColors: Record<string, string> = {
@@ -222,58 +192,60 @@ export default function SociosPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
                             >
-                                <AnimatedCard variant="glass" hover className="group">
-                                    <div className="flex flex-col md:flex-row md:items-center gap-4">
-                                        {/* Avatar and Basic Info */}
-                                        <div className="flex items-center gap-4 flex-1">
-                                            <div className="w-12 h-12 rounded-full bg-club-red/20 border border-club-red/30 flex items-center justify-center font-bold text-club-red">
-                                                {member.avatar}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <h3 className="font-medium text-white truncate group-hover:text-club-gold transition-colors">
-                                                        {member.name}
-                                                    </h3>
-                                                    <StatusIcon className={`w-4 h-4 flex-shrink-0 ${statusConfig[member.status as keyof typeof statusConfig].color}`} />
+                                <Link href={`/diretoria/socios/${member.id}`}>
+                                    <AnimatedCard variant="glass" hover className="group cursor-pointer">
+                                        <div className="flex flex-col md:flex-row md:items-center gap-4">
+                                            {/* Avatar and Basic Info */}
+                                            <div className="flex items-center gap-4 flex-1">
+                                                <div className="w-12 h-12 rounded-full bg-club-red/20 border border-club-red/30 flex items-center justify-center font-bold text-club-red">
+                                                    {member.avatar}
                                                 </div>
-                                                <div className="flex flex-wrap items-center gap-3 text-xs text-white/40">
-                                                    <span className="flex items-center gap-1">
-                                                        <Mail className="w-3 h-3" />
-                                                        {member.email}
-                                                    </span>
-                                                    <span className="flex items-center gap-1">
-                                                        <Phone className="w-3 h-3" />
-                                                        {member.phone}
-                                                    </span>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h3 className="font-medium text-white truncate group-hover:text-club-gold transition-colors">
+                                                            {member.name}
+                                                        </h3>
+                                                        <StatusIcon className={`w-4 h-4 flex-shrink-0 ${statusConfig[member.status as keyof typeof statusConfig].color}`} />
+                                                    </div>
+                                                    <div className="flex flex-wrap items-center gap-3 text-xs text-white/40">
+                                                        <span className="flex items-center gap-1">
+                                                            <Mail className="w-3 h-3" />
+                                                            {member.email}
+                                                        </span>
+                                                        <span className="flex items-center gap-1">
+                                                            <Phone className="w-3 h-3" />
+                                                            {member.phone}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {/* Category and Payment */}
-                                        <div className="flex items-center gap-3">
-                                            <Badge className={`${categoryColors[member.category] || 'bg-white/10 text-white/60'} border-0`}>
-                                                {member.category}
-                                            </Badge>
-                                            <Badge className={`${paymentStatusConfig[member.paymentStatus as keyof typeof paymentStatusConfig].color} border-0`}>
-                                                {paymentStatusConfig[member.paymentStatus as keyof typeof paymentStatusConfig].label}
-                                            </Badge>
-                                        </div>
+                                            {/* Category and Payment */}
+                                            <div className="flex items-center gap-3">
+                                                <Badge className={`${categoryColors[member.category] || 'bg-white/10 text-white/60'} border-0`}>
+                                                    {member.category}
+                                                </Badge>
+                                                <Badge className={`${paymentStatusConfig[member.paymentStatus as keyof typeof paymentStatusConfig].color} border-0`}>
+                                                    {paymentStatusConfig[member.paymentStatus as keyof typeof paymentStatusConfig].label}
+                                                </Badge>
+                                            </div>
 
-                                        {/* Member Since */}
-                                        <div className="hidden md:flex items-center gap-2 text-xs text-white/40 w-32">
-                                            <Calendar className="w-3 h-3" />
-                                            <span>Desde {new Date(member.memberSince).getFullYear()}</span>
-                                        </div>
+                                            {/* Member Since */}
+                                            <div className="hidden md:flex items-center gap-2 text-xs text-white/40 w-32">
+                                                <Calendar className="w-3 h-3" />
+                                                <span>Desde {new Date(member.memberSince).getFullYear()}</span>
+                                            </div>
 
-                                        {/* Actions */}
-                                        <div className="flex items-center gap-2">
-                                            <Button variant="ghost" size="icon" className="text-white/30 hover:text-white">
-                                                <MoreVertical className="w-4 h-4" />
-                                            </Button>
-                                            <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors" />
+                                            {/* Actions */}
+                                            <div className="flex items-center gap-2">
+                                                <Button variant="ghost" size="icon" className="text-white/30 hover:text-white">
+                                                    <MoreVertical className="w-4 h-4" />
+                                                </Button>
+                                                <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors" />
+                                            </div>
                                         </div>
-                                    </div>
-                                </AnimatedCard>
+                                    </AnimatedCard>
+                                </Link>
                             </motion.div>
                         );
                     })}

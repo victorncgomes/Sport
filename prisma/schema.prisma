@@ -28,6 +28,7 @@ model User {
   reservations  BoatReservation[]
   trainingSessions TrainingAttendance[]
   payments      Payment[]
+  financialTransactions FinancialTransaction[]
   votes         Vote[]
   forumPosts    ForumPost[]
   forumComments ForumComment[]
@@ -74,6 +75,9 @@ model User {
   volunteerAvailability   VolunteerAvailability[] @relation("VolunteerAvailability")
   volunteerReputation     VolunteerReputation? @relation("VolunteerReputation")
   volunteerTalent         VolunteerTalent?  @relation("VolunteerTalent")
+
+  // Reuniões
+  meetingParticipants     MeetingParticipant[]
 
   // Controle de Voluntariado
   isVolunteer             Boolean           @default(false)
@@ -709,6 +713,41 @@ model ClubEvent {
   @@map("club_events")
 }
 
+model Meeting {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  date            DateTime
+  location        String
+  type            String   @default("BOARD") // BOARD, ORDINARY, EXTRAORDINARY
+  status          String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  agenda          String?
+  minutes         String?
+  attendeesCount  Int      @default(0)
+  createdBy       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  participants    MeetingParticipant[]
+
+  @@map("meetings")
+}
+
+model MeetingParticipant {
+  id          String   @id @default(cuid())
+  meetingId   String
+  userId      String
+  status      String   @default("PENDING") // PENDING, CONFIRMED, DECLINED
+  notified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  meeting     Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId])
+  @@map("meeting_participants")
+}
+
 model EventRSVP {
   id        String   @id @default(cuid())
   eventId   String
@@ -1286,4 +1325,22 @@ model UserBoatUnlock {
   @@unique([userId, boatType])
   @@index([userId])
   @@map("user_boat_unlocks")
+}
+
+model FinancialTransaction {
+  id          String   @id @default(cuid())
+  type        String   // REVENUE, EXPENSE
+  category    String   // MENSALIDADE, STORE, EVENTO, MANUTENCAO, PESSOAL, UTILIDADES, OUTROS
+  description String
+  amount      Float
+  date        DateTime @default(now())
+  status      String   @default("COMPLETED") // PENDING, COMPLETED, CANCELLED
+  
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("financial_transactions")
 }

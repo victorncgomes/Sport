@@ -69,6 +69,25 @@ export default function PersonalDataPage() {
         canFlipBoat: true
     });
 
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch('/api/user/profile');
+                if (response.ok) {
+                    const profileData = await response.json();
+                    setData(profileData);
+                }
+            } catch (error) {
+                console.error("Erro ao carregar dados:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const updateField = (path: string, value: any) => {
         setData(prev => {
             const keys = path.split('.');
@@ -89,9 +108,19 @@ export default function PersonalDataPage() {
     const handleSave = async () => {
         setLoading(true);
         try {
-            // Simula salvamento
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            setSaved(true);
+            const response = await fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                setSaved(true);
+            } else {
+                console.error("Erro ao salvar dados");
+            }
+        } catch (error) {
+            console.error("Erro ao salvar dados:", error);
         } finally {
             setLoading(false);
         }

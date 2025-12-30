@@ -4,79 +4,75 @@ import { CheckCircle, Plus, AlertTriangle, Wrench, Sparkles } from 'lucide-react
 
 const changelogData = [
     {
-        version: '0.5.0',
-        date: '2025-12-25',
+        version: '0.4.5',
+        date: '2025-12-30',
         items: {
             added: [
-                '**Loja:** Modal de detalhes do produto com descrição expandida, tamanhos e especificações.',
-                '**Galeria:** Sistema social completo com curtidas e comentários.',
-                '**Galeria:** Simulação de interações de usuários (10 usuários, comentários e likes).',
-                '**Galeria:** Modal de visualização com seção de comentários e navegação.',
+                '**Treino Curto:** Modal de confirmação para treinos <3min com opções Armazenar/Descartar.',
+                '**Alongamento:** Nova página `/training/stretching` com 3 níveis e 21 exercícios.',
+                '**Coach:** 5 novas páginas - Treinos Ativos, Reservas, Diário, Novo Plano, Calendário.',
+                '**Sócios:** Ficha individual com dados completos, treinos, pagamentos e barcos.',
+                '**Aulas Experimentais:** 5 agendamentos simulados no calendário do coach.',
             ],
-            improved: [
-                '**Painel Diretoria:** Containers com fundo sólido, bordas coloridas e efeitos de glow.',
-                '**Experiência Mobile:** Ajustes de responsividade nos modais e grids.',
+            fixed: [
+                'Erro de sintaxe em `api/workouts/history/route.ts`.',
+                'Links do painel do coach para Novo Plano e Diário.',
+                'Estrutura JSX corrigida no painel do coach.',
+            ]
+        }
+    },
+    {
+        version: '0.4.4',
+        date: '2025-12-28',
+        items: {
+            added: [
+                '**Registro:** Sistema de cadastro de usuários com validação completa.',
+                '**Banco de Dados:** Seed com dados de exemplo (3 usuários, barcos, produtos).',
+            ],
+            fixed: [
+                'Erro de sintaxe em `app/api/tides/upload/route.ts`.',
+                'Suspense boundary em 4 páginas com useSearchParams.',
+            ]
+        }
+    },
+    {
+        version: '0.4.3',
+        date: '2025-12-28',
+        items: {
+            added: [
+                '**Coach:** API de sugestão de planilhas com 12 semanas de treino.',
+                '**Tarefas:** Kanban board com drag and drop.',
+                '**Voluntariado:** Calendário de atividades.',
             ]
         }
     },
     {
         version: '0.4.0',
-        date: '2025-12-23',
+        date: '2025-12-27',
         items: {
             added: [
-                'Fallback de dados mockados para perfil em produção (João Silva demo).',
-            ],
-            fixed: [
-                'Menu do rodapé mobile: z-index aumentado e estilos consolidados.',
-                'Redirecionamento automático `/login` → `/dashboard` removido.',
-                'Tamanhos de ícones inconsistentes no bottom-nav.',
+                '**Logos:** Parceiros no header e bottom nav (Governo RN, Prefeitura, Potigás, ERK, CBR).',
+                '**Treino:** Página `/training/live` com GPS tracking e cronômetro.',
             ]
         }
     },
     {
         version: '0.3.6',
-        date: '2025-12-20',
+        date: '2025-12-27',
         items: {
             added: [
-                'Seção de **Informações Financeiras** no Painel do Usuário (`/profile/panel`).',
-                'Dashboard do Treinador com visualização de **Agendamentos de Barcos**.',
-                'Tema **Dark Premium** na página de Aula Experimental para máxima legibilidade.',
-                'Imagens reais e profissionais na **Store** via Unsplash.',
-                'Estrutura rígida de navegação por cargo (Visitante, Sócio, Coach, Diretoria).',
-            ],
-            fixed: [
-                'Removido o indicador de scroll ("mouse") da página inicial.',
-                'Padronizada a **Estrutura de Menus Rígida** por cargo.',
-                'Corrigido erro de título e sintaxe no Dashboard Administrativo.',
-                'Resolvida inconsistência na simulação de acessos no dropdown de login.',
-                'Corrigida responsividade do **Bottom Navigation** em smartphones.',
-            ]
-        }
-    },
-    {
-        version: '0.3.5',
-        date: '2025-12-20',
-        items: {
-            fixed: [
-                '**Hall da Fama**: Corrigido crash crítico na página de ranking devido a propriedades indefinidas.',
-                'Navegação padronizada com nome consistente "Hall da Fama" em toda aplicação.',
-            ],
-            added: [
-                'Dados dinâmicos do banco integrados ao ranking social.',
-                'Imagens reais geradas para barcos e produtos iniciais.',
+                '**PWA:** Service Worker e IndexedDB para funcionamento offline.',
+                '**Schema:** 15+ modelos Prisma expandidos.',
             ]
         }
     },
     {
         version: '0.3.0',
-        date: '2025-12-19',
+        date: '2025-12-24',
         items: {
             added: [
-                'Redesign completo com cores oficiais (Blood Red #DC2626, Gold #FFD700, Black #0A0A0A).',
-                'Sistema de gamificação e ranqueamento social.',
-                'Galeria de imagens dinâmica do clube.',
-                'Integração de notícias via RSS.',
-                'Store expandida com múltiplas categorias.',
+                '**Identidade Visual 2.0:** Vermelho, Preto, Ouro com glassmorphism.',
+                '**Gamificação:** Sistema de níveis, pontos e conquistas.',
             ]
         }
     },

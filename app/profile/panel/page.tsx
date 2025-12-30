@@ -206,6 +206,79 @@ export default function ProfilePanelPage() {
                     </div>
                 </div>
 
+                {/* Progressão de Barcos */}
+                <div className="mb-8">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                            <span className="text-2xl">🚣</span>
+                            Meus Barcos
+                        </h2>
+                        <Link href="/boats">
+                            <Button variant="ghost" className="text-white/40 hover:text-white text-sm gap-1">
+                                Ver Todos <ArrowRight className="w-4 h-4" />
+                            </Button>
+                        </Link>
+                    </div>
+
+                    {/* Barra de Progresso */}
+                    <AnimatedCard variant="glass" className="mb-4">
+                        <div className="flex items-center gap-4 mb-3">
+                            <div className="flex-1">
+                                <div className="flex justify-between text-sm mb-1">
+                                    <span className="text-white/60">Nível {userData.level}</span>
+                                    <span className="text-club-gold font-bold">{userData.points} XP</span>
+                                </div>
+                                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-club-red to-club-gold rounded-full transition-all duration-1000"
+                                        style={{ width: `${((userData.points || 0) % 500) / 5}%` }}
+                                    />
+                                </div>
+                                <div className="text-[10px] text-white/40 mt-1">
+                                    {500 - ((userData.points || 0) % 500)} XP para próximo barco
+                                </div>
+                            </div>
+                        </div>
+                    </AnimatedCard>
+
+                    {/* Barcos em Grid Horizontal */}
+                    <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                        {/* Barcos Desbloqueados */}
+                        {[
+                            { name: 'Single Skiff', emoji: '🚣', level: 1, unlocked: true },
+                            { name: 'Double Scull', emoji: '🚣‍♂️', level: 5, unlocked: true },
+                            { name: 'Coxed Four', emoji: '🛶', level: 10, unlocked: (userData.level || 0) >= 10 },
+                            { name: 'Eight', emoji: '⛵', level: 15, unlocked: (userData.level || 0) >= 15 },
+                            { name: 'Racing Shell', emoji: '🏆', level: 25, unlocked: (userData.level || 0) >= 25 }
+                        ].map((boat, i) => (
+                            <div
+                                key={boat.name}
+                                className={`flex-shrink-0 w-28 text-center p-4 rounded-xl transition-all ${boat.unlocked
+                                        ? 'bg-gradient-to-br from-club-red/20 to-club-gold/20 border border-club-gold/30'
+                                        : 'bg-white/5 border border-white/10 opacity-50'
+                                    }`}
+                            >
+                                <div className={`text-3xl mb-2 ${boat.unlocked ? '' : 'grayscale'}`}>
+                                    {boat.unlocked ? boat.emoji : '🔒'}
+                                </div>
+                                <div className={`text-xs font-bold ${boat.unlocked ? 'text-white' : 'text-white/40'}`}>
+                                    {boat.name}
+                                </div>
+                                <div className="text-[10px] text-white/40">
+                                    Nível {boat.level}
+                                </div>
+                                {boat.unlocked && (
+                                    <div className="mt-2">
+                                        <Badge className="text-[8px] bg-emerald-500/20 text-emerald-400">
+                                            ✓ Desbloqueado
+                                        </Badge>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Resumo Financeiro - NEW Section requested by USER */}
                 <div className="mb-8">
                     <AnimatedCard variant="glass" className="border-emerald-500/20 bg-emerald-500/5">

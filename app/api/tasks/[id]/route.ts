@@ -1,74 +1,83 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import { prisma } from '@/lib/db';
+import { auth } from "@/auth"
+import { prisma } from "@/lib/db"
+import { NextResponse } from "next/server"
 
-// PATCH - Atualizar tarefa
-export async function PATCH(
-    request: NextRequest,
+export async function PUT(
+    request: Request,
     { params }: { params: { id: string } }
 ) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+    }
+
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
+        const { id } = await params
+        const body = await request.json()
+        const { status, title, description, priority, assigneeId } = body
+
+        // Buscar tarefa atual para verificar se o responsável mudou
+        const currentTask = await prisma.volunteerTask.findUnique({
+            where: { id }
+        })
+
+        // Mapear status do frontend para o banco
+        let prismaStatus = status
+        if (status === 'TODO') prismaStatus = 'OPEN'
+        if (status === 'IN_PROGRESS') prismaStatus = 'IN_PROGRESS'
+        if (status === 'DONE') prismaStatus = 'COMPLETED'
+
+        const updatedTask = await prisma.volunteerTask.update({
+            where: { id },
+            data: {
+                status: prismaStatus || undefined,
+                title: title !== undefined ? title : undefined,
+                description: description !== undefined ? description : undefined,
+                priority: priority !== undefined ? priority : undefined,
+                assignedToId: assigneeId !== undefined ? assigneeId : undefined
+            }
+        })
+
+        // Enviar notificação se o responsável mudou ou foi definido agora
+        if (assigneeId && assigneeId !== currentTask?.assignedToId) {
+            await prisma.notification.create({
+                data: {
+                    userId: assigneeId,
+                    title: "Nova tarefa atribuída",
+                    message: `Você recebeu uma nova tarefa ou reatribuição: ${updatedTask.title}`,
+                    type: "INFO",
+                    link: "/diretoria/tarefas"
+                }
+            })
         }
 
-        const taskId = params.id;
-        const updates = await request.json();
-
-        const task = await prisma.task.update({
-            where: { id: taskId },
-            data: updates,
-            include: {
-                assignedTo: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true
-                    }
-                }
-            }
-        });
-
-        return NextResponse.json({ success: true, task });
+        return NextResponse.json(updatedTask)
     } catch (error) {
-        console.error('Error updating task:', error);
-        return NextResponse.json(
-            { error: 'Erro ao atualizar tarefa' },
-            { status: 500 }
-        );
+        console.error("Erro ao atualizar tarefa:", error)
+        return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
     }
 }
 
-// DELETE - Deletar tarefa
 export async function DELETE(
-    request: NextRequest,
+    request: Request,
     { params }: { params: { id: string } }
 ) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+    }
+
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
-        }
+        const { id } = await params
+        await prisma.volunteerTask.delete({
+            where: { id }
+        })
 
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email }
-        });
-
-        if (!user || (user.role !== 'diretoria' && user.role !== 'admin')) {
-            return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
-        }
-
-        await prisma.task.delete({
-            where: { id: params.id }
-        });
-
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true })
     } catch (error) {
-        console.error('Error deleting task:', error);
-        return NextResponse.json(
-            { error: 'Erro ao deletar tarefa' },
-            { status: 500 }
-        );
+        console.error("Erro ao excluir tarefa:", error)
+        return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
     }
 }

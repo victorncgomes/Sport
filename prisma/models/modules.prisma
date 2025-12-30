@@ -331,7 +331,8 @@ model VolunteerAvailability {
   startTime       String   // "09:00"
   endTime         String   // "12:00"
   
-  areas           String   // JSON array de VolunteerArea
+  area            String   // MIDIA, STORE, LIMPEZA, MANUTENCAO, TREINAMENTO, ATENDIMENTO
+  areas           String?  // JSON array de VolunteerArea (deprecated)
   isRemote        Boolean  @default(false)
   
   isActive        Boolean  @default(true)
@@ -342,6 +343,22 @@ model VolunteerAvailability {
   
   @@index([userId, dayOfWeek])
   @@map("volunteer_availability")
+}
+
+// Mensagens/Notificações para áreas de voluntariado
+model VolunteerMessage {
+  id              String   @id @default(cuid())
+  
+  areaId          String   // MIDIA, STORE, LIMPEZA, MANUTENCAO, TREINAMENTO, ATENDIMENTO, ALL
+  message         String
+  
+  senderId        String
+  sender          User     @relation("VolunteerMessagesSent", fields: [senderId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([areaId, createdAt])
+  @@map("volunteer_messages")
 }
 
 // Reputação do voluntário

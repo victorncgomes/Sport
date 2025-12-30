@@ -2,12 +2,60 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
 
-// PUT /api/volunteer/availability - Atualizar disponibilidade semanal
-export async function PUT(request: NextRequest) {
+/**
+ * GET /api/volunteer/availability
+ * Retorna a disponibilidade semanal do voluntário
+ */
+export async function GET() {
     try {
         const session = await auth();
         if (!session?.user?.email) {
-            return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
+            return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email }
+        });
+
+        if (!user) {
+            return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
+        }
+
+        const availability = await prisma.volunteerAvailability.findMany({
+            where: {
+                userId: user.id,
+                isActive: true
+            }
+        });
+
+        // Converter para formato de slots
+        // Usar 'areas' se 'area' não estiver disponível (aguardando prisma generate)
+        const slots = availability.map(a => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const areaValue = (a as any).area || a.areas || '';
+            return {
+                areaId: areaValue,
+                dayOfWeek: a.dayOfWeek,
+                hour: parseInt(a.startTime.split(':')[0])
+            };
+        });
+
+        return NextResponse.json({ slots });
+    } catch (error) {
+        console.error('Erro ao buscar disponibilidade:', error);
+        return NextResponse.json({ slots: [] });
+    }
+}
+
+/**
+ * POST /api/volunteer/availability
+ * Salva a disponibilidade semanal do voluntário
+ */
+export async function POST(request: NextRequest) {
+    try {
+        const session = await auth();
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
         }
 
         const user = await prisma.user.findUnique({
@@ -19,77 +67,41 @@ export async function PUT(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { availability } = body;
+        const { slots } = body;
 
-        // availability é um objeto: { monday: ['09:00-12:00', '14:00-18:00'], tuesday: [...], ... }
+        if (!Array.isArray(slots)) {
+            return NextResponse.json({ error: 'Formato inválido' }, { status: 400 });
+        }
 
-        // Upsert availability
-        const updated = await prisma.volunteerAvailability.upsert({
+        // Desativar disponibilidades anteriores
+        await prisma.volunteerAvailability.updateMany({
             where: { userId: user.id },
-            create: {
-                userId: user.id,
-                monday: availability.monday ? JSON.stringify(availability.monday) : null,
-                tuesday: availability.tuesday ? JSON.stringify(availability.tuesday) : null,
-                wednesday: availability.wednesday ? JSON.stringify(availability.wednesday) : null,
-                thursday: availability.thursday ? JSON.stringify(availability.thursday) : null,
-                friday: availability.friday ? JSON.stringify(availability.friday) : null,
-                saturday: availability.saturday ? JSON.stringify(availability.saturday) : null,
-                sunday: availability.sunday ? JSON.stringify(availability.sunday) : null
-            },
-            update: {
-                monday: availability.monday ? JSON.stringify(availability.monday) : null,
-                tuesday: availability.tuesday ? JSON.stringify(availability.tuesday) : null,
-                wednesday: availability.wednesday ? JSON.stringify(availability.wednesday) : null,
-                thursday: availability.thursday ? JSON.stringify(availability.thursday) : null,
-                friday: availability.friday ? JSON.stringify(availability.friday) : null,
-                saturday: availability.saturday ? JSON.stringify(availability.saturday) : null,
-                sunday: availability.sunday ? JSON.stringify(availability.sunday) : null
-            }
+            data: { isActive: false }
         });
+
+        // Criar novas disponibilidades
+        if (slots.length > 0) {
+            for (const slot of slots) {
+                await prisma.volunteerAvailability.create({
+                    data: {
+                        userId: user.id,
+                        dayOfWeek: slot.dayOfWeek,
+                        startTime: `${slot.hour.toString().padStart(2, '0')}:00`,
+                        endTime: `${(slot.hour + 1).toString().padStart(2, '0')}:00`,
+                        areas: slot.areaId, // Usando 'areas' até rodar prisma generate
+                        isActive: true
+                    }
+                });
+            }
+        }
 
         return NextResponse.json({
             success: true,
-            availability: updated
+            message: 'Disponibilidade salva com sucesso',
+            slotsCount: slots.length
         });
-
     } catch (error) {
-        console.error('Error updating availability:', error);
-        return NextResponse.json(
-            { error: 'Erro ao atualizar disponibilidade' },
-            { status: 500 }
-        );
-    }
-}
-
-// GET /api/volunteer/availability - Obter disponibilidade
-export async function GET(request: NextRequest) {
-    try {
-        const session = await auth();
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email }
-        });
-
-        if (!user) {
-            return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
-        }
-
-        const availability = await prisma.volunteerAvailability.findUnique({
-            where: { userId: user.id }
-        });
-
-        return NextResponse.json({
-            availability: availability || null
-        });
-
-    } catch (error) {
-        console.error('Error fetching availability:', error);
-        return NextResponse.json(
-            { error: 'Erro ao buscar disponibilidade' },
-            { status: 500 }
-        );
+        console.error('Erro ao salvar disponibilidade:', error);
+        return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
     }
 }

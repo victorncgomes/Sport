@@ -231,7 +231,11 @@ export function TideWidget({ className }: { className?: string }) {
     const data = getFullData(dayOffset);
     const dateLabel = getDateLabel(dayOffset);
     const WeatherIcon = data.weather.icon;
-    const isGoodForRowing = data.coeficiente >= 60 && data.wind.speed < 20;
+
+    // IMPORTANTE: Usar a mesma classificação que é exibida nos detalhes para garantir consistência
+    const conditionRating = data.rowingConditions.condition_rating;
+    const isGoodForRowing = conditionRating === 'favorable';
+    const isModerateForRowing = conditionRating === 'technical';
 
     return (
         <motion.div
@@ -336,6 +340,13 @@ export function TideWidget({ className }: { className?: string }) {
                 >
                     <ChevronRight className="w-5 h-5" />
                 </button>
+            </div>
+
+            {/* Coordenadas do Sport Club */}
+            <div className="relative z-10 px-4 py-2 bg-black/20 border-b border-white/10">
+                <p className="text-[10px] text-white/50 text-center leading-relaxed">
+                    Sport Club de Natal: Latitude 5°46&apos;31 S • Longitude 35°12&apos;22 W • Fuso UTC -03:00h
+                </p>
             </div>
 
             {/* Main Content */}
@@ -450,25 +461,36 @@ export function TideWidget({ className }: { className?: string }) {
                                 </div>
                             </div>
 
-                            {/* Status para Remo */}
+                            {/* Status para Remo - USANDO MESMA CLASSIFICAÇÃO DOS DETALHES */}
                             <motion.div
                                 whileHover={{ scale: 1.02 }}
                                 className={cn(
-                                    "flex items-center justify-between p-4 rounded-xl border",
-                                    isGoodForRowing
-                                        ? "bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-400/30"
-                                        : "bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border-yellow-400/30"
+                                    "p-4 rounded-xl border",
+                                    conditionRating === 'favorable' && "bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-400/30",
+                                    conditionRating === 'technical' && "bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border-yellow-400/30",
+                                    conditionRating === 'difficult' && "bg-gradient-to-r from-red-500/20 to-rose-500/20 border-red-400/30"
                                 )}
                             >
-                                <span className="text-sm font-semibold text-white/90">
-                                    Condição para Remo
-                                </span>
-                                <span className={cn(
-                                    "text-sm font-bold uppercase px-3 py-1 rounded-lg",
-                                    isGoodForRowing ? "bg-green-500/30 text-green-300" : "bg-yellow-500/30 text-yellow-300"
-                                )}>
-                                    {isGoodForRowing ? '✓ Ideal' : '⚠ Moderada'}
-                                </span>
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm font-semibold text-white/90">
+                                        Condição para Remo
+                                    </span>
+                                    <span className={cn(
+                                        "text-sm font-bold uppercase px-3 py-1 rounded-lg",
+                                        conditionRating === 'favorable' && "bg-green-500/30 text-green-300",
+                                        conditionRating === 'technical' && "bg-yellow-500/30 text-yellow-300",
+                                        conditionRating === 'difficult' && "bg-red-500/30 text-red-300"
+                                    )}>
+                                        {data.rowingConditions.condition_classification.label}
+                                    </span>
+                                </div>
+                                <p className="text-[10px] text-white/50 leading-relaxed">
+                                    {data.rowingConditions.condition_classification.description}
+                                </p>
+                                <p className="text-[9px] text-white/40 mt-1 pt-1 border-t border-white/10">
+                                    📊 Cálculo: Baseado no ângulo relativo da correnteza ({data.rowingConditions.current.relative_angle_deg}°) em relação ao percurso de remo.
+                                    Corrente: {data.rowingConditions.current.speed_m_s.toFixed(2)}m/s | Vento: {data.wind.speed}km/h {data.wind.direction}
+                                </p>
                             </motion.div>
                         </motion.div>
                     ) : (
@@ -634,6 +656,13 @@ export function TideWidget({ className }: { className?: string }) {
                         </motion.div>
                     )}
                 </AnimatePresence>
+            </div>
+
+            {/* Fonte Oficial */}
+            <div className="relative z-10 px-4 py-2 bg-black/20 border-t border-white/10">
+                <p className="text-[9px] text-white/40 text-center leading-relaxed">
+                    Fonte: CAPITANIA DOS PORTOS DO RN e COMANDO DO 3º DISTRITO NAVAL - MARINHA DO BRASIL • Carta 811
+                </p>
             </div>
         </motion.div>
     );

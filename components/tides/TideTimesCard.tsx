@@ -15,6 +15,13 @@ interface TideTimesCardProps {
 export const TideTimesCard: React.FC<TideTimesCardProps> = ({ tideDay }) => {
     return (
         <AnimatedCard variant="gradient" hover="lift">
+            {/* Coordenadas do Sport Club */}
+            <div className="mb-4 pb-3 border-b border-white/10">
+                <p className="text-xs text-white/50 text-center leading-relaxed">
+                    Sport Club de Natal: Latitude 5°46'31 S • Longitude 35°12'22 W • Fuso UTC -03:00h
+                </p>
+            </div>
+
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h3 className="font-display text-xl text-white mb-1">
@@ -97,6 +104,13 @@ export const TideTimesCard: React.FC<TideTimesCardProps> = ({ tideDay }) => {
                     <p className="text-xs text-white/40 mb-1">Pôr do Sol</p>
                     <p className="font-mono text-white">{tideDay.sunset}</p>
                 </div>
+            </div>
+
+            {/* Fonte Oficial */}
+            <div className="mt-4 pt-3 border-t border-white/10">
+                <p className="text-[10px] text-white/40 text-center leading-relaxed">
+                    Fonte: CAPITANIA DOS PORTOS DO RN e COMANDO DO 3º DISTRITO NAVAL - MARINHA DO BRASIL • Carta 811
+                </p>
             </div>
         </AnimatedCard>
     );

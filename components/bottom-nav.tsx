@@ -92,113 +92,75 @@ export function BottomNav() {
         }
     }
 
-    // Ocultar em rotas específicas (como telas de login dedicadas se houver)
-    const hiddenRoutes = ['/login', '/member/login', '/coach/login', '/admin/login'];
-    // IMPORTANTE: Não ocultar nas dashboards, pois agora o menu deve aparecer lá também para navegação rápida
-    const isHidden = hiddenRoutes.some(route => pathname === route);
+    // Ocultar em rotas específicas (login, telas de treino ao vivo para fullscreen)
+    const hiddenRoutes = [
+        '/login',
+        '/member/login',
+        '/coach/login',
+        '/admin/login',
+        '/training/live',
+        '/training/live/gym',
+        '/training/warmup',
+        '/training/cooldown',
+        '/training/start'
+    ];
+    const isHidden = hiddenRoutes.some(route => pathname.startsWith(route));
 
     if (isHidden || !isLoaded) return null;
 
     return (
-        <>
-            <nav className="bottom-nav lg:hidden">
-                <div className="bottom-nav-inner">
-                    {navItems.map((item) => {
-                        // Lógica de Ativo: Correspondência exata ou prefixo (exceto root)
-                        const isActive = pathname === item.href ||
-                            (item.href !== '/' && pathname.startsWith(item.href));
-                        const Icon = item.icon;
+        <nav className="bottom-nav lg:hidden">
+            <div className="bottom-nav-inner">
+                {navItems.map((item) => {
+                    // Lógica de Ativo: Correspondência exata ou prefixo (exceto root)
+                    const isActive = pathname === item.href ||
+                        (item.href !== '/' && pathname.startsWith(item.href));
+                    const Icon = item.icon;
 
-                        return (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={cn(
-                                    'bottom-nav-item',
-                                    isActive && 'active'
-                                )}
-                            >
-                                {/* Active indicator (linha superior) */}
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="bottom-nav-indicator"
-                                        className="absolute top-0 w-8 h-0.5 bg-club-red rounded-full"
-                                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                    />
-                                )}
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={cn(
+                                'bottom-nav-item',
+                                isActive && 'active'
+                            )}
+                        >
+                            {/* Active indicator (linha superior) */}
+                            {isActive && (
+                                <motion.div
+                                    layoutId="bottom-nav-indicator"
+                                    className="absolute top-0 w-8 h-0.5 bg-club-red rounded-full"
+                                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                                />
+                            )}
 
-                                {/* Icon Container */}
-                                <div className={cn(
-                                    "relative p-2 rounded-lg transition-all duration-200",
-                                    isActive && "bg-club-red/10 -translate-y-1"
-                                )}>
-                                    <Icon
-                                        className={cn(
-                                            'w-5 h-5 transition-colors duration-200',
-                                            isActive ? 'text-club-red' : 'text-white/40'
-                                        )}
-                                        strokeWidth={2}
-                                    />
-                                </div>
+                            {/* Icon Container */}
+                            <div className={cn(
+                                "relative p-2 rounded-lg transition-all duration-200",
+                                isActive && "bg-club-red/10 -translate-y-1"
+                            )}>
+                                <Icon
+                                    className={cn(
+                                        'w-5 h-5 transition-colors duration-200',
+                                        isActive ? 'text-club-red' : 'text-white/40'
+                                    )}
+                                    strokeWidth={2}
+                                />
+                            </div>
 
-                                {/* Label */}
-                                <span className={cn(
-                                    "bottom-nav-label",
-                                    isActive ? 'text-club-red' : 'text-white/40'
-                                )}>
-                                    {item.label}
-                                </span>
-                            </Link>
-                        );
-                    })}
-                </div>
-            </nav>
-
-            {/* Logos dos Parceiros - Mobile */}
-            <div className="lg:hidden fixed bottom-[60px] left-0 right-0 bg-black/95 backdrop-blur-md border-t border-white/10 py-3 z-50">
-                <div className="flex items-center justify-center gap-6 px-4">
-                    <a href="https://www.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[96px] w-[120px] hover:opacity-80 transition-opacity">
-                        <Image
-                            src="/logos/svg/RN.svg"
-                            alt="Governo do RN"
-                            fill
-                            className="object-contain"
-                        />
-                    </a>
-                    <a href="https://www.natal.rn.gov.br/" target="_blank" rel="noopener noreferrer" className="relative h-[53px] w-[66px] hover:opacity-80 transition-opacity">
-                        <Image
-                            src="/logos/svg/prefeitura.svg"
-                            alt="Prefeitura de Natal"
-                            fill
-                            className="object-contain"
-                        />
-                    </a>
-                    <a href="https://www.instagram.com/eurekaerk/" target="_blank" rel="noopener noreferrer" className="relative h-[48px] w-[60px] hover:opacity-80 transition-opacity">
-                        <Image
-                            src="/logos/svg/ERK.svg"
-                            alt="Eureka"
-                            fill
-                            className="object-contain"
-                        />
-                    </a>
-                    <a href="https://www.remobrasil.com/" target="_blank" rel="noopener noreferrer" className="relative h-[48px] w-[60px] hover:opacity-80 transition-opacity">
-                        <Image
-                            src="/logos/svg/CBR.svg"
-                            alt="CBR"
-                            fill
-                            className="object-contain"
-                        />
-                    </a>
-                    <a href="https://www.potigas.com.br/" target="_blank" rel="noopener noreferrer" className="relative h-[48px] w-[60px] hover:opacity-80 transition-opacity">
-                        <Image
-                            src="/logos/svg/POTIGAS.svg"
-                            alt="Potigás"
-                            fill
-                            className="object-contain"
-                        />
-                    </a>
-                </div>
+                            {/* Label */}
+                            <span className={cn(
+                                "bottom-nav-label",
+                                isActive ? 'text-club-red' : 'text-white/40'
+                            )}>
+                                {item.label}
+                            </span>
+                        </Link>
+                    );
+                })}
             </div>
-        </>
+        </nav>
     );
 }
+
