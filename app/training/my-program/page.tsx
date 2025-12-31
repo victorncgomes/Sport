@@ -146,6 +146,7 @@ export default function MyProgramPage() {
                 title="Meu Programa"
                 subtitle={program.name}
                 backgroundImage="/images/rowing-pattern.jpg"
+                compact
             />
 
             <div className="px-4 py-6 space-y-6">
@@ -268,59 +269,72 @@ export default function MyProgramPage() {
 
                 {/* Lista de Sessões */}
                 <div>
-                    <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                        <Target className="w-5 h-5 text-purple-400" />
-                        Todas as Sessões
-                    </h3>
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                            <Target className="w-5 h-5 text-purple-400" />
+                            Todas as Sessões
+                        </h3>
+                        <Link href="/training/history">
+                            <Button variant="ghost" size="sm" className="text-xs text-club-gold gap-1">
+                                Ver Histórico <ChevronRight className="w-3 h-3" />
+                            </Button>
+                        </Link>
+                    </div>
                     <div className="space-y-2">
-                        {program.sessions.map((session, index) => (
-                            <motion.div
-                                key={session.id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                            >
-                                <AnimatedCard
-                                    variant="glass"
-                                    className={`p-3 ${session.completed ? 'opacity-60' : ''}`}
+                        {program.sessions.map((session, index) => {
+                            const isPast = session.dayOfWeek < today;
+                            return (
+                                <motion.div
+                                    key={session.id}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.05 }}
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <div className={`
+                                    <AnimatedCard
+                                        variant="glass"
+                                        className={`p-3 ${session.completed ? 'border-green-500/30' : isPast && !session.completed ? 'border-orange-500/30' : ''}`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`
                                             w-10 h-10 rounded-lg flex items-center justify-center
-                                            ${session.completed ? 'bg-green-500/20' : 'bg-white/10'}
+                                            ${session.completed ? 'bg-green-500/20' : isPast ? 'bg-orange-500/20' : 'bg-white/10'}
                                         `}>
-                                            {session.completed ? (
-                                                <CheckCircle className="w-5 h-5 text-green-400" />
-                                            ) : (
-                                                <span className="text-xl">{typeIcons[session.type]}</span>
-                                            )}
-                                        </div>
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs text-white/40">{dayNames[session.dayOfWeek]}</span>
-                                                <h4 className="font-bold text-white text-sm">{session.title}</h4>
+                                                {session.completed ? (
+                                                    <CheckCircle className="w-5 h-5 text-green-400" />
+                                                ) : (
+                                                    <span className="text-xl">{typeIcons[session.type]}</span>
+                                                )}
                                             </div>
-                                            <div className="flex items-center gap-3 text-xs text-white/40">
-                                                <span>{session.duration} min</span>
-                                                <span className={intensityColors[session.intensity]}>
-                                                    {session.intensity}
-                                                </span>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs text-white/40">{dayNames[session.dayOfWeek]}</span>
+                                                    <h4 className="font-bold text-white text-sm">{session.title}</h4>
+                                                    {isPast && !session.completed && (
+                                                        <Badge className="text-[8px] bg-orange-500/20 text-orange-400 border-0">Pendente</Badge>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-3 text-xs text-white/40">
+                                                    <span>{session.duration} min</span>
+                                                    <span className={intensityColors[session.intensity]}>
+                                                        {session.intensity}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        {!session.completed && session.dayOfWeek >= today && (
+                                            {/* Botão sempre visível para permitir iniciar ou repetir treino */}
                                             <Button
                                                 size="sm"
-                                                variant="outline"
+                                                variant={session.completed ? "outline" : "default"}
                                                 onClick={() => startSession(session)}
-                                                className="gap-1"
+                                                className={`gap-1 ${!session.completed ? 'bg-club-red hover:bg-club-red/90' : ''}`}
                                             >
                                                 <Play className="w-4 h-4" />
+                                                {session.completed ? 'Repetir' : isPast ? 'Fazer' : 'Iniciar'}
                                             </Button>
-                                        )}
-                                    </div>
-                                </AnimatedCard>
-                            </motion.div>
-                        ))}
+                                        </div>
+                                    </AnimatedCard>
+                                </motion.div>
+                            )
+                        })}
                     </div>
                 </div>
 

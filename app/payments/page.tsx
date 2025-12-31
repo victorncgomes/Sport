@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     CreditCard,
@@ -19,56 +19,50 @@ interface Payment {
     id: string;
     description: string;
     amount: number;
-    dueDate: string;
-    status: 'PENDING' | 'PAID' | 'OVERDUE' | 'PROCESSING';
-    type: 'MENSALIDADE' | 'EVENTO' | 'MULTA' | 'TAXA';
+    dueDate?: string;
+    date?: string;
+    status: 'PENDING' | 'PAID' | 'OVERDUE' | 'PROCESSING' | 'PAGO' | 'PENDENTE';
+    type: 'MENSALIDADE' | 'EVENTO' | 'MULTA' | 'TAXA' | 'LOJA';
+    method?: string;
 }
 
-const MOCK_PAYMENTS: Payment[] = [
-    {
-        id: '1',
-        description: 'Mensalidade Janeiro 2025',
-        amount: 150.00,
-        dueDate: '2025-01-10',
-        status: 'PENDING',
-        type: 'MENSALIDADE'
-    },
-    {
-        id: '2',
-        description: 'Taxa de Inscrição - Regata 2025',
-        amount: 80.00,
-        dueDate: '2025-01-15',
-        status: 'PENDING',
-        type: 'EVENTO'
-    },
-    {
-        id: '3',
-        description: 'Mensalidade Dezembro 2024',
-        amount: 150.00,
-        dueDate: '2024-12-10',
-        status: 'PAID',
-        type: 'MENSALIDADE'
-    }
-];
-
 export default function PaymentsPage() {
-    const [payments] = useState<Payment[]>(MOCK_PAYMENTS);
+    const [payments, setPayments] = useState<Payment[]>([]);
+    const [upcomingPayments, setUpcomingPayments] = useState<Payment[]>([]);
+    const [loading, setLoading] = useState(true);
     const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
     const [paymentMethod, setPaymentMethod] = useState<'PIX' | 'MERCADOPAGO' | null>(null);
     const [pixCode, setPixCode] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [pixLoading, setPixLoading] = useState(false);
 
-    const pendingPayments = payments.filter(p => p.status === 'PENDING' || p.status === 'OVERDUE');
-    const paidPayments = payments.filter(p => p.status === 'PAID');
+    useEffect(() => {
+        loadPayments();
+    }, []);
+
+    async function loadPayments() {
+        try {
+            const response = await fetch('/api/payments/history');
+            const data = await response.json();
+            setPayments(data.history || []);
+            setUpcomingPayments(data.upcoming || []);
+        } catch (error) {
+            console.error('Error loading payments:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const pendingPayments = upcomingPayments.filter(p => p.status === 'PENDING' || p.status === 'PENDENTE' || p.status === 'OVERDUE');
+    const paidPayments = payments.filter(p => p.status === 'PAID' || p.status === 'PAGO');
     const totalPending = pendingPayments.reduce((acc, p) => acc + p.amount, 0);
 
     const generatePixCode = async (payment: Payment) => {
-        setLoading(true);
+        setPixLoading(true);
         // Simula geração de código PIX
         await new Promise(resolve => setTimeout(resolve, 1500));
         const code = `00020126580014br.gov.bcb.pix0136${payment.id}5204000053039865802BR5925SPORT CLUB DE NATAL6009SAO PAULO62070503***6304${payment.amount.toFixed(2).replace('.', '')}`;
         setPixCode(code);
-        setLoading(false);
+        setPixLoading(false);
     };
 
     const copyPixCode = () => {
@@ -201,7 +195,7 @@ export default function PaymentsPage() {
                         </p>
                     </div>
 
-                    {loading ? (
+                    {pixLoading ? (
                         <div className="flex items-center justify-center py-8">
                             <RefreshCw className="w-8 h-8 text-white/60 animate-spin" />
                         </div>
@@ -323,7 +317,7 @@ export default function PaymentsPage() {
                                             <div className="flex items-center gap-2 mt-1">
                                                 <Calendar className="w-4 h-4 text-white/50" />
                                                 <span className="text-white/50 text-sm">
-                                                    Vence: {new Date(payment.dueDate).toLocaleDateString('pt-BR')}
+                                                    Vence: {payment.dueDate ? new Date(payment.dueDate).toLocaleDateString('pt-BR') : 'A definir'}
                                                 </span>
                                             </div>
                                         </div>
@@ -359,7 +353,7 @@ export default function PaymentsPage() {
                                 <div>
                                     <p className="text-white/80">{payment.description}</p>
                                     <p className="text-white/40 text-sm">
-                                        {new Date(payment.dueDate).toLocaleDateString('pt-BR')}
+                                        {new Date(payment.date || payment.dueDate || '').toLocaleDateString('pt-BR')}
                                     </p>
                                 </div>
                                 <div className="text-right">

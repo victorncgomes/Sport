@@ -1,47 +1,99 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
+import { AnimatedCard } from '@/components/ui/animated-card';
+import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
-import { mockNotifications, Notification } from '@/lib/data/notifications';
-import { cn } from '@/lib/utils';
+import Link from 'next/link';
+
+interface Notification {
+    id: string;
+    title: string;
+    message: string;
+    type: 'info' | 'warning' | 'success' | 'error';
+    read: boolean;
+    createdAt: string;
+    link?: string;
+}
 
 export function NotificationBell() {
     const [isOpen, setIsOpen] = useState(false);
-    const [notifications, setNotifications] = useState(mockNotifications);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isOpen && notifications.length === 0) {
+            loadNotifications();
+        }
+    }, [isOpen]);
+
+    async function loadNotifications() {
+        setLoading(true);
+        try {
+            // Dados simulados - em produção viria de /api/notifications
+            const mockNotifications: Notification[] = [
+                {
+                    id: '1',
+                    title: 'Nova Votação',
+                    message: 'Votação sobre reforma da academia foi iniciada',
+                    type: 'info',
+                    read: false,
+                    createdAt: new Date(Date.now() - 3600000).toISOString(),
+                    link: '/diretoria/eleicoes'
+                },
+                {
+                    id: '2',
+                    title: 'Pagamento Pendente',
+                    message: 'Mensalidade de Janeiro vence em 5 dias',
+                    type: 'warning',
+                    read: false,
+                    createdAt: new Date(Date.now() - 7200000).toISOString(),
+                    link: '/payments'
+                },
+                {
+                    id: '3',
+                    title: 'Treino Concluído',
+                    message: 'Parabéns! Você ganhou 25 pontos',
+                    type: 'success',
+                    read: true,
+                    createdAt: new Date(Date.now() - 86400000).toISOString()
+                }
+            ];
+            setNotifications(mockNotifications);
+        } catch (error) {
+            console.error('Error loading notifications:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const unreadCount = notifications.filter(n => !n.read).length;
 
-    const markAsRead = (id: string) => {
-        setNotifications(prev =>
-            prev.map(n => n.id === id ? { ...n, read: true } : n)
-        );
-    };
-
-    const markAllAsRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    const getTypeColor = (type: string) => {
+        switch (type) {
+            case 'info': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+            case 'warning': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+            case 'success': return 'bg-green-500/20 text-green-400 border-green-500/30';
+            case 'error': return 'bg-red-500/20 text-red-400 border-red-500/30';
+            default: return 'bg-white/10 text-white/60 border-white/20';
+        }
     };
 
     return (
         <div className="relative">
-            {/* Bell Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="relative p-2 rounded-lg hover:bg-white/10 transition-colors"
             >
                 <Bell className="w-5 h-5 text-white" />
                 {unreadCount > 0 && (
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-club-red rounded-full flex items-center justify-center"
-                    >
-                        <span className="text-[10px] font-bold text-white">{unreadCount}</span>
-                    </motion.div>
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-club-red rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+                        {unreadCount}
+                    </span>
                 )}
             </button>
 
-            {/* Dropdown */}
             <AnimatePresence>
                 {isOpen && (
                     <>
@@ -51,48 +103,66 @@ export function NotificationBell() {
                             onClick={() => setIsOpen(false)}
                         />
 
-                        {/* Notification Panel */}
+                        {/* Dropdown */}
                         <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-club-black border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            className="absolute right-0 top-12 w-80 z-50"
                         >
-                            {/* Header */}
-                            <div className="p-4 border-b border-white/10 bg-white/5">
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-sm font-black text-white uppercase tracking-wider">Notificações</h3>
+                            <AnimatedCard variant="glass" className="p-4 max-h-96 overflow-y-auto">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-bold text-white">Notificações</h3>
                                     {unreadCount > 0 && (
-                                        <button
-                                            onClick={markAllAsRead}
-                                            className="text-xs text-club-gold hover:text-club-gold-light transition-colors"
-                                        >
-                                            Marcar todas como lidas
-                                        </button>
+                                        <Badge className="bg-club-red text-white">
+                                            {unreadCount} nova{unreadCount > 1 ? 's' : ''}
+                                        </Badge>
                                     )}
                                 </div>
-                                {unreadCount > 0 && (
-                                    <p className="text-xs text-white/40">{unreadCount} não {unreadCount === 1 ? 'lida' : 'lidas'}</p>
-                                )}
-                            </div>
 
-                            {/* Notifications List */}
-                            <div className="max-h-96 overflow-y-auto">
-                                {notifications.length === 0 ? (
-                                    <div className="p-8 text-center text-white/40">
-                                        <Bell className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                                        <p className="text-sm">Nenhuma notificação</p>
+                                {loading ? (
+                                    <div className="text-center text-white/60 py-8">
+                                        Carregando...
+                                    </div>
+                                ) : notifications.length === 0 ? (
+                                    <div className="text-center text-white/60 py-8">
+                                        <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                                        <p>Nenhuma notificação</p>
                                     </div>
                                 ) : (
-                                    notifications.map(notification => (
-                                        <NotificationItem
-                                            key={notification.id}
-                                            notification={notification}
-                                            onClick={() => markAsRead(notification.id)}
-                                        />
-                                    ))
+                                    <div className="space-y-2">
+                                        {notifications.map((notification) => (
+                                            <div
+                                                key={notification.id}
+                                                className={`p-3 rounded-lg border transition-colors ${notification.read
+                                                        ? 'bg-white/5 border-white/10'
+                                                        : 'bg-white/10 border-white/20'
+                                                    }`}
+                                            >
+                                                {notification.link ? (
+                                                    <Link
+                                                        href={notification.link}
+                                                        onClick={() => setIsOpen(false)}
+                                                    >
+                                                        <NotificationContent notification={notification} getTypeColor={getTypeColor} />
+                                                    </Link>
+                                                ) : (
+                                                    <NotificationContent notification={notification} getTypeColor={getTypeColor} />
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
-                            </div>
+
+                                <Link
+                                    href="/notifications"
+                                    onClick={() => setIsOpen(false)}
+                                    className="block text-center text-club-red hover:text-club-red/80 text-sm mt-4 font-medium"
+                                >
+                                    Ver todas
+                                </Link>
+                            </AnimatedCard>
                         </motion.div>
                     </>
                 )}
@@ -101,76 +171,19 @@ export function NotificationBell() {
     );
 }
 
-interface NotificationItemProps {
-    notification: Notification;
-    onClick: () => void;
-}
-
-function NotificationItem({ notification, onClick }: NotificationItemProps) {
-    const typeColors = {
-        info: 'border-blue-500/20 bg-blue-500/5',
-        event: 'border-club-gold/20 bg-club-gold/5',
-        warning: 'border-club-red/20 bg-club-red/5',
-    };
-
-    const typeTextColors = {
-        info: 'text-blue-400',
-        event: 'text-club-gold',
-        warning: 'text-club-red',
-    };
-
+function NotificationContent({ notification, getTypeColor }: { notification: Notification; getTypeColor: (type: string) => string }) {
     return (
-        <button
-            onClick={onClick}
-            className={cn(
-                'w-full p-4 border-b border-white/5 hover:bg-white/5 transition-colors text-left',
-                !notification.read && 'bg-white/[0.02]'
-            )}
-        >
-            <div className="flex gap-3">
-                <div className={cn(
-                    'flex-shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center text-xl',
-                    typeColors[notification.type]
-                )}>
-                    {notification.icon}
-                </div>
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                        <h4 className={cn(
-                            'text-sm font-bold',
-                            !notification.read ? 'text-white' : 'text-white/60'
-                        )}>
-                            {notification.title}
-                        </h4>
-                        {!notification.read && (
-                            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-club-red" />
-                        )}
-                    </div>
-                    <p className={cn(
-                        'text-xs leading-relaxed line-clamp-2',
-                        !notification.read ? 'text-white/70' : 'text-white/40'
-                    )}>
-                        {notification.message}
-                    </p>
-                    <p className="text-[10px] text-white/30 mt-1">
-                        {formatDate(notification.createdAt)}
-                    </p>
-                </div>
+        <>
+            <div className="flex items-start justify-between mb-1">
+                <p className="font-semibold text-white text-sm">{notification.title}</p>
+                <Badge className={`text-[10px] ${getTypeColor(notification.type)}`}>
+                    {notification.type}
+                </Badge>
             </div>
-        </button>
+            <p className="text-white/70 text-xs mb-2">{notification.message}</p>
+            <p className="text-white/40 text-[10px]">
+                {new Date(notification.createdAt).toLocaleString('pt-BR')}
+            </p>
+        </>
     );
-}
-
-function formatDate(date: Date): string {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (hours < 1) return 'Agora';
-    if (hours < 24) return `Há ${hours}h`;
-    if (days === 1) return 'Ontem';
-    if (days < 7) return `Há ${days} dias`;
-
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }

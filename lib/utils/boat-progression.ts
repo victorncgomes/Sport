@@ -42,7 +42,7 @@ export const BOAT_HIERARCHY: BoatType[] = [
     {
         id: 'CANOE',
         name: 'Canoe',
-        displayName: 'Canoa',
+        displayName: 'Canoe',
         level: 'INICIANTE',
         crew: 1,
         description: 'Embarcação estável para primeiros treinos na água.',
@@ -55,10 +55,10 @@ export const BOAT_HIERARCHY: BoatType[] = [
     {
         id: 'DOUBLE_CANOE',
         name: 'Double Canoe',
-        displayName: 'Canoa Dupla',
+        displayName: 'Double Canoe',
         level: 'INICIANTE',
         crew: 2,
-        description: 'Canoa para dois remadores. Ideal para treinos em dupla.',
+        description: 'Canoe para dois remadores. Ideal para treinos em dupla.',
         order: 3,
         criteria: {
             minHours: 10,

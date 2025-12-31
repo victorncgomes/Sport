@@ -173,6 +173,9 @@ export default async function CoachPainelPage() {
                                         <input type="text" placeholder="Buscar atleta..." className="bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-xs text-white outline-none focus:border-club-red/50 w-48" />
                                     </div>
                                     <Button variant="outline" className="border-white/10 h-10 px-3"><Filter className="w-4 h-4" /></Button>
+                                    <Link href="/coach/athletes">
+                                        <Button variant="ghost" className="text-xs text-club-gold hover:text-white uppercase font-black tracking-widest">Ver Todos <ArrowRight className="w-3 h-3 ml-1" /></Button>
+                                    </Link>
                                 </div>
                             </div>
 

@@ -1344,3 +1344,22 @@ model FinancialTransaction {
 
   @@map("financial_transactions")
 }
+
+// Aulas Experimentais
+model ExperimentalClass {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  date        DateTime
+  time        String   // HH:MM format
+  modalidade  String   // iniciante, intermediario, avancado
+  status      String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  notes       String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([date, time]) // Garante que não há dois agendamentos no mesmo horário
+  @@map("experimental_classes")
+}

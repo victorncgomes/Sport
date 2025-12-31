@@ -183,17 +183,18 @@ export default function AnamnesePage() {
                     <>
                         {/* Progress */}
                         <div className="mb-6">
-                            {/* ... existing progress bar code ... */}
-                            <span className="text-sm text-white/60">Etapa {step} de {totalSteps}</span>
-                            <span className="text-sm text-white/60">{Math.round(progress)}%</span>
-                        </div>
-                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                            <motion.div
-                                className="h-full bg-club-red"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${progress}%` }}
-                                transition={{ duration: 0.3 }}
-                            />
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm text-white/60">Etapa {step} de {totalSteps}</span>
+                                <span className="text-sm text-white/60">{Math.round(progress)}%</span>
+                            </div>
+                            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                                <motion.div
+                                    className="h-full bg-club-red"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${progress}%` }}
+                                    transition={{ duration: 0.3 }}
+                                />
+                            </div>
                         </div>
 
 

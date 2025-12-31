@@ -1,406 +1,355 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { HeroSection } from '@/components/ui/hero-section';
-import { athleteData } from '@/lib/data/athlete-performance';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { Button } from '@/components/ui/button';
-import { Trophy, Activity, Heart, Calendar, ArrowRight, Table, FileText, User, ChevronRight, Zap, Ship, Anchor, AlertCircle, Award, Waves, PersonStanding, Bike, Dumbbell } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { garageBoats, Boat, BoatType } from '@/lib/data/garage-boats';
-import { BoatCard } from '@/components/garage/boat-card';
-import { ReservationModal } from '@/components/garage/reservation-modal';
-import { WorkoutAnalyticsDashboard } from '@/components/training/analytics-dashboard';
+import { Badge } from '@/components/ui/badge';
+import { StreakDisplay } from '@/components/gamification';
+import {
+    Play,
+    TrendingUp,
+    Award,
+    ChevronRight,
+    Ship,
+    History,
+    CalendarDays,
+    Waves,
+    Dumbbell,
+    FileText,
+    Activity,
+    Flame,
+    StretchHorizontal
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-export default function TrainingsPage() {
-    const [activeTab, setActiveTab] = useState<'performance' | 'anamnesis' | 'garage'>('performance');
-    const [selectedBoatType, setSelectedBoatType] = useState<BoatType | 'all'>('all');
-    const [bookingBoat, setBookingBoat] = useState<Boat | null>(null);
+// APENAS 5 MODALIDADES: Remo, Musculação, Outras Atividades, Aquecimento, Alongamento
+const sports = [
+    { id: 'ROWING', title: 'Remo', icon: Waves, color: 'from-blue-600 to-cyan-600' },
+    { id: 'GYM', title: 'Musculação', icon: Dumbbell, color: 'from-purple-600 to-pink-600' },
+    { id: 'OTHER', title: 'Outras Atividades', icon: Activity, color: 'from-gray-600 to-slate-600' },
+    { id: 'WARMUP', title: 'Aquecimento', icon: Flame, color: 'from-orange-600 to-red-600' },
+    { id: 'STRETCHING', title: 'Alongamento', icon: StretchHorizontal, color: 'from-green-600 to-emerald-600' }
+];
 
-    const filteredBoats = selectedBoatType === 'all'
-        ? garageBoats
-        : garageBoats.filter(boat => boat.type === selectedBoatType);
+export default function TrainingDashboard() {
+    const router = useRouter();
+    const [recentWorkouts, setRecentWorkouts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const boatTypes: { id: BoatType | 'all', label: string }[] = [
-        { id: 'all', label: 'Toda a Frota' },
-        { id: '1x', label: 'Single (1x)' },
-        { id: '2-', label: 'Dois Sem (2-)' },
-        { id: '2x', label: 'Double (2x)' },
-        { id: '4-', label: 'Quatro Sem (4-)' },
-        { id: '8+', label: 'Oito Com (8+)' },
-    ];
+    useEffect(() => {
+        loadDashboardData();
+    }, []);
 
-    const availableBoats = garageBoats.filter(b => b.status === 'available').length;
+    async function loadDashboardData() {
+        try {
+            setRecentWorkouts([
+                {
+                    id: '1',
+                    mode: 'OUTDOOR',
+                    sport: 'REMO',
+                    distance: 8500,
+                    duration: 2400,
+                    avgPace: '2:20/500m',
+                    completedAt: new Date(Date.now() - 86400000),
+                    pointsEarned: 25
+                },
+                {
+                    id: '2',
+                    mode: 'INDOOR_TANK',
+                    sport: 'REMO',
+                    duration: 3600,
+                    distance: 6000,
+                    avgSPM: 26,
+                    completedAt: new Date(Date.now() - 172800000),
+                    pointsEarned: 20
+                },
+                {
+                    id: '3',
+                    mode: 'OTHER',
+                    sport: 'CORRIDA',
+                    distance: 5000,
+                    duration: 1800,
+                    avgPace: '6:00/km',
+                    completedAt: new Date(Date.now() - 259200000),
+                    pointsEarned: 18
+                },
+                {
+                    id: '4',
+                    mode: 'INDOOR_GENERAL',
+                    sport: 'MUSCULAÇÃO',
+                    duration: 2700,
+                    completedAt: new Date(Date.now() - 345600000),
+                    pointsEarned: 15
+                },
+                {
+                    id: '5',
+                    mode: 'OUTDOOR',
+                    sport: 'REMO',
+                    distance: 10000,
+                    duration: 3000,
+                    avgPace: '2:30/500m',
+                    completedAt: new Date(Date.now() - 432000000),
+                    pointsEarned: 30
+                },
+                {
+                    id: '6',
+                    mode: 'OTHER',
+                    sport: 'BIKE',
+                    distance: 25000,
+                    duration: 4200,
+                    avgPace: '35 km/h',
+                    completedAt: new Date(Date.now() - 518400000),
+                    pointsEarned: 22
+                },
+                {
+                    id: '7',
+                    mode: 'INDOOR_TANK',
+                    sport: 'REMO',
+                    distance: 4000,
+                    duration: 1200,
+                    avgSPM: 28,
+                    completedAt: new Date(Date.now() - 604800000),
+                    pointsEarned: 16
+                },
+                {
+                    id: '8',
+                    mode: 'OTHER',
+                    sport: 'CORRIDA',
+                    distance: 10000,
+                    duration: 3300,
+                    avgPace: '5:30/km',
+                    completedAt: new Date(Date.now() - 691200000),
+                    pointsEarned: 28
+                },
+                {
+                    id: '9',
+                    mode: 'OUTDOOR',
+                    sport: 'REMO',
+                    distance: 7500,
+                    duration: 2100,
+                    avgPace: '2:18/500m',
+                    completedAt: new Date(Date.now() - 777600000),
+                    pointsEarned: 24
+                },
+                {
+                    id: '10',
+                    mode: 'INDOOR_GENERAL',
+                    sport: 'MUSCULAÇÃO',
+                    duration: 3000,
+                    completedAt: new Date(Date.now() - 864000000),
+                    pointsEarned: 17
+                }
+            ]);
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleSportSelect = (sportId: string) => {
+        if (sportId === 'WARMUP') {
+            router.push('/training/warmup');
+        } else if (sportId === 'STRETCHING') {
+            router.push('/training/stretching');
+        } else if (sportId === 'OTHER') {
+            router.push('/training/other-activities');
+        } else {
+            router.push(`/training/start?sport=${sportId}`);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-club-black pb-24">
-            {/* Spacer for fixed header */}
-            <div className="h-8 md:h-10" />
-
             <HeroSection
-                title="Painel do Atleta"
-                subtitle="Performance & Evolução"
-                description="Acompanhe seus treinos, índices físicos e histórico de saúde em um só lugar."
+                title="Treinos"
+                subtitle="Sport Club de Natal"
+                description="Escolha uma modalidade e comece a treinar"
                 compact
             />
 
-            <div className="container mx-auto px-4 py-8">
-                {/* Athlete Header */}
-                <div className="flex flex-col md:flex-row gap-8 items-center mb-12">
-                    <div className="relative">
-                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-club-red to-red-800 p-1">
-                            <div className="w-full h-full rounded-full bg-club-black flex items-center justify-center overflow-hidden">
-                                <User className="w-12 h-12 text-white/20" />
-                            </div>
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-club-gold rounded-full flex items-center justify-center text-black border-2 border-club-black">
-                            <Trophy className="w-4 h-4" />
-                        </div>
-                    </div>
+            <div className="container mx-auto px-4 py-6 space-y-6">
 
-                    <div className="text-center md:text-left">
-                        <h1 className="text-3xl font-bold text-white mb-1">{athleteData.name}</h1>
-                        <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60">
-                                Categoria: <strong className="text-club-red">{athleteData.category}</strong>
-                            </span>
-                            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60">
-                                Técnico: <strong className="text-white">{athleteData.coach}</strong>
-                            </span>
-                        </div>
-                    </div>
+                {/* Streak Display */}
+                <StreakDisplay variant="compact" />
 
-                    <div className="md:ml-auto flex gap-4">
-                        <Link href="/training/plans">
-                            <Button variant="outline" className="border-white/10 text-white/60 hover:text-white">
-                                Meu Programa de Treinamento
+                {/* Seleção de Modalidade - 5 Cards */}
+                <div>
+                    <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                        <Play className="w-5 h-5 text-club-red" />
+                        Iniciar Treino
+                    </h2>
+                    <div className="grid grid-cols-3 gap-3">
+                        {sports.slice(0, 3).map((sport, index) => {
+                            const Icon = sport.icon;
+                            return (
+                                <motion.button
+                                    key={sport.id}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    onClick={() => handleSportSelect(sport.id)}
+                                    className="w-full"
+                                >
+                                    <div className={`bg-gradient-to-br ${sport.color} rounded-xl p-3 text-center hover:scale-105 transition-transform flex flex-col items-center justify-center`}>
+                                        <Icon className="w-6 h-6 text-white mb-1" />
+                                        <span className="text-[10px] font-bold text-white">{sport.title}</span>
+                                    </div>
+                                </motion.button>
+                            );
+                        })}
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mt-3">
+                        {sports.slice(3).map((sport, index) => {
+                            const Icon = sport.icon;
+                            return (
+                                <motion.button
+                                    key={sport.id}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: (index + 3) * 0.05 }}
+                                    onClick={() => handleSportSelect(sport.id)}
+                                    className="w-full"
+                                >
+                                    <div className={`bg-gradient-to-br ${sport.color} rounded-xl p-3 text-center hover:scale-105 transition-transform flex flex-col items-center justify-center`}>
+                                        <Icon className="w-6 h-6 text-white mb-1" />
+                                        <span className="text-[10px] font-bold text-white">{sport.title}</span>
+                                    </div>
+                                </motion.button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Atalhos Rápidos - MEU TREINO */}
+                <div>
+                    <h2 className="text-sm font-bold text-white/60 mb-3 uppercase tracking-wider">Meu Treino</h2>
+                    <div className="grid grid-cols-2 gap-3">
+                        <Link href="/training/my-program">
+                            <AnimatedCard variant="glass" className="p-4 hover:bg-white/10 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <CalendarDays className="w-6 h-6 text-purple-400" />
+                                    <div>
+                                        <p className="text-sm font-bold text-white">Programa</p>
+                                        <p className="text-[10px] text-white/40">Meu plano</p>
+                                    </div>
+                                </div>
+                            </AnimatedCard>
+                        </Link>
+                        <Link href="/profile/anamnese">
+                            <AnimatedCard variant="glass" className="p-4 hover:bg-white/10 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <FileText className="w-6 h-6 text-emerald-400" />
+                                    <div>
+                                        <p className="text-sm font-bold text-white">Anamnese</p>
+                                        <p className="text-[10px] text-white/40">Saúde</p>
+                                    </div>
+                                </div>
+                            </AnimatedCard>
+                        </Link>
+                        <Link href="/boats">
+                            <AnimatedCard variant="glass" className="p-4 hover:bg-white/10 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <Ship className="w-6 h-6 text-club-red" />
+                                    <div>
+                                        <p className="text-sm font-bold text-white">Barcos</p>
+                                        <p className="text-[10px] text-white/40">Garagem</p>
+                                    </div>
+                                </div>
+                            </AnimatedCard>
+                        </Link>
+                        <Link href="/training/history">
+                            <AnimatedCard variant="glass" className="p-4 hover:bg-white/10 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <History className="w-6 h-6 text-blue-400" />
+                                    <div>
+                                        <p className="text-sm font-bold text-white">Histórico</p>
+                                        <p className="text-[10px] text-white/40">Treinos</p>
+                                    </div>
+                                </div>
+                            </AnimatedCard>
+                        </Link>
+                        <Link href="/training/analytics" className="col-span-2">
+                            <AnimatedCard variant="glass" className="p-4 hover:bg-white/10 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <TrendingUp className="w-6 h-6 text-club-gold" />
+                                    <div>
+                                        <p className="text-sm font-bold text-white">Analytics</p>
+                                        <p className="text-[10px] text-white/40">Estatísticas e performance</p>
+                                    </div>
+                                </div>
+                            </AnimatedCard>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Treinos Recentes */}
+                <div>
+                    <div className="flex items-center justify-between mb-3">
+                        <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 text-club-gold" />
+                            Últimos Treinos
+                        </h2>
+                        <Link href="/training/history">
+                            <Button variant="ghost" className="text-white/60 hover:text-white text-sm gap-1">
+                                Ver Todos
+                                <ChevronRight className="w-4 h-4" />
                             </Button>
                         </Link>
-                        <Button
-                            variant="outline"
-                            onClick={() => setActiveTab('garage')}
-                            className={cn(
-                                "border-white/10 text-white/60 hover:text-white gap-2",
-                                activeTab === 'garage' && "border-club-gold text-club-gold"
-                            )}
-                        >
-                            <Ship className="w-4 h-4" /> Garagem Náutica
-                        </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                        {recentWorkouts.slice(0, 5).map((workout, i) => (
+                            <motion.div
+                                key={workout.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                            >
+                                <AnimatedCard variant="glass" className="p-3">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <Badge className="text-[10px] font-black uppercase">
+                                                    {workout.sport}
+                                                </Badge>
+                                                <span className="text-xs text-white/40">
+                                                    {new Date(workout.completedAt).toLocaleDateString('pt-BR')}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-sm">
+                                                {workout.distance && (
+                                                    <span className="text-white">
+                                                        <strong>{(workout.distance / 1000).toFixed(1)}</strong> km
+                                                    </span>
+                                                )}
+                                                <span className="text-white/60">
+                                                    {Math.floor(workout.duration / 60)} min
+                                                </span>
+                                                {workout.avgPace && (
+                                                    <span className="text-white/60">
+                                                        {workout.avgPace}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1 text-emerald-400 text-sm font-bold">
+                                                <Award className="w-4 h-4" />
+                                                +{workout.pointsEarned}
+                                            </div>
+                                            <ChevronRight className="w-4 h-4 text-white/30" />
+                                        </div>
+                                    </div>
+                                </AnimatedCard>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
-
-                {/* Analytics Dashboard */}
-                <WorkoutAnalyticsDashboard />
-
-                {/* Ações Rápidas - Modalidades */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
-                    <Link href="/training/start?sport=rowing">
-                        <AnimatedCard variant="gradient" className="p-6 hover:border-blue-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-                                <Waves className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-white text-center">Remo</h3>
-                            <p className="text-white/60 text-xs text-center mt-1">Rio ou tanque</p>
-                        </AnimatedCard>
-                    </Link>
-
-                    <Link href="/training/start?sport=running">
-                        <AnimatedCard variant="gradient" className="p-6 hover:border-green-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-                                <PersonStanding className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-white text-center">Corrida</h3>
-                            <p className="text-white/60 text-xs text-center mt-1">Outdoor ou esteira</p>
-                        </AnimatedCard>
-                    </Link>
-
-                    <Link href="/training/start?sport=cycling">
-                        <AnimatedCard variant="gradient" className="p-6 hover:border-orange-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-600 to-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-                                <Bike className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-white text-center">Bicicleta</h3>
-                            <p className="text-white/60 text-xs text-center mt-1">Pedal ou spinning</p>
-                        </AnimatedCard>
-                    </Link>
-
-                    <Link href="/training/start?sport=gym">
-                        <AnimatedCard variant="gradient" className="p-6 hover:border-purple-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-                                <Dumbbell className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-white text-center">Musculação</h3>
-                            <p className="text-white/60 text-xs text-center mt-1">Academia</p>
-                        </AnimatedCard>
-                    </Link>
-
-                    <Link href="/training/start?sport=other">
-                        <AnimatedCard variant="gradient" className="p-6 hover:border-gray-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center">
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-gray-600 to-slate-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-                                <Activity className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-white text-center">Outra Atividade</h3>
-                            <p className="text-white/60 text-xs text-center mt-1">Tempo + Intensidade</p>
-                        </AnimatedCard>
-                    </Link>
-
-                    <Link href="/training/warmup">
-                        <AnimatedCard variant="gradient" className="p-6 hover:border-red-500/50 transition-all cursor-pointer group aspect-square flex flex-col items-center justify-center border-red-500/20 bg-gradient-to-br from-red-900/20 to-orange-900/20">
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-                                <Heart className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-white text-center">Aquecimento</h3>
-                            <p className="text-white/60 text-xs text-center mt-1">Core & Preparação</p>
-                        </AnimatedCard>
-                    </Link>
-                </div>
-
-                {/* Card de Progressão de Barcos */}
-                <div className="mb-8">
-                    <Link href="/boats">
-                        <AnimatedCard variant="glass" className="p-6 hover:border-yellow-500/50 transition-all cursor-pointer group">
-                            <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Award className="w-7 h-7 text-white" />
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-bold text-white">Progressão de Barcos</h3>
-                                    <p className="text-white/60 text-sm">Desbloqueie novos barcos</p>
-                                </div>
-                                <ChevronRight className="w-5 h-5 text-white/40 group-hover:text-yellow-400 transition-colors" />
-                            </div>
-                        </AnimatedCard>
-                    </Link>
-                </div>
-
-                {/* Navigation Tabs */}
-                <div className="flex border-b border-white/10 mb-8 overflow-x-auto scrollbar-none">
-                    <button
-                        onClick={() => setActiveTab('performance')}
-                        className={cn("px-6 py-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap",
-                            activeTab === 'performance' ? "border-club-red text-white" : "border-transparent text-white/40 hover:text-white"
-                        )}
-                    >
-                        Performance & Índices
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('anamnesis')}
-                        className={cn("px-6 py-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap",
-                            activeTab === 'anamnesis' ? "border-club-red text-white" : "border-transparent text-white/40 hover:text-white"
-                        )}
-                    >
-                        Ficha (Anamnese)
-                    </button>
-                </div>
-
-                {/* Tab Content */}
-                <div className="min-h-[400px]">
-                    {activeTab === 'performance' && (
-                        <div className="space-y-8">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                {/* Chart 2000m */}
-                                <AnimatedCard variant="carbon" className="p-6 h-[350px]">
-                                    <h3 className="text-sm font-bold text-white/40 uppercase mb-6">Evolução Ergômetro (2000m)</h3>
-                                    <div className="w-full h-full">
-                                        <ResponsiveContainer width="100%" height="80%" minWidth={300}>
-                                            <LineChart data={athleteData.performance}>
-                                                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                                                <XAxis dataKey="date" stroke="#ffffff40" fontSize={10} />
-                                                <YAxis hide />
-                                                <Tooltip
-                                                    contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #ffffff10', color: '#fff' }}
-                                                    itemStyle={{ color: '#DC2626' }}
-                                                />
-                                                <Line
-                                                    type="monotone"
-                                                    dataKey="erg2000m"
-                                                    stroke="#DC2626"
-                                                    strokeWidth={3}
-                                                    dot={{ fill: '#DC2626', strokeWidth: 2 }}
-                                                    activeDot={{ r: 6 }}
-                                                />
-                                            </LineChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                    <p className="text-[10px] text-white/30 text-center mt-2">Dados coletados nos testes mensais oficiais.</p>
-                                </AnimatedCard>
-
-                                {/* Physical Stats */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <AnimatedCard variant="metal" className="p-6 flex flex-col justify-center items-center">
-                                        <Activity className="w-6 h-6 text-club-gold mb-2" />
-                                        <span className="text-xs text-white/40 font-bold uppercase">Último 500m</span>
-                                        <span className="text-3xl font-black text-white">{athleteData.performance[2].erg500m}</span>
-                                    </AnimatedCard>
-                                    <AnimatedCard variant="metal" className="p-6 flex flex-col justify-center items-center">
-                                        <Zap className="w-6 h-6 text-club-gold mb-2" />
-                                        <span className="text-xs text-white/40 font-bold uppercase">F.C. Repouso</span>
-                                        <span className="text-3xl font-black text-white">{athleteData.performance[2].heartRateRest} bpm</span>
-                                    </AnimatedCard>
-                                    <AnimatedCard variant="metal" className="p-6 flex flex-col justify-center items-center">
-                                        <User className="w-6 h-6 text-club-red mb-2" />
-                                        <span className="text-xs text-white/40 font-bold uppercase">Peso Atual</span>
-                                        <span className="text-3xl font-black text-white">{athleteData.performance[2].weight} kg</span>
-                                    </AnimatedCard>
-                                    <AnimatedCard variant="metal" className="p-6 flex flex-col justify-center items-center">
-                                        <Trophy className="w-6 h-6 text-club-red mb-2" />
-                                        <span className="text-xs text-white/40 font-bold uppercase">Recorde 2k</span>
-                                        <span className="text-3xl font-black text-white">{athleteData.performance[2].erg2000m}</span>
-                                    </AnimatedCard>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'anamnesis' && (
-                        <div className="max-w-4xl mx-auto space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                    <FileText className="w-5 h-5 text-club-gold" />
-                                    Ficha Clínica do Associado
-                                </h2>
-                                <span className="text-xs text-white/40 italic">Última atualização: {athleteData.anamnesis.lastUpdate}</span>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <AnimatedCard variant="carbon" className="p-6 space-y-4">
-                                    <h3 className="text-sm font-black text-club-red uppercase border-b border-white/5 pb-2">Informações Gerais</h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-[10px] text-white/40 uppercase">Tipo Sanguíneo</p>
-                                            <p className="text-lg font-bold text-white">{athleteData.anamnesis.bloodType}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] text-white/40 uppercase">Pressão Média</p>
-                                            <p className="text-lg font-bold text-white">12/8 mmHg</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-white/40 uppercase">Alergias</p>
-                                        <div className="flex gap-2 flex-wrap mt-1">
-                                            {athleteData.anamnesis.allergies.map((a, i) => (
-                                                <span key={i} className="px-2 py-1 rounded bg-red-500/10 text-red-500 text-xs">{a}</span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </AnimatedCard>
-
-                                <AnimatedCard variant="carbon" className="p-6 space-y-4">
-                                    <h3 className="text-sm font-black text-club-red uppercase border-b border-white/5 pb-2">Contatos de Emergência</h3>
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-                                                <Heart className="w-5 h-5 text-club-red" />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs text-white/40">{athleteData.anamnesis.emergencyContact.relation}</p>
-                                                <p className="font-bold text-white">{athleteData.anamnesis.emergencyContact.name}</p>
-                                                <p className="text-sm text-club-gold">{athleteData.anamnesis.emergencyContact.phone}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </AnimatedCard>
-
-                                <AnimatedCard variant="metal" className="md:col-span-2 p-6">
-                                    <h3 className="text-sm font-black text-club-red uppercase border-b border-white/5 pb-2 mb-4">Histórico Médico & Lesões</h3>
-                                    <ul className="space-y-3">
-                                        {athleteData.anamnesis.previousInjuries.map((injury, i) => (
-                                            <li key={i} className="flex items-start gap-3 text-sm text-white/70">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-club-gold mt-1.5 shrink-0" />
-                                                {injury}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </AnimatedCard>
-                            </div>
-
-                            <Button className="w-full bg-club-red hover:bg-red-700 text-white font-bold h-12">
-                                Solicitar Atualização de Ficha
-                            </Button>
-                        </div>
-                    )}
-
-                    {/* Garagem Tab */}
-                    {activeTab === 'garage' && (
-                        <div className="space-y-6">
-                            {/* Stats */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                                <AnimatedCard variant="glass" className="p-4 flex items-center justify-between">
-                                    <div>
-                                        <p className="text-white/50 text-xs uppercase font-bold">Total Frota</p>
-                                        <span className="text-2xl font-bold text-white">{garageBoats.length}</span>
-                                    </div>
-                                    <Ship className="w-8 h-8 text-white/20" />
-                                </AnimatedCard>
-                                <AnimatedCard variant="glass" className="p-4 flex items-center justify-between border-green-500/20 bg-green-500/5">
-                                    <div>
-                                        <p className="text-green-400/70 text-xs uppercase font-bold">Disponíveis</p>
-                                        <span className="text-2xl font-bold text-green-400">{availableBoats}</span>
-                                    </div>
-                                    <Anchor className="w-8 h-8 text-green-500/20" />
-                                </AnimatedCard>
-                                <AnimatedCard variant="glass" className="p-4 flex items-center justify-between border-blue-500/20 bg-blue-500/5">
-                                    <div>
-                                        <p className="text-blue-400/70 text-xs uppercase font-bold">Na Água</p>
-                                        <span className="text-2xl font-bold text-blue-400">{garageBoats.filter(b => b.status === 'in-use').length}</span>
-                                    </div>
-                                    <Ship className="w-8 h-8 text-blue-500/20" />
-                                </AnimatedCard>
-                                <AnimatedCard variant="glass" className="p-4 flex items-center justify-between border-amber-500/20 bg-amber-500/5">
-                                    <div>
-                                        <p className="text-amber-400/70 text-xs uppercase font-bold">Manutenção</p>
-                                        <span className="text-2xl font-bold text-amber-400">{garageBoats.filter(b => b.status === 'maintenance').length}</span>
-                                    </div>
-                                    <AlertCircle className="w-8 h-8 text-amber-500/20" />
-                                </AnimatedCard>
-                            </div>
-
-                            {/* Filters */}
-                            <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-4 scrollbar-none">
-                                {boatTypes.map((type) => (
-                                    <button
-                                        key={type.id}
-                                        onClick={() => setSelectedBoatType(type.id)}
-                                        className={cn(
-                                            "whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 border",
-                                            selectedBoatType === type.id
-                                                ? "bg-white/10 border-club-gold text-club-gold shadow-[0_0_15px_rgba(255,215,0,0.1)]"
-                                                : "bg-transparent border-white/10 text-white/60 hover:border-white/30 hover:text-white"
-                                        )}
-                                    >
-                                        {type.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Grid de Barcos */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {filteredBoats.map(boat => (
-                                    <BoatCard
-                                        key={boat.id}
-                                        boat={boat}
-                                        onBook={setBookingBoat}
-                                    />
-                                ))}
-                            </div>
-
-                            {filteredBoats.length === 0 && (
-                                <div className="text-center py-20">
-                                    <p className="text-white/50">Nenhum barco encontrado nesta categoria.</p>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
             </div>
-
-            {/* Modal de Reserva */}
-            <ReservationModal
-                boat={bookingBoat}
-                onClose={() => setBookingBoat(null)}
-            />
         </div>
     );
 }

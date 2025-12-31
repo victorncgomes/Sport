@@ -21,6 +21,7 @@ export default auth((req) => {
         "/trial-booking",
         "/competitions",
         "/tides",
+        "/tides-weather",
         "/diretoria",
         "/coach",
         "/profile",
@@ -34,7 +35,11 @@ export default auth((req) => {
         "/garage",
         "/finance",
         "/volunteer",
-        "/boats"
+        "/voluntariado",
+        "/notifications",
+        "/boats",
+        "/docs",
+        "/changelog"
     ]
 
     // Check if the current path is public

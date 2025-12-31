@@ -64,7 +64,7 @@ export default function UnifiedProfilePage() {
     }
 
     const menuItems = [
-        { href: '/profile/data', icon: User, title: 'Dados Pessoais', color: 'text-blue-400', bgColor: 'bg-blue-500/20' },
+        { href: '/profile/personal-data', icon: User, title: 'Dados Pessoais', color: 'text-blue-400', bgColor: 'bg-blue-500/20' },
         { href: '/profile/anamnese', icon: FileText, title: 'Anamnese', color: 'text-emerald-400', bgColor: 'bg-emerald-500/20' },
         { href: '/profile/payments', icon: CreditCard, title: 'Pagamentos', color: 'text-amber-400', bgColor: 'bg-amber-500/20' },
         { href: '/profile/settings', icon: Settings, title: 'Segurança', color: 'text-gray-400', bgColor: 'bg-gray-500/20' },

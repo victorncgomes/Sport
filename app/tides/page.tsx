@@ -29,13 +29,15 @@ import {
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { getTidesForDate, isHighTide } from '@/lib/data/tide-data-official';
+import { calculatePaceImpact } from '@/lib/utils/pace-calculator';
 
 export default function TidesPage() {
+    // Buscar dados oficiais primeiro
+    const today = new Date();
+    const officialDay = getTidesForDate(today);
+
     // Usar mesma fonte de dados que o widget da home
     const tideData = useMemo(() => {
-        const today = new Date();
-        const officialDay = getTidesForDate(today);
-
         const high: { time: string; height: number }[] = [];
         const low: { time: string; height: number }[] = [];
 
@@ -54,7 +56,7 @@ export default function TidesPage() {
         }
 
         return { high, low, source: officialDay ? 'Marinha do Brasil' : 'Simulado' };
-    }, []);
+    }, [officialDay]);
 
     // Dados simulados complementares (em produção, viriam de API)
     const mockData = {
@@ -84,15 +86,20 @@ export default function TidesPage() {
             chop_index: 38,
             description: 'Ondulação leve a moderada'
         },
-        pace: {
-            delta: -14.5,
-            percentage: -18.3,
-            description: 'Ganho de 14.5s/500m'
-        },
+        pace: calculatePaceImpact({
+            windSpeed: 18,
+            windDirection: 45,  // NE
+            currentSpeed: 0.59,
+            currentDirection: 308, // NW
+            waveHeight: 0.8,
+            rowingDirection: 140 // SE (direção típica no Rio Potengi)
+        }),
         tides: tideData, // Usar dados reais
         sun: {
-            sunrise: '05:18',
-            sunset: '17:45'
+            // TODO: Em produção, buscar de API meteorológica (Open-Meteo)
+            // Endpoint: /v1/forecast?latitude=-5.7833&longitude=-35.2&daily=sunrise,sunset
+            sunrise: '05:18', // Nascer do sol para Natal/RN (aproximado)
+            sunset: '17:50'   // Pôr do sol para Natal/RN (aproximado, varia ~17:30-18:00)
         },
         coefficient: 72,
         moonPhase: {

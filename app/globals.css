@@ -422,10 +422,6 @@ h6 {
         font-size: 80%;
     }
 
-    body:not(.theme-light) {
-        /* Mantém proporções ajustadas */
-    }
-
     /* Reduz tamanho de fontes proporcionalmente */
     h1 {
         font-size: 2.4rem !important;
@@ -461,12 +457,6 @@ h6 {
     .badge {
         padding: 0.25rem 0.5rem;
         font-size: 0.625rem;
-    }
-
-    /* Header compacto */
-    header {
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
     }
 
     /* Container com max-width menor */

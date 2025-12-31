@@ -220,7 +220,7 @@ export default function VolunteerPage() {
                         </AnimatedCard>
                     </Link>
 
-                    <Link href="/profile/gamification">
+                    <Link href="/profile/panel">
                         <AnimatedCard variant="glass" className="p-4 hover:bg-white/10 transition-colors">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">

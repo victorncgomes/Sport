@@ -12,7 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Tipos
-type SportType = 'ROWING' | 'RUNNING' | 'CYCLING' | 'GYM' | 'OTHER';
+type SportType = 'ROWING' | 'GYM' | 'OTHER' | 'WARMUP' | 'STRETCH';
 type WorkoutLocation = 'OUTDOOR' | 'INDOOR_TANK' | 'INDOOR_GENERAL' | 'OUTDOOR_RUN' | 'TREADMILL' | 'OUTDOOR_BIKE' | 'SPINNING' | 'OTHER_LOCATION';
 type WorkoutMode = 'FREE' | 'TIME' | 'DISTANCE' | 'INTERVAL';
 
@@ -29,7 +29,7 @@ interface WorkoutSettings {
     };
 }
 
-// Dados dos esportes
+// Dados dos esportes - Apenas opções ativas
 const sports = [
     {
         id: 'ROWING' as const,
@@ -38,22 +38,6 @@ const sports = [
         icon: Waves,
         color: 'from-blue-600 to-cyan-600',
         locations: ['OUTDOOR', 'INDOOR_TANK', 'INDOOR_GENERAL']
-    },
-    {
-        id: 'RUNNING' as const,
-        title: 'Corrida',
-        description: 'Corrida outdoor ou esteira',
-        icon: PersonStanding,
-        color: 'from-green-600 to-emerald-600',
-        locations: ['OUTDOOR_RUN', 'TREADMILL']
-    },
-    {
-        id: 'CYCLING' as const,
-        title: 'Bicicleta',
-        description: 'Pedal outdoor ou spinning',
-        icon: Bike,
-        color: 'from-orange-600 to-amber-600',
-        locations: ['OUTDOOR_BIKE', 'SPINNING']
     },
     {
         id: 'GYM' as const,
@@ -65,11 +49,27 @@ const sports = [
     },
     {
         id: 'OTHER' as const,
-        title: 'Outra Atividade',
+        title: 'Outras Atividades',
         description: 'Patinação, futebol, surfe, etc.',
         icon: Target,
         color: 'from-gray-600 to-slate-600',
         locations: ['OTHER_LOCATION']
+    },
+    {
+        id: 'WARMUP' as const,
+        title: 'Aquecimento',
+        description: 'Preparação antes do treino',
+        icon: Timer,
+        color: 'from-orange-500 to-amber-500',
+        locations: ['INDOOR_GENERAL']
+    },
+    {
+        id: 'STRETCH' as const,
+        title: 'Alongamento',
+        description: 'Flexibilidade e recuperação',
+        icon: PersonStanding,
+        color: 'from-green-500 to-emerald-500',
+        locations: ['INDOOR_GENERAL']
     }
 ];
 
@@ -93,6 +93,12 @@ const locationsByType: Record<string, { id: WorkoutLocation; title: string; desc
     ],
     OTHER: [
         { id: 'OTHER_LOCATION', title: 'Qualquer Local', description: 'Registre tempo e intensidade', icon: Target, color: 'from-gray-600 to-slate-600' }
+    ],
+    WARMUP: [
+        { id: 'INDOOR_GENERAL', title: 'Área de Aquecimento', description: 'Preparação para o treino', icon: Timer, color: 'from-orange-500 to-amber-500' }
+    ],
+    STRETCH: [
+        { id: 'INDOOR_GENERAL', title: 'Área de Alongamento', description: 'Flexibilidade e recuperação', icon: PersonStanding, color: 'from-green-500 to-emerald-500' }
     ]
 };
 
@@ -104,17 +110,6 @@ const modesBySport: Record<SportType, { id: WorkoutMode; title: string; descript
         { id: 'DISTANCE', title: 'Por Distância', description: 'Defina quantos metros remar', icon: Target, requiresConfig: true },
         { id: 'INTERVAL', title: 'Intervalado', description: 'Alternância trabalho/descanso', icon: RotateCcw, requiresConfig: true }
     ],
-    RUNNING: [
-        { id: 'FREE', title: 'Corrida Livre', description: 'Sem meta definida', icon: Infinity, requiresConfig: false },
-        { id: 'TIME', title: 'Por Tempo', description: 'Corra por X minutos', icon: Clock, requiresConfig: true },
-        { id: 'DISTANCE', title: 'Por Distância', description: 'Corra X quilômetros', icon: Target, requiresConfig: true },
-        { id: 'INTERVAL', title: 'Tiros', description: 'Sprints com recuperação', icon: RotateCcw, requiresConfig: true }
-    ],
-    CYCLING: [
-        { id: 'FREE', title: 'Pedal Livre', description: 'Sem meta definida', icon: Infinity, requiresConfig: false },
-        { id: 'TIME', title: 'Por Tempo', description: 'Pedale por X minutos', icon: Clock, requiresConfig: true },
-        { id: 'DISTANCE', title: 'Por Distância', description: 'Pedale X quilômetros', icon: Target, requiresConfig: true }
-    ],
     GYM: [
         { id: 'FREE', title: 'Treino Livre', description: 'Registre exercícios manualmente', icon: Infinity, requiresConfig: false },
         { id: 'TIME', title: 'Por Tempo', description: 'Treino cronometrado', icon: Clock, requiresConfig: true }
@@ -122,6 +117,14 @@ const modesBySport: Record<SportType, { id: WorkoutMode; title: string; descript
     OTHER: [
         { id: 'FREE', title: 'Atividade Livre', description: 'Registre o tempo da atividade', icon: Infinity, requiresConfig: false },
         { id: 'TIME', title: 'Por Tempo', description: 'Defina a duração da atividade', icon: Clock, requiresConfig: true }
+    ],
+    WARMUP: [
+        { id: 'FREE', title: 'Aquecimento Livre', description: 'Prepare-se no seu ritmo', icon: Infinity, requiresConfig: false },
+        { id: 'TIME', title: 'Por Tempo', description: 'Aquecimento cronometrado', icon: Clock, requiresConfig: true }
+    ],
+    STRETCH: [
+        { id: 'FREE', title: 'Alongamento Livre', description: 'Alongue-se no seu ritmo', icon: Infinity, requiresConfig: false },
+        { id: 'TIME', title: 'Por Tempo', description: 'Alongamento cronometrado', icon: Clock, requiresConfig: true }
     ]
 };
 
@@ -142,22 +145,10 @@ const distancePresets: Record<SportType, { label: string; value: number }[]> = {
         { label: '5000m', value: 5000 },
         { label: '10000m', value: 10000 }
     ],
-    RUNNING: [
-        { label: '1 km', value: 1000 },
-        { label: '3 km', value: 3000 },
-        { label: '5 km', value: 5000 },
-        { label: '10 km', value: 10000 },
-        { label: '21 km', value: 21000 }
-    ],
-    CYCLING: [
-        { label: '10 km', value: 10000 },
-        { label: '20 km', value: 20000 },
-        { label: '30 km', value: 30000 },
-        { label: '50 km', value: 50000 },
-        { label: '100 km', value: 100000 }
-    ],
     GYM: [],
-    OTHER: []
+    OTHER: [],
+    WARMUP: [],
+    STRETCH: []
 };
 
 const intervalPresets = [
@@ -324,11 +315,11 @@ function StartWorkoutContent() {
                                         onClick={() => handleSportSelect(sport.id)}
                                         className="w-full"
                                     >
-                                        <div className={`bg-gradient-to-br ${sport.color} rounded-2xl p-6 text-center aspect-square flex flex-col items-center justify-center gap-3 hover:scale-105 transition-transform`}>
-                                            <Icon className="w-12 h-12 text-white" />
+                                        <div className={`bg-gradient-to-br ${sport.color} rounded-xl p-4 text-center flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform`}>
+                                            <Icon className="w-8 h-8 text-white" />
                                             <div>
-                                                <h3 className="text-lg font-bold text-white">{sport.title}</h3>
-                                                <p className="text-xs text-white/70">{sport.description}</p>
+                                                <h3 className="text-sm font-bold text-white">{sport.title}</h3>
+                                                <p className="text-[10px] text-white/70 line-clamp-1">{sport.description}</p>
                                             </div>
                                         </div>
                                     </motion.button>
@@ -349,9 +340,6 @@ function StartWorkoutContent() {
                             {/* Esporte selecionado */}
                             <div className="flex items-center gap-2 text-white/40 text-sm mb-4">
                                 <span>{sports.find(s => s.id === settings.sport)?.title}</span>
-                                <button onClick={() => setStep('sport')} className="text-red-400 hover:underline">
-                                    (alterar)
-                                </button>
                             </div>
 
                             {locationsByType[settings.sport].map((loc, index) => {
@@ -395,9 +383,6 @@ function StartWorkoutContent() {
                                 <span>{sports.find(s => s.id === settings.sport)?.title}</span>
                                 <span>→</span>
                                 <span>{locationsByType[settings.sport]?.find(l => l.id === settings.location)?.title}</span>
-                                <button onClick={() => setStep('location')} className="text-red-400 hover:underline">
-                                    (alterar)
-                                </button>
                             </div>
 
                             {modesBySport[settings.sport].map((mode, index) => {
@@ -462,9 +447,6 @@ function StartWorkoutContent() {
                                 <span>{sports.find(s => s.id === settings.sport)?.title}</span>
                                 <span>→</span>
                                 <span>{modesBySport[settings.sport]?.find(m => m.id === settings.mode)?.title}</span>
-                                <button onClick={() => setStep('mode')} className="text-red-400 hover:underline">
-                                    (alterar)
-                                </button>
                             </div>
 
                             {/* Config por Tempo - Com entrada customizada */}

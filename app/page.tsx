@@ -35,25 +35,25 @@ const heroNews = [
     },
 ];
 
-// Últimas notícias
+// Últimas notícias - IDs must match articles in /news/[id]/page.tsx
 const latestNews = [
     {
-        id: 3,
-        title: 'Inscrições abertas para regata de verão',
-        category: 'Evento',
-        date: '20 Dez',
-    },
-    {
-        id: 4,
-        title: 'Treino especial de fim de ano',
-        category: 'Treino',
-        date: '18 Dez',
-    },
-    {
-        id: 5,
-        title: 'Atletas participam de campeonato nacional',
+        id: 'cbi-remo-2025',
+        title: 'Sport Club de Natal encerra participação histórica no CBI de Remo',
         category: 'Competição',
-        date: '15 Dez',
+        date: '22 Dez',
+    },
+    {
+        id: 'confraternizacao-2024',
+        title: 'Família Sport Club de Natal unida em frente à sede histórica',
+        category: 'Eventos',
+        date: '21 Dez',
+    },
+    {
+        id: '1',
+        title: 'Equipe de Remo conquista 5 medalhas no Campeonato Nordestino',
+        category: 'Competição',
+        date: '15 Jan',
     },
 ];
 

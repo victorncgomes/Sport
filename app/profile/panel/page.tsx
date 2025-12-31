@@ -28,20 +28,12 @@ import { getMemberDashboardData, type MemberDashboardData } from '@/lib/actions/
 
 const menuItems = [
     {
-        href: '/profile/data',
+        href: '/profile/personal-data',
         icon: User,
         title: 'Dados Pessoais',
         description: 'Informações de contato e documentos',
         color: 'text-blue-400',
         bgColor: 'bg-blue-500/20',
-    },
-    {
-        href: '/profile/anamnese',
-        icon: FileText,
-        title: 'Anamnese e Dados Físicos',
-        description: 'Histórico de saúde e avaliações',
-        color: 'text-emerald-400',
-        bgColor: 'bg-emerald-500/20',
     },
     {
         href: '/profile/payments',
@@ -52,15 +44,7 @@ const menuItems = [
         bgColor: 'bg-amber-500/20',
     },
     {
-        href: '/profile/volunteer',
-        icon: Heart,
-        title: 'Voluntariado',
-        description: 'Programas e disponibilidade',
-        color: 'text-pink-400',
-        bgColor: 'bg-pink-500/20',
-    },
-    {
-        href: '/profile/notifications',
+        href: '/profile/notices',
         icon: Bell,
         title: 'Avisos',
         description: 'Notificações e comunicados',
@@ -254,8 +238,8 @@ export default function ProfilePanelPage() {
                             <div
                                 key={boat.name}
                                 className={`flex-shrink-0 w-28 text-center p-4 rounded-xl transition-all ${boat.unlocked
-                                        ? 'bg-gradient-to-br from-club-red/20 to-club-gold/20 border border-club-gold/30'
-                                        : 'bg-white/5 border border-white/10 opacity-50'
+                                    ? 'bg-gradient-to-br from-club-red/20 to-club-gold/20 border border-club-gold/30'
+                                    : 'bg-white/5 border border-white/10 opacity-50'
                                     }`}
                             >
                                 <div className={`text-3xl mb-2 ${boat.unlocked ? '' : 'grayscale'}`}>

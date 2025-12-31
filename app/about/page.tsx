@@ -35,7 +35,7 @@ const AppDetailsSection = () => {
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-white uppercase tracking-tighter">Sistema de Gestão Digital</h3>
-                            <p className="text-blue-400 font-bold text-sm mt-1">Clique para ver detalhes técnicos</p>
+                            <p className="text-blue-400 font-bold text-sm mt-1">Clique para ver detalhes</p>
                         </div>
                     </div>
                     <div>
@@ -52,35 +52,42 @@ const AppDetailsSection = () => {
                                     O Sport Club de Natal entra em uma nova era com seu sistema de gestão integrado. Desenvolvido para facilitar a vida do sócio e otimizar processos internos, o aplicativo reúne desde reservas de barcos até o acompanhamento de performance dos atletas.
                                 </p>
                                 <div className="space-y-3">
-                                    <div className="flex items-center gap-3 text-xs text-white/40">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                                        0.0.x: Funcionalidades e implementações base
+                                    <div className="flex items-center gap-3 text-sm text-white/60">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                        Reserva de barcos e equipamentos
                                     </div>
-                                    <div className="flex items-center gap-3 text-xs text-white/40">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                                        0.x.0: Novas funcionalidades ou repaginação visual
+                                    <div className="flex items-center gap-3 text-sm text-white/60">
+                                        <div className="w-2 h-2 rounded-full bg-blue-500" />
+                                        Acompanhamento de treinos com GPS
                                     </div>
-                                    <div className="flex items-center gap-3 text-xs text-white/40">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                                        x.0.0: Mudança completa na estrutura da aplicação
+                                    <div className="flex items-center gap-3 text-sm text-white/60">
+                                        <div className="w-2 h-2 rounded-full bg-purple-500" />
+                                        Sistema de gamificação e conquistas
+                                    </div>
+                                    <div className="flex items-center gap-3 text-sm text-white/60">
+                                        <div className="w-2 h-2 rounded-full bg-club-gold" />
+                                        Portal de voluntariado
                                     </div>
                                 </div>
                             </div>
 
                             <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                                <h4 className="text-xs font-black text-white/40 uppercase tracking-widest mb-4">Últimas Atualizações</h4>
-                                <div className="space-y-6">
+                                <h4 className="text-xs font-black text-white/40 uppercase tracking-widest mb-4">Versão Atual</h4>
+                                <div className="space-y-4">
                                     <div className="relative pl-6 border-l border-blue-500/30">
                                         <div className="absolute top-0 -left-1.5 w-3 h-3 rounded-full bg-blue-500 border-2 border-club-black" />
-                                        <div className="text-[10px] font-bold text-blue-400 mb-1">V0.3.2 - ATUAL</div>
-                                        <p className="text-xs text-white/70">Refatoração nav bar, Garagem, Store e unificação de ações sociais.</p>
+                                        <div className="text-sm font-bold text-blue-400 mb-1">V0.4.5</div>
+                                        <p className="text-xs text-white/70">Módulo Coach, Alongamento, Fichas de Sócio e muito mais.</p>
                                     </div>
                                     <div className="relative pl-6 border-l border-blue-500/30">
                                         <div className="absolute top-0 -left-1.5 w-3 h-3 rounded-full bg-blue-500/50 border-2 border-club-black" />
-                                        <div className="text-[10px] font-bold text-white/30 mb-1">V0.3.0</div>
-                                        <p className="text-xs text-white/50">Nova identidade visual Glassmorphism e módulo de gamificação.</p>
+                                        <div className="text-[10px] font-bold text-white/30 mb-1">V0.4.0</div>
+                                        <p className="text-xs text-white/50">Treinos com GPS, logos de parceiros.</p>
                                     </div>
                                 </div>
+                                <Link href="/docs" onClick={(e) => e.stopPropagation()} className="mt-6 inline-flex items-center gap-2 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">
+                                    Ver documentação completa <ArrowRight className="w-3 h-3" />
+                                </Link>
                             </div>
                         </div>
                     </div>

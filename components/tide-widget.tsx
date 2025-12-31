@@ -40,7 +40,11 @@ import {
 import { CONVERSIONS } from '@/lib/config/rowing-config';
 import { CurrentIndicator } from '@/components/tides/current-indicator';
 import { ConditionBadge } from '@/components/tides/condition-badge';
+import { SlotsTable } from '@/components/tides/SlotsTable';
+import { TimeSlotSelector } from '@/components/tides/TimeSlotSelector';
+import { ConditionsDisplay } from '@/components/tides/ConditionsDisplay';
 import type { RowingConditionsData } from '@/types/rowing-conditions';
+import { analyzeRowingConditions, findCurrentSlot, analyzeSlot } from '@/lib/utils/rowing-conditions-analyzer';
 
 // Função para obter dados do dia (usando dados oficiais da Marinha)
 const getFullData = (dayOffset: number) => {
@@ -224,9 +228,24 @@ const getDateLabel = (offset: number): string => {
     return '';
 };
 
+// Mapear condição climática para o tipo esperado
+function mapWeatherCondition(condition: string): 'clear' | 'partly-cloudy' | 'cloudy' | 'rain' | 'heavy-rain' | 'thunderstorm' {
+    const lower = condition.toLowerCase();
+    if (lower.includes('ensolarado') || lower.includes('limpo')) return 'clear';
+    if (lower.includes('parcial') || lower.includes('poucas nuvens')) return 'partly-cloudy';
+    if (lower.includes('nublado')) return 'cloudy';
+    if (lower.includes('tempestade') || lower.includes('trovoada')) return 'thunderstorm';
+    if (lower.includes('chuva forte')) return 'heavy-rain';
+    if (lower.includes('chuva')) return 'rain';
+    return 'clear';
+}
+
+
 export function TideWidget({ className }: { className?: string }) {
     const [dayOffset, setDayOffset] = useState(0);
     const [showDetails, setShowDetails] = useState(false);
+    const [showMoreInfo, setShowMoreInfo] = useState(false);
+    const [selectedTime, setSelectedTime] = useState<string>('07:00');
 
     const data = getFullData(dayOffset);
     const dateLabel = getDateLabel(dayOffset);
@@ -236,6 +255,60 @@ export function TideWidget({ className }: { className?: string }) {
     const conditionRating = data.rowingConditions.condition_rating;
     const isGoodForRowing = conditionRating === 'favorable';
     const isModerateForRowing = conditionRating === 'technical';
+
+    // NOVO: Análise completa de horários viáveis
+    const nextHighTide = data.preiaMar[0];
+    const nextLowTide = data.baixaMar[0];
+
+    // Criar datas completas para as marés
+    const [highH, highM] = nextHighTide.hour.split(':').map(Number);
+    const [lowH, lowM] = nextLowTide.hour.split(':').map(Number);
+
+    const highTideDate = new Date(data.date);
+    highTideDate.setHours(highH, highM, 0, 0);
+
+    const lowTideDate = new Date(data.date);
+    lowTideDate.setHours(lowH, lowM, 0, 0);
+
+    // Calcular amplitude (diferença entre preamar e baixamar)
+    const amplitude = (nextHighTide.height - nextLowTide.height) * 100; // converter para cm
+
+    const rowingAnalysis = analyzeRowingConditions({
+        currentDate: data.date,
+        tideData: {
+            nextHighTide: highTideDate,
+            nextLowTide: lowTideDate,
+            amplitude: amplitude
+        },
+        weatherData: {
+            windSpeed: data.wind.speed,
+            windDirection: data.rowingConditions.wind.direction_deg,
+            waveHeight: 0.3,
+            precipitation: 0,
+            condition: mapWeatherCondition(data.weather.condition)
+        }
+    });
+
+    const currentTime = new Date();
+    const currentSlot = dayOffset === 0 ? findCurrentSlot(currentTime, rowingAnalysis) : null;
+
+    // Análise do horário selecionado (para seção Detalhes)
+    const selectedPeriod = (selectedTime >= '05:00' && selectedTime <= '09:00') ? 'morning' as const : 'afternoon' as const;
+    const selectedSlotAnalysis = analyzeSlot(selectedTime, selectedPeriod, {
+        currentDate: data.date,
+        tideData: {
+            nextHighTide: highTideDate,
+            nextLowTide: lowTideDate,
+            amplitude: amplitude
+        },
+        weatherData: {
+            windSpeed: data.wind.speed,
+            windDirection: data.rowingConditions.wind.direction_deg,
+            waveHeight: 0.3,
+            precipitation: 0,
+            condition: mapWeatherCondition(data.weather.condition)
+        }
+    });
 
     return (
         <motion.div
@@ -461,40 +534,76 @@ export function TideWidget({ className }: { className?: string }) {
                                 </div>
                             </div>
 
-                            {/* Status para Remo - USANDO MESMA CLASSIFICAÇÃO DOS DETALHES */}
-                            <motion.div
-                                whileHover={{ scale: 1.02 }}
-                                className={cn(
-                                    "p-4 rounded-xl border",
-                                    conditionRating === 'favorable' && "bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-400/30",
-                                    conditionRating === 'technical' && "bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border-yellow-400/30",
-                                    conditionRating === 'difficult' && "bg-gradient-to-r from-red-500/20 to-rose-500/20 border-red-400/30"
+                            {/* NOVO: Condições para Remo por Horários Viáveis */}
+                            <div className="space-y-3">
+                                {/* Melhor Horário */}
+                                <motion.div
+                                    whileHover={{ scale: 1.02 }}
+                                    className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 border-2 border-emerald-400/40"
+                                >
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-2xl">⭐</span>
+                                        <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">
+                                            Melhor Horário Hoje
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-2xl">🕐</span>
+                                            <span className="text-xl font-bold text-white">
+                                                {rowingAnalysis.bestTime.slot.startTime} - {rowingAnalysis.bestTime.slot.endTime}
+                                            </span>
+                                        </div>
+                                        <span className={cn(
+                                            "text-xs font-bold uppercase px-3 py-1 rounded-lg border",
+                                            rowingAnalysis.bestTime.slot.classification === 'EXCELENTE' && "bg-green-500/30 text-green-300 border-green-500/50",
+                                            rowingAnalysis.bestTime.slot.classification === 'BOA' && "bg-blue-500/30 text-blue-300 border-blue-500/50",
+                                            rowingAnalysis.bestTime.slot.classification === 'MODERADA' && "bg-yellow-500/30 text-yellow-300 border-yellow-500/50",
+                                            rowingAnalysis.bestTime.slot.classification === 'DIFÍCIL' && "bg-orange-500/30 text-orange-300 border-orange-500/50",
+                                            rowingAnalysis.bestTime.slot.classification === 'PERIGOSA' && "bg-red-500/30 text-red-300 border-red-500/50"
+                                        )}>
+                                            {rowingAnalysis.bestTime.slot.classification}
+                                        </span>
+                                    </div>
+                                    <ul className="text-[10px] text-white/70 space-y-1 ml-6">
+                                        <li>• {rowingAnalysis.bestTime.slot.tideFactors.departurePhase}</li>
+                                        <li>• {rowingAnalysis.bestTime.reason}</li>
+                                        <li>• Término: {rowingAnalysis.bestTime.slot.endTime} ({rowingAnalysis.bestTime.slot.environmentFactors.sunIntensity} intensidade solar)</li>
+                                    </ul>
+                                </motion.div>
+
+                                {/* Condição Atual (se aplicável) */}
+                                {currentSlot && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-400/30"
+                                    >
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-xl">🕐</span>
+                                            <span className="text-xs font-bold uppercase tracking-wider text-blue-300">
+                                                Agora ({currentTime.getHours().toString().padStart(2, '0')}:{currentTime.getMinutes().toString().padStart(2, '0')})
+                                            </span>
+                                            <span className={cn(
+                                                "text-xs font-bold uppercase px-2 py-1 rounded border ml-auto",
+                                                currentSlot.classification === 'EXCELENTE' && "bg-green-500/30 text-green-300 border-green-500/50",
+                                                currentSlot.classification === 'BOA' && "bg-blue-500/30 text-blue-300 border-blue-500/50",
+                                                currentSlot.classification === 'MODERADA' && "bg-yellow-500/30 text-yellow-300 border-yellow-500/50",
+                                                currentSlot.classification === 'DIFÍCIL' && "bg-orange-500/30 text-orange-300 border-orange-500/50",
+                                                currentSlot.classification === 'PERIGOSA' && "bg-red-500/30 text-red-300 border-red-500/50"
+                                            )}>
+                                                {currentSlot.classification}
+                                            </span>
+                                        </div>
+                                        <p className="text-[10px] text-white/60">
+                                            {currentSlot.recommendation}
+                                        </p>
+                                    </motion.div>
                                 )}
-                            >
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-semibold text-white/90">
-                                        Condição para Remo
-                                    </span>
-                                    <span className={cn(
-                                        "text-sm font-bold uppercase px-3 py-1 rounded-lg",
-                                        conditionRating === 'favorable' && "bg-green-500/30 text-green-300",
-                                        conditionRating === 'technical' && "bg-yellow-500/30 text-yellow-300",
-                                        conditionRating === 'difficult' && "bg-red-500/30 text-red-300"
-                                    )}>
-                                        {data.rowingConditions.condition_classification.label}
-                                    </span>
-                                </div>
-                                <p className="text-[10px] text-white/50 leading-relaxed">
-                                    {data.rowingConditions.condition_classification.description}
-                                </p>
-                                <p className="text-[9px] text-white/40 mt-1 pt-1 border-t border-white/10">
-                                    📊 Cálculo: Baseado no ângulo relativo da correnteza ({data.rowingConditions.current.relative_angle_deg}°) em relação ao percurso de remo.
-                                    Corrente: {data.rowingConditions.current.speed_m_s.toFixed(2)}m/s | Vento: {data.wind.speed}km/h {data.wind.direction}
-                                </p>
-                            </motion.div>
+                            </div>
                         </motion.div>
                     ) : (
-                        /* DETALHES - SEM PREVISÃO DO TEMPO */
+                        /* DETALHES - SELETOR DE HORÁRIO DINÂMICO */
                         <motion.div
                             key="details"
                             initial={{ opacity: 0, x: 20 }}
@@ -502,166 +611,87 @@ export function TideWidget({ className }: { className?: string }) {
                             exit={{ opacity: 0, x: -20 }}
                             className="space-y-4"
                         >
-                            {/* Grid 2x2 - Condições de Remo */}
-                            <div className="grid grid-cols-2 gap-3">
-                                {/* Correnteza */}
-                                <div className="rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 p-3 border border-cyan-400/30">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Navigation className="w-4 h-4 text-cyan-300" />
-                                        <span className="text-xs text-white/60 uppercase tracking-wider font-bold">Correnteza</span>
-                                    </div>
-                                    <p className="text-xl font-bold text-white">{data.rowingConditions.current.speed_m_s.toFixed(2)} <span className="text-sm">m/s</span></p>
-                                    <p className="text-sm text-cyan-300">{degreesToCardinal(data.rowingConditions.current.direction_deg)} ({data.rowingConditions.current.direction_deg}°)</p>
-                                    <p className="text-xs text-white/50 mt-1">Ângulo relativo: {data.rowingConditions.current.relative_angle_deg}°</p>
-                                </div>
+                            {/* Seletor de Horário */}
+                            <TimeSlotSelector
+                                selectedTime={selectedTime}
+                                onTimeChange={setSelectedTime}
+                            />
 
-                                {/* Classificação */}
-                                <div className={cn(
-                                    "rounded-xl p-3 border-2",
-                                    data.rowingConditions.condition_rating === 'favorable' && "bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-green-400/50",
-                                    data.rowingConditions.condition_rating === 'technical' && "bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border-yellow-400/50",
-                                    data.rowingConditions.condition_rating === 'difficult' && "bg-gradient-to-br from-red-500/20 to-rose-500/20 border-red-400/50"
-                                )}>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        {data.rowingConditions.condition_rating === 'favorable' && <CheckCircle className="w-4 h-4 text-green-300" />}
-                                        {data.rowingConditions.condition_rating === 'technical' && <AlertTriangle className="w-4 h-4 text-yellow-300" />}
-                                        {data.rowingConditions.condition_rating === 'difficult' && <XCircle className="w-4 h-4 text-red-300" />}
-                                        <span className="text-xs text-white/60 uppercase tracking-wider font-bold">Classificação</span>
-                                    </div>
-                                    <p className={cn(
-                                        "text-lg font-bold uppercase",
-                                        data.rowingConditions.condition_rating === 'favorable' && "text-green-300",
-                                        data.rowingConditions.condition_rating === 'technical' && "text-yellow-300",
-                                        data.rowingConditions.condition_rating === 'difficult' && "text-red-300"
-                                    )}>
-                                        {data.rowingConditions.condition_classification.label}
-                                    </p>
-                                    <p className="text-xs text-white/50 mt-1">{data.rowingConditions.condition_classification.description}</p>
-                                </div>
+                            {/* Condições do Horário Selecionado */}
+                            <ConditionsDisplay slot={selectedSlotAnalysis} />
 
-                                {/* Condição da Água */}
-                                <div className="rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 p-3 border border-blue-400/30">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Waves className="w-4 h-4 text-blue-300" />
-                                        <span className="text-xs text-white/60 uppercase tracking-wider font-bold">Superfície</span>
-                                    </div>
-                                    <p className="text-lg font-bold text-white">
-                                        {data.rowingConditions.water_condition.surface === 'mirror' && '🪞 Espelho'}
-                                        {data.rowingConditions.water_condition.surface === 'ripple' && '〰️ Ondulação'}
-                                        {data.rowingConditions.water_condition.surface === 'chaotic' && '🌊 Caótico'}
-                                    </p>
-                                    <div className="flex items-center justify-between mt-2">
-                                        <span className="text-xs text-white/50">Chop Lateral</span>
-                                        <span className="text-sm font-bold text-blue-300">{data.rowingConditions.water_condition.side_chop_index}%</span>
-                                    </div>
-                                    <div className="h-2 bg-black/30 rounded-full overflow-hidden mt-1">
-                                        <div
-                                            className={cn(
-                                                'h-full rounded-full',
-                                                data.rowingConditions.water_condition.side_chop_index < 30 && 'bg-green-400',
-                                                data.rowingConditions.water_condition.side_chop_index >= 30 && data.rowingConditions.water_condition.side_chop_index < 60 && 'bg-yellow-400',
-                                                data.rowingConditions.water_condition.side_chop_index >= 60 && 'bg-red-400'
-                                            )}
-                                            style={{ width: `${data.rowingConditions.water_condition.side_chop_index}%` }}
-                                        />
-                                    </div>
-                                </div>
+                            {/* Botão Mais Informações */}
+                            <button
+                                onClick={() => setShowMoreInfo(!showMoreInfo)}
+                                className="w-full px-4 py-3 text-sm font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-2"
+                            >
+                                {showMoreInfo ? '▲ Ocultar Detalhes' : '▼ Mais Informações'}
+                            </button>
 
-                                {/* Impacto no Pace */}
-                                <div className="rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 p-3 border border-purple-400/30">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Gauge className="w-4 h-4 text-purple-300" />
-                                        <span className="text-xs text-white/60 uppercase tracking-wider font-bold">Impacto Pace</span>
-                                    </div>
-                                    <p className={cn(
-                                        "text-2xl font-bold",
-                                        data.rowingConditions.pace_impact.delta_s_per_500m < 0 ? 'text-green-300' : 'text-red-300'
-                                    )}>
-                                        {data.rowingConditions.pace_impact.delta_s_per_500m > 0 && '+'}
-                                        {data.rowingConditions.pace_impact.delta_s_per_500m.toFixed(1)}s
-                                    </p>
-                                    <p className="text-xs text-white/50 mt-1">
-                                        {data.rowingConditions.pace_impact.percentage > 0 && '+'}
-                                        {data.rowingConditions.pace_impact.percentage.toFixed(1)}% por 500m
-                                    </p>
-                                </div>
-                            </div>
+                            {/* Seção Mais Informações (Tabela + Dados Extras) */}
+                            {showMoreInfo && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="space-y-4"
+                                >
+                                    {/* Tabela de Todos os Horários */}
+                                    <SlotsTable
+                                        morning={rowingAnalysis.morningSlots}
+                                        afternoon={rowingAnalysis.afternoonSlots}
+                                    />
 
-                            {/* Fase da Lua */}
-                            <div className="rounded-xl bg-gradient-to-br from-slate-700/50 to-slate-800/50 p-4 border border-slate-500/30">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-slate-300 to-slate-500 flex items-center justify-center text-2xl">
-                                            {data.moonPhase.emoji}
+                                    {/* Informações Extras */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {/* Lua */}
+                                        <div className="rounded-xl bg-purple-500/20 p-3 border border-purple-400/30">
+                                            <p className="text-xs text-white/60 uppercase tracking-wider font-bold mb-2">Fase da Lua</p>
+                                            <p className="text-2xl">{data.moonPhase.emoji}</p>
+                                            <p className="text-sm text-white/70">{data.moonPhase.name}</p>
                                         </div>
-                                        <div>
-                                            <p className="text-lg font-bold text-white">{data.moonPhase.name}</p>
-                                            <p className="text-sm text-white/60">Iluminação: {data.moonPhase.illumination}%</p>
+
+                                        {/* Sol */}
+                                        <div className="rounded-xl bg-yellow-500/20 p-3 border border-yellow-400/30">
+                                            <p className="text-xs text-white/60 uppercase tracking-wider font-bold mb-2">Sol</p>
+                                            <p className="text-sm text-white/70">☀️ {data.sunrise}</p>
+                                            <p className="text-sm text-white/70">🌙 {data.sunset}</p>
+                                        </div>
+
+                                        {/* Coeficiente */}
+                                        <div className="rounded-xl bg-blue-500/20 p-3 border border-blue-400/30 col-span-2">
+                                            <p className="text-xs text-white/60 uppercase tracking-wider font-bold mb-2">Coeficiente de Maré</p>
+                                            <p className="text-xl font-bold text-white">{data.coeficiente}</p>
+                                            <p className="text-xs text-white/50">Amplitude: {amplitude.toFixed(0)}cm ({rowingAnalysis.tideInfo.tideType})</p>
                                         </div>
                                     </div>
-                                    <Moon className="w-6 h-6 text-slate-400" />
-                                </div>
-                                <p className="text-xs text-white/50 mt-3 border-t border-white/10 pt-3">
-                                    {data.moonPhase.description}
-                                </p>
-                            </div>
-
-                            {/* Sol e Coeficiente */}
-                            <div className="grid grid-cols-3 gap-3">
-                                <div className="flex items-center gap-3 p-3 rounded-lg bg-yellow-500/20 border border-yellow-400/30">
-                                    <Sunrise className="w-6 h-6 text-yellow-400" />
-                                    <div>
-                                        <p className="text-[10px] text-white/50 uppercase">Nascer do Sol</p>
-                                        <p className="text-lg font-bold text-white">{data.sunrise}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 p-3 rounded-lg bg-orange-500/20 border border-orange-400/30">
-                                    <Sunset className="w-6 h-6 text-orange-400" />
-                                    <div>
-                                        <p className="text-[10px] text-white/50 uppercase">Pôr do Sol</p>
-                                        <p className="text-lg font-bold text-white">{data.sunset}</p>
-                                    </div>
-                                </div>
-                                <div
-                                    className="flex items-center gap-3 p-3 rounded-lg bg-purple-500/20 border border-purple-400/30 cursor-help"
-                                    title="Indica a amplitude da maré. Quanto maior (perto de 120), mais forte a correnteza."
-                                >
-                                    <Thermometer className="w-6 h-6 text-purple-300" />
-                                    <div>
-                                        <p className="text-[9px] text-white/50 uppercase whitespace-nowrap">Coeficiente de Marés</p>
-                                        <p className="text-lg font-bold text-purple-300">{data.coeficiente}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Links */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <a
-                                    href="/tides"
-                                    className="flex items-center justify-center gap-2 p-3 bg-club-red hover:bg-club-red-700 transition-all text-xs text-white font-bold uppercase tracking-wider border border-club-red rounded-lg"
-                                >
-                                    <Waves className="w-4 h-4" />
-                                    Mais Informações
-                                </a>
-                                <a
-                                    href="https://tabuademares.com/br/rio-grande-do-norte/natal"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-2 p-3 bg-white/5 hover:bg-white/10 transition-all text-xs text-white/60 hover:text-white border border-white/10 hover:border-white/20 rounded-lg"
-                                >
-                                    <ExternalLink className="w-4 h-4" />
-                                    Fonte Oficial
-                                </a>
-                            </div>
+                                </motion.div>
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
 
-            {/* Fonte Oficial */}
-            <div className="relative z-10 px-4 py-2 bg-black/20 border-t border-white/10">
-                <p className="text-[9px] text-white/40 text-center leading-relaxed">
-                    Fonte: CAPITANIA DOS PORTOS DO RN e COMANDO DO 3º DISTRITO NAVAL - MARINHA DO BRASIL • Carta 811
+                {/* Navegação de Dias */}
+                <div className="flex items-center justify-between gap-2 mt-4">
+                    <button
+                        onClick={() => setDayOffset(dayOffset - 1)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg border border-white/10 hover:border-white/20 transition-all"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                        Anterior
+                    </button>
+                    <button
+                        onClick={() => setDayOffset(dayOffset + 1)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg border border-white/10 hover:border-white/20 transition-all"
+                    >
+                        Próximo
+                        <ChevronRight className="w-4 h-4" />
+                    </button>
+                </div>
+
+                {/* Fonte */}
+                <p className="text-[9px] text-white/30 text-center mt-4 leading-relaxed">
+                    Fonte: {data.source}
                 </p>
             </div>
         </motion.div>

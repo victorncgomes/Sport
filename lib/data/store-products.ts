@@ -30,7 +30,7 @@ export const storeProducts: Product[] = [
         description: 'Camiseta oficial de treino e torcida. Tecido 100% poliéster leve e respirável com as cores tradicionais do clube.',
         price: 79.90,
         category: 'vestuario',
-        image: '/store/camisa_poliester_oficial.png',
+        image: '/store/camisa_poliester_oficial_v3.png',
         isNew: true
     },
     {
@@ -39,7 +39,7 @@ export const storeProducts: Product[] = [
         description: 'Tecido tecnológico com proteção UV50+ e secagem ultra rápida. Design aerodinâmico para alta performance.',
         price: 189.90,
         category: 'vestuario',
-        image: 'https://images.unsplash.com/photo-1571945153237-4929e783ee4a?auto=format&fit=crop&q=80&w=800',
+        image: '/store/camisa_competicao_2025.png',
         isNew: true
     },
     {
@@ -48,7 +48,7 @@ export const storeProducts: Product[] = [
         description: 'Boné leve com ventilação lateral a laser. Logo bordado em fio metálico.',
         price: 89.90,
         category: 'vestuario',
-        image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=800'
+        image: '/store/bone_tatico_scn.png'
     },
     {
         id: '3',
@@ -56,7 +56,7 @@ export const storeProducts: Product[] = [
         description: 'Macaquinho de remo profissional. Compressão graduada e corte anatômico.',
         price: 299.90,
         category: 'vestuario',
-        image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800',
+        image: '/store/unisuit_elite_pro.png',
         isPopular: true
     },
     {
@@ -65,7 +65,7 @@ export const storeProducts: Product[] = [
         description: 'Proteção contra vento e chuva leve. Faixas refletivas para segurança.',
         price: 249.90,
         category: 'vestuario',
-        image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800'
+        image: '/store/jaqueta_corta_vento.png'
     },
     {
         id: '5',
@@ -73,7 +73,7 @@ export const storeProducts: Product[] = [
         description: 'Conforto e durabilidade para o dia a dia. Malha fria.',
         price: 69.90,
         category: 'vestuario',
-        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800'
+        image: '/store/regata_treino_diario.png'
     },
 
     // Acessórios
@@ -83,7 +83,7 @@ export const storeProducts: Product[] = [
         description: 'Mantém a temperatura por até 12 horas. Aço inoxidável com acabamento fosco.',
         price: 99.90,
         category: 'acessorios',
-        image: 'https://images.unsplash.com/photo-1602143302703-f9a4991a8da2?auto=format&fit=crop&q=80&w=800',
+        image: '/store/squeeze_termico.png',
         isPopular: true
     },
     {
@@ -92,7 +92,7 @@ export const storeProducts: Product[] = [
         description: 'Proteção solar sem comprometer a ventilação. Ajuste elástico confortável.',
         price: 59.90,
         category: 'acessorios',
-        image: 'https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?auto=format&fit=crop&q=80&w=800'
+        image: '/store/viseira_scn_gold.png'
     },
     {
         id: '8',
@@ -100,7 +100,7 @@ export const storeProducts: Product[] = [
         description: '100% à prova d\'água. Ideal para levar equipamentos no barco.',
         price: 329.90,
         category: 'acessorios',
-        image: 'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&q=80&w=800'
+        image: '/store/mochila_estanque.png'
     },
     {
         id: '9',
@@ -108,7 +108,7 @@ export const storeProducts: Product[] = [
         description: 'Microfibra compacta. Seca 5x mais rápido que toalhas comuns.',
         price: 49.90,
         category: 'acessorios',
-        image: 'https://images.unsplash.com/photo-1615485290382-441e4d0c9cb5?auto=format&fit=crop&q=80&w=800'
+        image: '/store/toalha_alta_absorcao.png'
     },
     {
         id: '10',
@@ -116,7 +116,7 @@ export const storeProducts: Product[] = [
         description: 'Nunca perca suas chaves na água. Espuma de alta densidade.',
         price: 29.90,
         category: 'acessorios',
-        image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=800'
+        image: '/store/chaveiro_flutuante.png'
     },
 
     // Bar & Lanchonete
@@ -126,7 +126,7 @@ export const storeProducts: Product[] = [
         description: 'Açaí puro com banana, granola e mel. Energia para o pós-treino.',
         price: 22.00,
         category: 'lanchonete',
-        image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?auto=format&fit=crop&q=80&w=800',
+        image: '/store/acai_turbinado.png',
         isPopular: true
     },
     {
@@ -135,7 +135,7 @@ export const storeProducts: Product[] = [
         description: 'Mix de frutas cítricas, água de coco e sal do himalaia.',
         price: 12.00,
         category: 'bar',
-        image: 'https://images.unsplash.com/photo-1543253687-c931c8e01820?auto=format&fit=crop&q=80&w=800'
+        image: '/store/isotonico_natural.png'
     },
     {
         id: '13',
@@ -143,7 +143,7 @@ export const storeProducts: Product[] = [
         description: 'Pão integral, peito de frango desfiado, ricota e cenoura.',
         price: 18.00,
         category: 'lanchonete',
-        image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&q=80&w=800'
+        image: '/store/sanduiche_club.png'
     },
     {
         id: '14',
@@ -151,7 +151,7 @@ export const storeProducts: Product[] = [
         description: 'Direto do coco. Hidratação perfeita.',
         price: 8.00,
         category: 'bar',
-        image: 'https://images.unsplash.com/photo-1553177595-4de2bb0842b9?auto=format&fit=crop&q=80&w=800'
+        image: '/store/agua_de_coco.png'
     },
     {
         id: '15',
@@ -159,7 +159,7 @@ export const storeProducts: Product[] = [
         description: 'Aveia, pasta de amendoim, whey protein e cacau.',
         price: 10.00,
         category: 'lanchonete',
-        image: 'https://images.unsplash.com/photo-1510003461433-6f4327292271?auto=format&fit=crop&q=80&w=800',
+        image: '/store/barra_proteina.png',
         isNew: true
     }
 ];

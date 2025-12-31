@@ -229,3 +229,40 @@
 - **Dashboard Atualizado** (`app/training/page.tsx`):
     - Grid de atalhos agora com 4 colunas: Programa, Barcos, Histórico, Analytics
 
+### 20. Reorganização da Documentação e Changelog (31/12/2025)
+- **Seção Tecnologia & Inovação** (`app/about/page.tsx`):
+    - Removida exposição de padrões internos SemVer
+    - Atualizada versão de "V0.3.2" para "V0.4.5"
+    - Texto simplificado mostrando funcionalidades principais
+    - Adicionado link "Ver documentação completa" para `/docs`
+- **Nova Página de Documentação** (`app/docs/page.tsx`):
+    - Central de Documentação com 4 abas: Versões, Mapa do Site, Arquitetura, Orientações
+    - Histórico completo de 32 versões (0.0.1 a 0.4.5)
+    - Mapa do site com 80+ páginas organizadas por área (Público, Sócio, Coach, Diretoria, Admin)
+    - Diagrama de arquitetura do sistema (Frontend → API → ORM → Database)
+    - Guias de uso: reservar barco, registrar treino, acumular pontos
+- **Changelog Expandido** (`app/changelog/page.tsx`):
+    - Expandido de 6 para 32 versões completas
+    - Todas as versões do CHANGELOG.md agora visíveis na interface
+
+### 21. Sistema de Classificação de Condições para Remo por Horários Viáveis (31/12/2025)
+- **Motivação**: Widget de marés mostrava classificação única para o dia inteiro, ignorando variação de correntes e horários de funcionamento do clube.
+- **Solução Implementada**:
+    - **Análise de 16 Horários Viáveis**: 9 slots manhã (05:00-09:00) + 7 slots tarde (14:30-17:30)
+    - **Física Real do Rio Potengi**: Correntes de enchente (mar → rio) vs vazante (rio → mar)
+    - **Algoritmo de Scoring**: CurrentScore (0-40) + WindScore (0-30) + WaveScore (0-15) + TimeOfDayScore (-8 a +15)
+    - **Preferência Absoluta Manhã**: Em empates ou diferença ≤10 pontos, sempre escolhe manhã
+- **Arquivos Criados**:
+    - `types/rowing-conditions.ts` - Novos tipos: `SlotAnalysis`, `BestTimeResult`, `RowingConditionsOutput`
+    - `lib/utils/rowing-conditions-analyzer.ts` - Algoritmo completo com dados oficiais da Marinha
+    - `components/tides/SlotsTable.tsx` - Tabela expansível com todos os horários
+    - `docs/ROWING_CONDITIONS_ANALYSIS.md` - Documentação técnica completa
+- **Arquivos Modificados**:
+    - `components/tide-widget.tsx` - Substituída classificação única por melhor horário + tabela expansível
+- **Interface**:
+    - **Melhor Horário**: Card destacado com horário, classificação e motivo
+    - **Condição Atual**: Exibida se estiver em horário viável
+    - **Botão Expandir**: Mostra tabela com todos os 16 horários analisados
+    - **Tabela Detalhada**: Score, classificação, fase da maré, corrente, vento por horário
+- **Dados Oficiais**: Velocidades de corrente da Marinha do Brasil (Porto de Natal)
+

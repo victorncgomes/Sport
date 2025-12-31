@@ -8,7 +8,25 @@ Histórico completo de versões do sistema de gestão do Sport Club de Natal.
 
 ---
 
-## [0.4.5] - 2025-12-30 _(Versão Atual)_
+## [0.4.7] - 2025-12-31 _(Versão Atual)_
+
+### Corrigido
+- **Módulo de Treino:**
+  - Sessões passadas agora acessíveis em "Meu Programa"
+  - Botão "Repetir" para treinos completados
+  - Botão "Fazer" para treinos pendentes do passado
+  - Badge "Pendente" para sessões não completadas
+  - Link "Ver Histórico" adicionado
+  - Título "Meu Programa" redimensionado (modo compacto)
+  
+- **Página de Início de Treino:**
+  - Tamanho dos cards de seleção de esporte reduzido
+  - Esportes "Corrida" e "Bicicleta" removidos
+  - Esportes "Aquecimento" e "Alongamento" adicionados
+
+---
+
+## [0.4.5] - 2025-12-30
 
 ### Adicionado
 - **Verificação de Treino Curto (<3min):**

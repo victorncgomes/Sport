@@ -183,7 +183,7 @@ export default function MuralPage() {
                                     Consulte o estatuto oficial do Sport Club de Natal, com todas as normas e regulamentos que regem nossa instituição.
                                 </p>
                                 <a
-                                    href="/docs/Estatuto Sport Club de Natal.pdf"
+                                    href="/public/docs/Estatuto Sport Club de Natal.pdf"
                                     download="Estatuto_Sport_Club_de_Natal.pdf"
                                     className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-club-gold text-black font-bold rounded-lg hover:bg-club-gold/90 transition-colors"
                                 >

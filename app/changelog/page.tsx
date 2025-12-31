@@ -2,7 +2,42 @@ import { AnimatedCard } from '@/components/ui/animated-card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Plus, AlertTriangle, Wrench, Sparkles } from 'lucide-react';
 
-const changelogData = [
+interface ChangelogRelease {
+    version: string;
+    date: string;
+    items: {
+        added?: string[];
+        improved?: string[];
+        fixed?: string[];
+    };
+}
+
+const changelogData: ChangelogRelease[] = [
+    {
+        version: '0.4.6',
+        date: '2025-12-31',
+        items: {
+            fixed: [
+                '**UI:** Tamanho dos botões de modalidades reduzido (Remo, Musculação, Outras Atividades).',
+                '**Middleware:** Voluntariado, Docs e Changelog não redirecionam mais para login.',
+                '**Barcos:** Renomeado "Canoa" para "Canoe" e "Canoa Dupla" para "Double Canoe".',
+                '**Pagamentos:** Histórico de pagamentos integrado com API.',
+                '**Lint:** Corrigidos erros TypeScript em datas opcionais.',
+            ],
+            added: [
+                '**APIs:** `/api/payments/history` - Histórico de pagamentos.',
+                '**APIs:** `/api/users?role=BOARD` - Listar membros da diretoria.',
+                '**Dados:** 8 pagamentos simulados para histórico.',
+                '**Dados:** 5 membros da diretoria simulados.',
+                '**Dados:** 5 tarefas simuladas para sistema Kanban.',
+            ],
+            improved: [
+                '**Documentação:** Arquitetura de Barcos vs Garagem documentada.',
+                '**Documentação:** Regras de negócio do sistema de eleições.',
+                '**Package:** Versão atualizada para 0.4.6.',
+            ]
+        }
+    },
     {
         version: '0.4.5',
         date: '2025-12-30',
@@ -47,6 +82,30 @@ const changelogData = [
         }
     },
     {
+        version: '0.4.2',
+        date: '2025-12-28',
+        items: {
+            added: [
+                '**Coach:** API `/api/coach/athletes` para listar atletas.',
+                '**Dashboard:** Painel do coach funcional.',
+            ]
+        }
+    },
+    {
+        version: '0.4.1',
+        date: '2025-12-27',
+        items: {
+            added: [
+                '**Reservas:** Intervalos de 15 minutos.',
+                '**Perfil:** Páginas de Pagamentos, Avisos e Configurações.',
+                '**APIs:** Rotas de perfil completas.',
+            ],
+            fixed: [
+                'Sistema de notificações (sininho).',
+            ]
+        }
+    },
+    {
         version: '0.4.0',
         date: '2025-12-27',
         items: {
@@ -57,12 +116,98 @@ const changelogData = [
         }
     },
     {
+        version: '0.3.9',
+        date: '2025-12-27',
+        items: {
+            added: [
+                '**Garagem:** Módulo completo com 10 APIs.',
+                '**Check-in/Check-out:** Sistema de controle de barcos.',
+                '**Fila de Espera:** Recurso para barcos ocupados.',
+            ]
+        }
+    },
+    {
+        version: '0.3.8',
+        date: '2025-12-27',
+        items: {
+            added: [
+                '**GPS Tracking:** Filtro de accuracy, cálculo Haversine, auto-pause.',
+                '**Aquecimento:** Página com 5 exercícios de core.',
+            ]
+        }
+    },
+    {
+        version: '0.3.7',
+        date: '2025-12-27',
+        items: {
+            added: [
+                '**Treinos:** Dashboard de treinos.',
+                '**Seletor:** Tipo de treino (indoor/outdoor).',
+                '**APIs:** Rotas de treinos (start, complete, templates).',
+            ]
+        }
+    },
+    {
         version: '0.3.6',
         date: '2025-12-27',
         items: {
             added: [
-                '**PWA:** Service Worker e IndexedDB para funcionamento offline.',
+                '**PWA:** Service Worker para funcionamento offline.',
+                '**IndexedDB:** Manager para dados locais.',
                 '**Schema:** 15+ modelos Prisma expandidos.',
+            ]
+        }
+    },
+    {
+        version: '0.3.5',
+        date: '2025-12-26',
+        items: {
+            added: [
+                '**Anamnese:** Ficha completa em 5 etapas.',
+                '**Voluntariado:** Termo de aceite.',
+                '**EAD:** Sistema Escola de Remo.',
+            ]
+        }
+    },
+    {
+        version: '0.3.4',
+        date: '2025-12-26',
+        items: {
+            added: [
+                '**Notícias:** Sistema de publicações.',
+                '**Marés:** Widget de condições do rio.',
+            ]
+        }
+    },
+    {
+        version: '0.3.3',
+        date: '2025-12-25',
+        items: {
+            added: [
+                '**Perfis:** Estrutura base de perfis de usuário.',
+                '**Carteirinha:** Digital com QR Code.',
+            ]
+        }
+    },
+    {
+        version: '0.3.2',
+        date: '2025-12-25',
+        items: {
+            added: [
+                '**Voluntariado:** Portal completo.',
+                '**Login:** Via dropdown no header.',
+                '**Proposta:** Formulário de sócio.',
+            ]
+        }
+    },
+    {
+        version: '0.3.1',
+        date: '2025-12-24',
+        items: {
+            added: [
+                '**Treinador:** Dashboard do coach.',
+                '**Associado:** Ficha do membro.',
+                '**Presença:** Sistema de controle.',
             ]
         }
     },
@@ -73,6 +218,167 @@ const changelogData = [
             added: [
                 '**Identidade Visual 2.0:** Vermelho, Preto, Ouro com glassmorphism.',
                 '**Gamificação:** Sistema de níveis, pontos e conquistas.',
+            ]
+        }
+    },
+    {
+        version: '0.2.14',
+        date: '2024-12-23',
+        items: {
+            added: [
+                '**Autenticação:** NextAuth integrado.',
+                '**Prisma:** Banco de dados SQLite.',
+                '**Dashboard:** Dinâmico por perfil.',
+            ]
+        }
+    },
+    {
+        version: '0.2.12',
+        date: '2024-12-22',
+        items: {
+            improved: [
+                'Performance de carregamento.',
+                'Responsividade mobile.',
+            ]
+        }
+    },
+    {
+        version: '0.2.10',
+        date: '2024-12-21',
+        items: {
+            added: [
+                '**Loja:** Store oficial.',
+                '**Galeria:** Álbum de imagens.',
+            ]
+        }
+    },
+    {
+        version: '0.2.8',
+        date: '2024-12-20',
+        items: {
+            added: [
+                '**Eventos:** Sistema de eventos.',
+                '**RSVP:** Confirmação de presença.',
+            ]
+        }
+    },
+    {
+        version: '0.2.5',
+        date: '2024-12-19',
+        items: {
+            added: [
+                '**Reservas:** Sistema de barcos.',
+                '**Notícias:** Painel de publicações.',
+            ]
+        }
+    },
+    {
+        version: '0.2.3',
+        date: '2024-12-18',
+        items: {
+            added: [
+                '**Pagamentos:** Sistema mock.',
+                '**Histórico:** Financeiro do membro.',
+            ]
+        }
+    },
+    {
+        version: '0.2.0',
+        date: '2024-12-17',
+        items: {
+            added: [
+                '**Next.js 14:** Migração para App Router.',
+                '**Mobile-First:** Arquitetura responsiva.',
+            ]
+        }
+    },
+    {
+        version: '0.1.12',
+        date: '2024-12-16',
+        items: {
+            added: [
+                '**Permissões:** Estrutura de roles.',
+                '**UI:** Componentes fundamentais.',
+            ]
+        }
+    },
+    {
+        version: '0.1.10',
+        date: '2024-12-15',
+        items: {
+            improved: [
+                'Sistema de navegação.',
+                'Estilização de cards.',
+            ]
+        }
+    },
+    {
+        version: '0.1.8',
+        date: '2024-12-14',
+        items: {
+            added: [
+                '**Header:** Com logo do clube.',
+                '**Footer:** Responsivo.',
+            ]
+        }
+    },
+    {
+        version: '0.1.5',
+        date: '2024-12-13',
+        items: {
+            added: [
+                '**Landing Page:** Protótipo inicial.',
+                '**Eventos:** Seção de eventos.',
+            ]
+        }
+    },
+    {
+        version: '0.1.3',
+        date: '2024-12-12',
+        items: {
+            added: [
+                '**Tailwind:** Configuração inicial.',
+                '**Tema:** Cores e fontes base.',
+            ]
+        }
+    },
+    {
+        version: '0.1.1',
+        date: '2024-12-11',
+        items: {
+            added: [
+                '**Repositório:** Criação do projeto.',
+                '**Next.js:** Estrutura base.',
+            ]
+        }
+    },
+    {
+        version: '0.0.5',
+        date: '2024-12-10',
+        items: {
+            added: [
+                '**ESLint:** Configuração.',
+                '**Prettier:** Formatação de código.',
+            ]
+        }
+    },
+    {
+        version: '0.0.3',
+        date: '2024-12-09',
+        items: {
+            added: [
+                '**Arquitetura:** Definição de estrutura.',
+                '**Docs:** Documentação inicial.',
+            ]
+        }
+    },
+    {
+        version: '0.0.1',
+        date: '2024-12-08',
+        items: {
+            added: [
+                '**Início:** Criação do projeto.',
+                '**Diretórios:** Estrutura de pastas.',
             ]
         }
     },

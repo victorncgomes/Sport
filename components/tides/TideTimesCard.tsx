@@ -105,13 +105,6 @@ export const TideTimesCard: React.FC<TideTimesCardProps> = ({ tideDay }) => {
                     <p className="font-mono text-white">{tideDay.sunset}</p>
                 </div>
             </div>
-
-            {/* Fonte Oficial */}
-            <div className="mt-4 pt-3 border-t border-white/10">
-                <p className="text-[10px] text-white/40 text-center leading-relaxed">
-                    Fonte: CAPITANIA DOS PORTOS DO RN e COMANDO DO 3º DISTRITO NAVAL - MARINHA DO BRASIL • Carta 811
-                </p>
-            </div>
         </AnimatedCard>
     );
 };

@@ -16,6 +16,7 @@ import {
     Instagram,
 } from 'lucide-react';
 import { useAuth } from './auth-context';
+import { SearchBar } from './search/search-bar';
 
 // TikTok icon (not available in lucide-react)
 const TikTokIcon = ({ className }: { className?: string }) => (
@@ -68,7 +69,6 @@ function getMenuItems(role: string) {
 
 export function ClubHeader() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [searchOpen, setSearchOpen] = useState(false);
     const [notificationCount, setNotificationCount] = useState(0);
     const pathname = usePathname();
     const router = useRouter();
@@ -127,7 +127,7 @@ export function ClubHeader() {
     return (
         <>
             {/* ========== DESKTOP HEADER (>=992px) ========== */}
-            <header className="hidden lg:block fixed top-0 left-0 right-0 z-50">
+            <header className="hidden lg:block fixed inset-x-0 top-0 z-50">
                 {/* FAIXA SUPERIOR - PRETA (64px - reduzido 20%) */}
                 <div className="bg-[#000000] h-[64px] flex items-center justify-between px-5 relative">
                     {/* Logo Esquerdo - SOBREPOSTO ÀS BARRAS (112px - reduzido 20%) */}
@@ -244,13 +244,7 @@ export function ClubHeader() {
                                     )}
                                 </button>
                             </Link>
-                            <button
-                                onClick={() => setSearchOpen(!searchOpen)}
-                                className="text-white hover:opacity-80 transition-opacity"
-                                aria-label="Buscar"
-                            >
-                                <Search className="w-6 h-6" />
-                            </button>
+                            <SearchBar />
                         </div>
                     </div>
                 </div>
@@ -342,13 +336,7 @@ export function ClubHeader() {
                                 </span>
                             )}
                         </button>
-                        <button
-                            onClick={() => setSearchOpen(!searchOpen)}
-                            className="text-white hover:opacity-70 transition-opacity"
-                            aria-label="Buscar"
-                        >
-                            <Search className="w-5 h-5" />
-                        </button>
+                        <SearchBar />
                     </div>
                 </div>
 
@@ -433,35 +421,7 @@ export function ClubHeader() {
                 )}
             </AnimatePresence>
 
-            {/* ========== SEARCH OVERLAY ========== */}
-            <AnimatePresence>
-                {searchOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="fixed top-[115px] left-0 right-0 bg-black/95 backdrop-blur-lg z-40 p-4 border-b border-white/10"
-                    >
-                        <div className="container mx-auto max-w-2xl">
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                                <input
-                                    type="text"
-                                    placeholder="Buscar..."
-                                    className="w-full bg-white/10 border border-white/20 rounded py-3 pl-12 pr-4 text-white placeholder:text-white/40 focus:outline-none focus:border-[#DC2626]"
-                                    autoFocus
-                                />
-                                <button
-                                    onClick={() => setSearchOpen(false)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+
 
             {/* Spacer to prevent content from going under fixed header (100px - reduzido 20%) */}
             <div className="h-[100px] lg:h-[100px]" />

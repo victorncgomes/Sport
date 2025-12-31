@@ -1,9 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
-    swcMinify: true,
     images: {
-        domains: ['localhost', 'scnatal.com.br'],
+        remotePatterns: [
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+            },
+            {
+                protocol: 'https',
+                hostname: 'scnatal.com.br',
+            },
+        ],
         formats: ['image/avif', 'image/webp'],
     },
     experimental: {
@@ -17,16 +25,12 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
-    // Desabilitar indicador N de desenvolvimento
     devIndicators: {
-        buildActivity: false,
-        buildActivityPosition: 'bottom-right',
+        position: 'bottom-right',
     },
-    // Otimizações de performance
     compiler: {
         removeConsole: process.env.NODE_ENV === 'production',
     },
-    // PWA será configurado posteriormente
 }
 
 module.exports = nextConfig

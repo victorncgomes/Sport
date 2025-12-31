@@ -228,7 +228,7 @@ export default function VolunteerTermPage() {
 
                         {/* Link para o termo completo */}
                         <a
-                            href="/docs/termo-de-adesao-completo.pdf"
+                            href="/public/docs/termo-de-adesao-completo.pdf"
                             target="_blank"
                             className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
                         >
