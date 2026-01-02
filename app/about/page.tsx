@@ -300,6 +300,22 @@ export default function AboutPage() {
                                             <p className="text-white font-bold text-sm">contato@scnatal.com.br</p>
                                         </div>
                                     </div>
+
+                                    {/* Google Maps Embed */}
+                                    <div className="pt-4 border-t border-white/5">
+                                        <p className="text-white/30 text-[10px] uppercase font-black tracking-widest mb-3">Como Chegar</p>
+                                        <div className="rounded-xl overflow-hidden border border-white/10 h-48 w-full bg-white/5">
+                                            <iframe
+                                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.319567844086!2d-35.2045582!3d-5.8052278!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7b2550116892607%3A0x805421526685827c!2sSport%20Club%20de%20Natal!5e0!3m2!1spt-BR!2sbr!4v1704207185072!5m2!1spt-BR!2sbr"
+                                                width="100%"
+                                                height="100%"
+                                                style={{ border: 0 }}
+                                                allowFullScreen
+                                                loading="lazy"
+                                                referrerPolicy="no-referrer-when-downgrade"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </AnimatedCard>
 
