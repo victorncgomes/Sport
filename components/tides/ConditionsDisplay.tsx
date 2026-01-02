@@ -2,8 +2,8 @@
 
 import { SlotAnalysis } from '@/types/rowing-conditions';
 import { cn } from '@/lib/utils';
-import { Navigation, Waves, Gauge, Wind, Droplets } from 'lucide-react';
-import { calculateWaterSurface, calculatePaceImpact } from '@/lib/utils/rowing-calculations';
+import { Navigation, Waves, Gauge, Wind, Droplets, Anchor } from 'lucide-react';
+import { calculateWaterSurface, calculateDualPaceImpact, TideType } from '@/lib/utils/rowing-calculations';
 
 interface ConditionsDisplayProps {
     slot: SlotAnalysis;
@@ -16,17 +16,17 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
         slot.environmentFactors.windDirection
     );
 
-    // Calcular impacto no pace (Dois cenários: a favor e contra a correnteza)
-    // A favor (0 graus relativos à corrente)
-    const paceImpactFavor = calculatePaceImpact(
-        slot.tideFactors.departureCurrentSpeed,
-        0 // 0 graus = alinhado com a corrente (a favor)
-    );
+    // Mapear tipo de maré
+    const tideType: TideType = slot.tideFactors.departureCurrentType === 'flood' ? 'flood' :
+        slot.tideFactors.departureCurrentType === 'ebb' ? 'ebb' : 'slack';
 
-    // Contra (180 graus relativos à corrente)
-    const paceImpactContra = calculatePaceImpact(
+    // Calcular impacto no pace com física realista do Rio Potengi
+    // Considera: correnteza natural do rio + maré + vento
+    const dualPace = calculateDualPaceImpact(
         slot.tideFactors.departureCurrentSpeed,
-        180 // 180 graus = oposto à corrente (contra)
+        tideType,
+        slot.environmentFactors.windSpeed / 3.6, // km/h para m/s
+        slot.environmentFactors.windDirection
     );
 
     return (
@@ -114,33 +114,60 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                 </div>
             </div>
 
-            {/* 3ª Linha: Pace (Favor e Contra) */}
+            {/* 3ª Linha: Pace para Mar e Nascente */}
             <div className="grid grid-cols-2 gap-3">
-                {/* Pace A Favor */}
-                <div className="rounded-xl bg-green-500/10 p-3 border border-green-400/20">
+                {/* Pace para o Mar (NE) */}
+                <div className={cn(
+                    "rounded-xl p-3 border",
+                    dualPace.towardsSea.delta_s_per_500m <= 0
+                        ? "bg-green-500/10 border-green-400/20"
+                        : "bg-red-500/10 border-red-400/20"
+                )}>
                     <div className="flex items-center gap-2 mb-2">
-                        <Gauge className="w-4 h-4 text-green-300" />
-                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Pace (Favor)</span>
+                        <Anchor className="w-4 h-4 text-blue-300" />
+                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">
+                            P/ Mar (NE)
+                        </span>
                     </div>
-                    <p className="text-xl font-bold text-green-300">
-                        {paceImpactFavor.delta_s_per_500m > 0 ? '+' : ''}
-                        {paceImpactFavor.delta_s_per_500m.toFixed(1)}s
+                    <p className={cn(
+                        "text-xl font-bold",
+                        dualPace.towardsSea.delta_s_per_500m <= 0 ? "text-green-300" : "text-red-300"
+                    )}>
+                        {dualPace.towardsSea.delta_s_per_500m > 0 ? '+' : ''}
+                        {dualPace.towardsSea.delta_s_per_500m.toFixed(1)}s
                     </p>
                     <p className="text-[10px] text-white/50 mt-1">por 500m</p>
                 </div>
 
-                {/* Pace Contra */}
-                <div className="rounded-xl bg-red-500/10 p-3 border border-red-400/20">
+                {/* Pace para Nascente (SW) */}
+                <div className={cn(
+                    "rounded-xl p-3 border",
+                    dualPace.towardsUpstream.delta_s_per_500m <= 0
+                        ? "bg-green-500/10 border-green-400/20"
+                        : "bg-red-500/10 border-red-400/20"
+                )}>
                     <div className="flex items-center gap-2 mb-2">
-                        <Gauge className="w-4 h-4 text-red-300" />
-                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Pace (Contra)</span>
+                        <Anchor className="w-4 h-4 text-orange-300" />
+                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">
+                            P/ Nascente (SW)
+                        </span>
                     </div>
-                    <p className="text-xl font-bold text-red-300">
-                        {paceImpactContra.delta_s_per_500m > 0 ? '+' : ''}
-                        {paceImpactContra.delta_s_per_500m.toFixed(1)}s
+                    <p className={cn(
+                        "text-xl font-bold",
+                        dualPace.towardsUpstream.delta_s_per_500m <= 0 ? "text-green-300" : "text-red-300"
+                    )}>
+                        {dualPace.towardsUpstream.delta_s_per_500m > 0 ? '+' : ''}
+                        {dualPace.towardsUpstream.delta_s_per_500m.toFixed(1)}s
                     </p>
                     <p className="text-[10px] text-white/50 mt-1">por 500m</p>
                 </div>
+            </div>
+
+            {/* Força Dominante */}
+            <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-center">
+                <p className="text-[10px] text-white/50">
+                    ⚡ {dualPace.dominantForce} • Força: {dualPace.netForce > 0 ? '+' : ''}{dualPace.netForce.toFixed(2)} m/s
+                </p>
             </div>
 
             {/* Recomendação */}

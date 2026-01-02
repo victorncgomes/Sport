@@ -9,10 +9,26 @@ import {
 } from '@/types/rowing-conditions';
 import {
     POTENGI_COURSE,
+    POTENGI_PHYSICS,
     PACE_IMPACT_COEFFICIENT,
     CONDITION_THRESHOLDS,
     WATER_CONDITION_THRESHOLDS
 } from '@/lib/config/rowing-config';
+
+/**
+ * Tipo de maré
+ */
+export type TideType = 'ebb' | 'flood' | 'slack';
+
+/**
+ * Resultado do cálculo de pace para ambas as direções
+ */
+export interface DualPaceImpact {
+    towardsSea: PaceImpact;      // Remando para NE (mar)
+    towardsUpstream: PaceImpact; // Remando para SW (nascente)
+    netForce: number;            // Força resultante em m/s (+ = NE, - = SW)
+    dominantForce: string;       // Descrição da força dominante
+}
 
 /**
  * Normaliza um ângulo para o intervalo 0-360
@@ -135,50 +151,154 @@ export function calculateSideChopIndex(
 }
 
 /**
- * Calcula o impacto estimado no pace
- * @param current_speed_m_s Velocidade da corrente em m/s
- * @param current_relative_angle Ângulo relativo da corrente
- * @param boat_speed_m_s Velocidade do barco (padrão: velocidade média do Potengi)
- * @returns Impacto no pace
+ * Calcula a força resultante no eixo do rio (SW-NE)
+ * Positivo = força para NE (mar)
+ * Negativo = força para SW (nascente)
+ * 
+ * @param tideCurrentSpeed Velocidade da corrente da maré em m/s
+ * @param tideType Tipo da maré: 'ebb' (vazante), 'flood' (enchente), 'slack' (estofa)
+ * @param windSpeed_m_s Velocidade do vento em m/s
+ * @param windDirection Direção do vento em graus
+ * @returns Força resultante em m/s
+ */
+export function calculateNetForce(
+    tideCurrentSpeed: number,
+    tideType: TideType,
+    windSpeed_m_s: number,
+    windDirection: number
+): { netForce: number; components: { river: number; tide: number; wind: number } } {
+    // 1. Força do rio (sempre para NE = positivo)
+    const F_river = POTENGI_PHYSICS.naturalCurrentSpeed;
+
+    // 2. Força da maré
+    let F_tide: number;
+    if (tideType === 'ebb') {
+        // Vazante: maré puxa para o mar (NE) = positivo
+        F_tide = +tideCurrentSpeed;
+    } else if (tideType === 'flood') {
+        // Enchente: maré empurra para dentro (SW) = negativo
+        F_tide = -tideCurrentSpeed;
+    } else {
+        // Estofa: sem contribuição da maré
+        F_tide = 0;
+    }
+
+    // 3. Componente do vento no eixo SW-NE (45°)
+    const RIVER_AZIMUTH = POTENGI_COURSE.azimuth; // 45°
+    const windAngleRad = ((windDirection - RIVER_AZIMUTH) * Math.PI) / 180;
+    const F_wind = windSpeed_m_s * Math.cos(windAngleRad) * POTENGI_PHYSICS.windDragCoefficient;
+
+    // Força total
+    const netForce = F_river + F_tide + F_wind;
+
+    return {
+        netForce,
+        components: {
+            river: F_river,
+            tide: F_tide,
+            wind: F_wind
+        }
+    };
+}
+
+/**
+ * Calcula o impacto no pace para AMBAS as direções de remo
+ * Esta é a função principal que considera toda a física do Rio Potengi
+ * 
+ * @param tideCurrentSpeed Velocidade da corrente da maré em m/s
+ * @param tideType Tipo da maré: 'ebb' (vazante), 'flood' (enchente), 'slack' (estofa)
+ * @param windSpeed_m_s Velocidade do vento em m/s
+ * @param windDirection Direção do vento em graus
+ * @param boatSpeed Velocidade média do barco em m/s (padrão: 4.5 m/s = 2:00/500m)
+ * @returns Impacto no pace para ambas as direções
+ */
+export function calculateDualPaceImpact(
+    tideCurrentSpeed: number,
+    tideType: TideType,
+    windSpeed_m_s: number,
+    windDirection: number,
+    boatSpeed: number = POTENGI_COURSE.average_boat_speed_m_s
+): DualPaceImpact {
+    // Calcular força resultante
+    const { netForce, components } = calculateNetForce(
+        tideCurrentSpeed,
+        tideType,
+        windSpeed_m_s,
+        windDirection
+    );
+
+    // Tempo base para 500m sem corrente
+    const baseTime = 500 / boatSpeed; // ~111 segundos (1:51)
+
+    // Remando para NE (mar):
+    // Força positiva AJUDA (aumenta velocidade efetiva)
+    // Força negativa ATRAPALHA (diminui velocidade efetiva)
+    const effectiveSpeedNE = Math.max(boatSpeed + netForce, 0.5); // Mínimo 0.5 m/s para evitar divisão por zero
+    const timeNE = 500 / effectiveSpeedNE;
+    const deltaNE = timeNE - baseTime;
+
+    // Remando para SW (nascente):
+    // Força positiva ATRAPALHA (diminui velocidade efetiva)
+    // Força negativa AJUDA (aumenta velocidade efetiva)
+    const effectiveSpeedSW = Math.max(boatSpeed - netForce, 0.5);
+    const timeSW = 500 / effectiveSpeedSW;
+    const deltaSW = timeSW - baseTime;
+
+    // Determinar força dominante
+    let dominantForce: string;
+    if (Math.abs(components.tide) > Math.abs(components.river) + Math.abs(components.wind)) {
+        dominantForce = tideType === 'ebb' ? 'Maré vazante dominante' :
+            tideType === 'flood' ? 'Maré enchente dominante' :
+                'Estofa';
+    } else if (components.river > Math.abs(components.tide)) {
+        dominantForce = 'Correnteza do rio dominante';
+    } else {
+        dominantForce = 'Forças equilibradas';
+    }
+
+    return {
+        towardsSea: {
+            delta_s_per_500m: Math.round(deltaNE * 10) / 10,
+            percentage: Math.round((deltaNE / baseTime) * 1000) / 10,
+            description: deltaNE < -2 ? `Ganho de ${Math.abs(deltaNE).toFixed(1)}s/500m` :
+                deltaNE > 2 ? `Perda de ${deltaNE.toFixed(1)}s/500m` :
+                    'Impacto mínimo'
+        },
+        towardsUpstream: {
+            delta_s_per_500m: Math.round(deltaSW * 10) / 10,
+            percentage: Math.round((deltaSW / baseTime) * 1000) / 10,
+            description: deltaSW < -2 ? `Ganho de ${Math.abs(deltaSW).toFixed(1)}s/500m` :
+                deltaSW > 2 ? `Perda de ${deltaSW.toFixed(1)}s/500m` :
+                    'Impacto mínimo'
+        },
+        netForce: Math.round(netForce * 100) / 100,
+        dominantForce
+    };
+}
+
+/**
+ * Função legada para compatibilidade - usa calculateDualPaceImpact internamente
+ * @deprecated Use calculateDualPaceImpact para resultados mais precisos
  */
 export function calculatePaceImpact(
     current_speed_m_s: number,
     current_relative_angle: number,
     boat_speed_m_s: number = POTENGI_COURSE.average_boat_speed_m_s
 ): PaceImpact {
-    // Componente da corrente na direção do percurso
-    // Positivo = a favor, Negativo = contra
-    const angle_rad = (current_relative_angle * Math.PI) / 180;
-    const current_component = current_speed_m_s * Math.cos(angle_rad);
+    // Converter ângulo relativo para tipo de maré (aproximação)
+    // 0° = a favor (vazante), 180° = contra (enchente)
+    const tideType: TideType = current_relative_angle < 90 ? 'ebb' : 'flood';
 
-    // Fórmula: pace_delta = (current_component / boat_speed) × K × 500m_time
-    // Onde 500m_time é o tempo base para percorrer 500m
-    const base_time_500m = 500 / boat_speed_m_s; // segundos
+    // Calcular com a nova função (sem vento para compatibilidade)
+    const dualImpact = calculateDualPaceImpact(
+        current_speed_m_s,
+        tideType,
+        0, // sem vento
+        0  // direção irrelevante
+    );
 
-    // Impacto relativo
-    const relative_impact = (current_component / boat_speed_m_s) * PACE_IMPACT_COEFFICIENT;
-
-    // Delta em segundos por 500m (negativo = mais rápido, positivo = mais lento)
-    const delta_s_per_500m = -relative_impact * base_time_500m;
-
-    // Percentual de impacto
-    const percentage = (relative_impact * 100);
-
-    // Descrição
-    let description: string;
-    if (Math.abs(delta_s_per_500m) < 2) {
-        description = 'Impacto mínimo no pace';
-    } else if (delta_s_per_500m < 0) {
-        description = `Ganho de ${Math.abs(delta_s_per_500m).toFixed(1)}s/500m`;
-    } else {
-        description = `Perda de ${delta_s_per_500m.toFixed(1)}s/500m`;
-    }
-
-    return {
-        delta_s_per_500m: Math.round(delta_s_per_500m * 10) / 10,
-        percentage: Math.round(percentage * 10) / 10,
-        description
-    };
+    // Retornar o impacto para o Mar (NE) como padrão
+    return dualImpact.towardsSea;
 }
 
 /**
@@ -197,3 +317,4 @@ export function degreesToCardinal(degrees: number): string {
 export function msToKmh(ms: number): number {
     return Math.round(ms * 3.6 * 10) / 10;
 }
+
