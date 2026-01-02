@@ -94,7 +94,7 @@ export default function HomePage() {
                                 initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.2 }}
-                                className="group relative h-[300px] md:h-[400px] rounded-2xl overflow-hidden cursor-pointer"
+                                className="group relative h-[300px] md:h-[400px] overflow-hidden cursor-pointer"
                             >
                                 <Link href={`/news/${news.id}`} className="block h-full">
                                     <Image
@@ -141,31 +141,23 @@ export default function HomePage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-gray-800 rounded-xl overflow-hidden border border-white/5 hover:border-club-red/30 transition-all group cursor-pointer"
+                                className="bg-gray-800 overflow-hidden border border-white/5 hover:border-club-red/30 transition-all group cursor-pointer"
                             >
-                                <Link href={`/news/${news.id}`} className="block h-full">
-                                    <div className="h-48 relative overflow-hidden">
-                                        <Image
-                                            src={news.image || '/placeholder-news.jpg'}
-                                            alt={news.title}
-                                            fill
-                                            className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                        />
-                                        <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs font-medium text-white">
-                                            {news.date ? news.date : new Date(news.publishedAt!).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                                        </div>
-                                    </div>
-                                    <div className="p-4">
+                                <Link href={`/news/${news.id}`} className="block h-full p-6">
+                                    <div className="flex justify-between items-start mb-4">
                                         <span className="text-xs font-bold text-club-red uppercase tracking-wider">
                                             {news.category}
                                         </span>
-                                        <h3 className="text-lg font-bold text-white mt-2 mb-3 line-clamp-2 group-hover:text-club-red transition-colors">
-                                            {news.title}
-                                        </h3>
-                                        <p className="text-sm text-gray-400 line-clamp-2">
-                                            {news.excerpt}
-                                        </p>
+                                        <span className="text-[10px] font-medium text-white/40 uppercase tracking-widest">
+                                            {news.date ? news.date : new Date(news.publishedAt!).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                                        </span>
                                     </div>
+                                    <h3 className="text-lg font-bold text-white mb-3 line-clamp-3 group-hover:text-club-red transition-colors">
+                                        {news.title}
+                                    </h3>
+                                    <p className="text-sm text-gray-400 line-clamp-4">
+                                        {news.excerpt}
+                                    </p>
                                 </Link>
                             </motion.article>
                         ))}
