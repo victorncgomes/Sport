@@ -29,47 +29,61 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
         slot.environmentFactors.windDirection
     );
 
-    // Constante de conversão m/s para nós: 1 nó = 0.5144 m/s
-    const KNOTS_CONVERSION = 0.5144;
-    const BASE_BOAT_SPEED = 4.5; // m/s
-    const BASE_TIME_500M = 500 / BASE_BOAT_SPEED; // ~111s
+    // ═══════════════════════════════════════════════════════════════════════
+    // CÁLCULO DE VELOCIDADE EM NÓS (Refatoração Definitiva)
+    // ═══════════════════════════════════════════════════════════════════════
+    // 
+    // netForce > 0 = corrente para NE (VAZANTE - água saindo para o mar)
+    // netForce < 0 = corrente para SW (ENCHENTE - água entrando do mar)
+    // 
+    // Para quem rema para IGAPÓ (SW):
+    //   - Corrente para SW (netForce < 0) = A FAVOR → mostrar valor POSITIVO
+    //   - Corrente para NE (netForce > 0) = CONTRA → mostrar valor NEGATIVO
+    //   → Fórmula: igapoKnots = -netForce / 0.5144
+    //
+    // Para quem rema para REDINHA (NE):
+    //   - Corrente para NE (netForce > 0) = A FAVOR → mostrar valor POSITIVO
+    //   - Corrente para SW (netForce < 0) = CONTRA → mostrar valor NEGATIVO
+    //   → Fórmula: redinhaKnots = +netForce / 0.5144
+    // ═══════════════════════════════════════════════════════════════════════
 
-    // Calcular velocidades EFETIVAS a partir dos deltas de tempo (que são DIFERENTES!)
-    // tempo_efetivo = base_time + delta
-    // velocidade_efetiva = 500 / tempo_efetivo
-    // delta_velocidade = velocidade_efetiva - velocidade_base
+    const KNOTS_CONVERSION = 0.5144; // 1 nó = 0.5144 m/s
 
-    // Para Igapó (usando delta upstream)
-    const igapoEffectiveTime = BASE_TIME_500M + dualPace.towardsUpstream.delta_s_per_500m;
-    const igapoEffectiveSpeedMs = 500 / igapoEffectiveTime;
-    const igapoDeltaSpeedMs = igapoEffectiveSpeedMs - BASE_BOAT_SPEED;
-    const igapoCurrentKnots = igapoDeltaSpeedMs / KNOTS_CONVERSION;
+    // Velocidade da corrente em nós POR PERSPECTIVA DE DIREÇÃO
+    const igapoKnots = -dualPace.netForce / KNOTS_CONVERSION;
+    const redinhaKnots = +dualPace.netForce / KNOTS_CONVERSION;
 
-    // Para Redinha (usando delta sea)
-    const redinhaEffectiveTime = BASE_TIME_500M + dualPace.towardsSea.delta_s_per_500m;
-    const redinhaEffectiveSpeedMs = 500 / redinhaEffectiveTime;
-    const redinhaDeltaSpeedMs = redinhaEffectiveSpeedMs - BASE_BOAT_SPEED;
-    const redinhaCurrentKnots = redinhaDeltaSpeedMs / KNOTS_CONVERSION;
+    // Função para calcular cor do container baseada no valor em nós
+    // Verde: a favor (positivo) | Azul: neutro (~0) | Vermelho: contra (negativo)
+    const getContainerColor = (valueKnots: number) => {
+        const absMax = 1.2; // Máximo esperado baseado na tabela da Marinha
+        const normalized = Math.max(-1, Math.min(1, valueKnots / absMax));
 
-    // Função para calcular cor gradiente baseada no valor
-    // Verde intenso (valores positivos altos = a favor) → Azul (perto de 0) → Vermelho intenso (valores negativos altos = contra)
-    const getGradientColor = (value: number) => {
-        const absMax = 1.0; // Máximo esperado em nós
-        const normalized = Math.max(-1, Math.min(1, value / absMax));
-
-        if (normalized > 0.1) {
-            // Verde gradiente (valores positivos = a favor)
+        if (normalized > 0.08) {
+            // VERDE gradiente (a favor)
             const intensity = Math.min(1, normalized);
-            return `rgba(34, 197, 94, ${0.1 + intensity * 0.3})`; // green-500
-        } else if (normalized < -0.1) {
-            // Vermelho gradiente (valores negativos = contra)
+            return {
+                bg: `rgba(34, 197, 94, ${0.1 + intensity * 0.25})`,
+                border: `rgba(34, 197, 94, ${0.3 + intensity * 0.2})`
+            };
+        } else if (normalized < -0.08) {
+            // VERMELHO gradiente (contra)
             const intensity = Math.min(1, -normalized);
-            return `rgba(239, 68, 68, ${0.1 + intensity * 0.3})`; // red-500
+            return {
+                bg: `rgba(239, 68, 68, ${0.1 + intensity * 0.25})`,
+                border: `rgba(239, 68, 68, ${0.3 + intensity * 0.2})`
+            };
         } else {
-            // Azul (neutro, perto de 0)
-            return `rgba(59, 130, 246, 0.15)`; // blue-500
+            // AZUL (neutro/estofa)
+            return {
+                bg: 'rgba(59, 130, 246, 0.15)',
+                border: 'rgba(59, 130, 246, 0.3)'
+            };
         }
     };
+
+    const igapoColors = getContainerColor(igapoKnots);
+    const redinhaColors = getContainerColor(redinhaKnots);
 
     return (
         <div className="space-y-3">
@@ -162,8 +176,8 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                 <div
                     className="rounded-xl p-3 border relative"
                     style={{
-                        backgroundColor: getGradientColor(igapoCurrentKnots),
-                        borderColor: igapoCurrentKnots > 0 ? 'rgba(239, 68, 68, 0.3)' : igapoCurrentKnots < -0.1 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(59, 130, 246, 0.3)'
+                        backgroundColor: igapoColors.bg,
+                        borderColor: igapoColors.border
                     }}
                 >
                     <div className="flex items-center gap-2 mb-2">
@@ -174,10 +188,10 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                     </div>
                     {/* Valor principal em nós - velocidade da CORRENTE */}
                     <p className="text-xl font-bold text-white">
-                        {igapoCurrentKnots > 0 ? '+' : ''}{igapoCurrentKnots.toFixed(2)} <span className="text-sm">nós</span>
+                        {igapoKnots > 0 ? '+' : ''}{igapoKnots.toFixed(2)} <span className="text-sm">nós</span>
                     </p>
                     <p className="text-[9px] text-white/40 mt-0.5">
-                        {igapoCurrentKnots > 0.1 ? 'A favor' : igapoCurrentKnots < -0.1 ? 'Contra' : 'Neutro'}
+                        {igapoKnots > 0.1 ? 'A favor' : igapoKnots < -0.1 ? 'Contra' : 'Neutro'}
                     </p>
                     {/* Impacto no pace - canto inferior direito */}
                     <div className="absolute bottom-2 right-2 text-right">
@@ -196,8 +210,8 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                 <div
                     className="rounded-xl p-3 border relative"
                     style={{
-                        backgroundColor: getGradientColor(redinhaCurrentKnots),
-                        borderColor: redinhaCurrentKnots > 0.1 ? 'rgba(34, 197, 94, 0.3)' : redinhaCurrentKnots < -0.1 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'
+                        backgroundColor: redinhaColors.bg,
+                        borderColor: redinhaColors.border
                     }}
                 >
                     <div className="flex items-center gap-2 mb-2">
@@ -208,10 +222,10 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                     </div>
                     {/* Valor principal em nós - velocidade da CORRENTE */}
                     <p className="text-xl font-bold text-white">
-                        {redinhaCurrentKnots > 0 ? '+' : ''}{redinhaCurrentKnots.toFixed(2)} <span className="text-sm">nós</span>
+                        {redinhaKnots > 0 ? '+' : ''}{redinhaKnots.toFixed(2)} <span className="text-sm">nós</span>
                     </p>
                     <p className="text-[9px] text-white/40 mt-0.5">
-                        {redinhaCurrentKnots > 0.1 ? 'A favor' : redinhaCurrentKnots < -0.1 ? 'Contra' : 'Neutro'}
+                        {redinhaKnots > 0.1 ? 'A favor' : redinhaKnots < -0.1 ? 'Contra' : 'Neutro'}
                     </p>
                     {/* Impacto no pace - canto inferior direito */}
                     <div className="absolute bottom-2 right-2 text-right">
