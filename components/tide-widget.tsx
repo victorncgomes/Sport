@@ -435,59 +435,55 @@ export function TideWidget({ className }: { className?: string }) {
                             exit={{ opacity: 0, x: 20 }}
                             className="space-y-4"
                         >
-                            {/* Clima Atual */}
-                            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 p-4 border border-white/10">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
+                            {/* Clima e Vento - Lado a Lado */}
+                            <div className="grid grid-cols-2 gap-3">
+                                {/* Clima Atual */}
+                                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 p-3 border border-white/10">
+                                    <div className="flex items-center gap-3 mb-2">
                                         <motion.div
-                                            animate={{
-                                                scale: [1, 1.1, 1],
-                                                rotate: [0, 5, -5, 0]
-                                            }}
+                                            animate={{ scale: [1, 1.1, 1] }}
                                             transition={{ duration: 3, repeat: Infinity }}
                                         >
-                                            <WeatherIcon className="w-12 h-12 text-yellow-400" />
+                                            <WeatherIcon className="w-8 h-8 text-yellow-400" />
                                         </motion.div>
                                         <div>
-                                            <p className="text-xl font-bold text-white">{data.weather.temp}°C</p>
-                                            <p className="text-xs text-white/60">{data.weather.condition}</p>
+                                            <p className="text-lg font-bold text-white">{data.weather.temp}°C</p>
+                                            <p className="text-[10px] text-white/60">{data.weather.condition}</p>
                                         </div>
                                     </div>
-                                    <div className="text-right space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <Droplets className="w-4 h-4 text-blue-300" />
-                                            <span className="text-sm text-white">{data.humidity}%</span>
+                                    <div className="flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-1">
+                                            <Droplets className="w-3 h-3 text-blue-300" />
+                                            <span className="text-white/80">{data.humidity}%</span>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <Cloud className="w-4 h-4 text-gray-300" />
-                                            <span className="text-sm text-white">{data.weather.clouds}%</span>
+                                        <div className="flex items-center gap-1">
+                                            <Cloud className="w-3 h-3 text-gray-300" />
+                                            <span className="text-white/80">{data.weather.clouds}%</span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Ventos */}
-                            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 p-4 border border-white/10">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
+                                {/* Ventos */}
+                                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 p-3 border border-white/10">
+                                    <div className="flex items-center gap-2 mb-2">
                                         <motion.div
                                             animate={{ scale: [1, 1.2, 1] }}
                                             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                            className="w-12 h-12 rounded-full bg-cyan-500/30 flex items-center justify-center"
+                                            className="w-8 h-8 rounded-full bg-cyan-500/30 flex items-center justify-center"
                                         >
-                                            <Wind className="w-6 h-6 text-cyan-300" />
+                                            <Wind className="w-4 h-4 text-cyan-300" />
                                         </motion.div>
                                         <div>
-                                            <p className="text-xs text-white/60 uppercase">Vento</p>
-                                            <p className="text-2xl font-bold text-white">{data.wind.speed} <span className="text-sm">km/h</span></p>
+                                            <p className="text-[10px] text-white/60 uppercase">Vento</p>
+                                            <p className="text-lg font-bold text-white">{data.wind.speed} <span className="text-xs">km/h</span></p>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <Navigation className="w-4 h-4 text-cyan-300" />
-                                            <span className="text-lg font-bold text-white">{data.wind.direction}</span>
+                                    <div className="flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-1">
+                                            <Navigation className="w-3 h-3 text-cyan-300" />
+                                            <span className="text-white font-bold">{data.wind.direction}</span>
                                         </div>
-                                        <p className="text-xs text-white/50">Rajadas {data.wind.gusts}km/h</p>
+                                        <span className="text-white/50">↑{data.wind.gusts}</span>
                                     </div>
                                 </div>
                             </div>
@@ -673,23 +669,7 @@ export function TideWidget({ className }: { className?: string }) {
                     )}
                 </AnimatePresence>
 
-                {/* Navegação de Dias */}
-                <div className="flex items-center justify-between gap-2 mt-4">
-                    <button
-                        onClick={() => setDayOffset(dayOffset - 1)}
-                        className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg border border-white/10 hover:border-white/20 transition-all"
-                    >
-                        <ChevronLeft className="w-4 h-4" />
-                        Anterior
-                    </button>
-                    <button
-                        onClick={() => setDayOffset(dayOffset + 1)}
-                        className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg border border-white/10 hover:border-white/20 transition-all"
-                    >
-                        Próximo
-                        <ChevronRight className="w-4 h-4" />
-                    </button>
-                </div>
+                {/* Navegação removida - já existe na parte superior */}
 
                 {/* Fonte */}
                 <p className="text-[9px] text-white/30 text-center mt-4 leading-relaxed">

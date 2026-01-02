@@ -10,9 +10,11 @@ import {
     Camera,
     Wrench,
     ShoppingBag,
-    Mic,
-    Palette,
-    Users,
+    Smartphone,
+    Briefcase,
+    Dumbbell,
+    MessageCircle,
+    Sparkles,
     CheckCircle,
     Save,
     Loader2,
@@ -22,39 +24,63 @@ import { motion } from 'framer-motion';
 
 const AREAS_VOLUNTARIADO = [
     { id: 'MIDIA', label: 'Mídia e Comunicação', icon: Camera, color: 'text-purple-400' },
-    { id: 'LOJA', label: 'Loja do Clube', icon: ShoppingBag, color: 'text-amber-400' },
-    { id: 'EVENTOS', label: 'Eventos e Regatas', icon: Users, color: 'text-blue-400' },
-    { id: 'MANUTENCAO', label: 'Manutenção', icon: Wrench, color: 'text-emerald-400' },
-    { id: 'DESIGN', label: 'Design Gráfico', icon: Palette, color: 'text-pink-400' },
-    { id: 'AUDIO', label: 'Áudio e Narração', icon: Mic, color: 'text-cyan-400' },
+    { id: 'STORE', label: 'Store', icon: ShoppingBag, color: 'text-amber-400' },
+    { id: 'MANUTENCAO_BARCOS', label: 'Manutenção de Barcos', icon: Wrench, color: 'text-red-400' },
+    { id: 'LIMPEZA_CLUBE', label: 'Limpeza do Clube', icon: Sparkles, color: 'text-emerald-400' },
+    { id: 'BETA_TESTERS', label: 'Beta Testers do Aplicativo', icon: Smartphone, color: 'text-cyan-400' },
+    { id: 'ADMINISTRATIVO', label: 'Área Administrativa', icon: Briefcase, color: 'text-indigo-400' },
+    { id: 'AUXILIARES_TREINADORES', label: 'Auxiliares dos Treinadores', icon: Dumbbell, color: 'text-blue-400' },
+    { id: 'ATENDIMENTO', label: 'Atendimento', icon: MessageCircle, color: 'text-pink-400' },
 ];
 
+// Segunda como primeiro dia da semana
 const DIAS_SEMANA = [
-    { id: 0, label: 'Dom' },
     { id: 1, label: 'Seg' },
     { id: 2, label: 'Ter' },
     { id: 3, label: 'Qua' },
     { id: 4, label: 'Qui' },
     { id: 5, label: 'Sex' },
     { id: 6, label: 'Sáb' },
+    { id: 0, label: 'Dom', disabled: true },
 ];
 
+// Habilidades expandidas e organizadas por categoria
 const HABILIDADES = [
+    // Comunicação
     'Fotografia',
     'Edição de Vídeo',
-    'Redes Sociais',
-    'Atendimento ao Cliente',
-    'Vendas',
-    'Organização de Eventos',
-    'Carpintaria',
+    'Gestão de Redes Sociais',
+    'Redação e Textos',
+    'Criação de Conteúdo',
+    // Técnico
+    'Manutenção de Barcos',
+    'Trabalho com Fibra/Resina',
+    'Marcenaria Básica',
+    'Elétrica Básica',
+    'Hidráulica Básica',
     'Pintura',
-    'Elétrica',
-    'Design Gráfico',
-    'Ilustração',
-    'Narração',
-    'Edição de Áudio',
+    // Remo
+    'Remo Avançado',
+    'Timoneiro Experiente',
+    'Segurança Náutica',
     'Primeiros Socorros',
-    'Idiomas',
+    'Salvamento Aquático',
+    // Administrativo
+    'Atendimento ao Público',
+    'Organização e Arquivos',
+    'Informática Básica',
+    'Excel/Planilhas',
+    'Vendas',
+    // Tecnologia
+    'Teste de Software',
+    'Reporte de Bugs',
+    'Feedback de UX',
+    'Programação',
+    // Eventos e Limpeza
+    'Organização de Eventos',
+    'Limpeza e Organização',
+    'Cozinha/Alimentação',
+    'Idiomas (Inglês/Espanhol)',
 ];
 
 export default function VoluntariadoPage() {
@@ -64,8 +90,10 @@ export default function VoluntariadoPage() {
     const [areas, setAreas] = useState<string[]>([]);
     const [dias, setDias] = useState<number[]>([]);
     const [habilidades, setHabilidades] = useState<string[]>([]);
-    const [horarioInicio, setHorarioInicio] = useState('09:00');
-    const [horarioFim, setHorarioFim] = useState('12:00');
+    const [horarioInicio, setHorarioInicio] = useState('05:45');
+    const [horarioFim, setHorarioFim] = useState('06:45');
+    const [horarioInicioTarde, setHorarioInicioTarde] = useState('16:15');
+    const [horarioFimTarde, setHorarioFimTarde] = useState('17:30');
     const [novaHabilidade, setNovaHabilidade] = useState('');
 
     const toggleArea = (areaId: string) => {
@@ -148,8 +176,8 @@ export default function VoluntariadoPage() {
                                     key={area.id}
                                     onClick={() => toggleArea(area.id)}
                                     className={`p-4 rounded-xl border transition-all text-left ${isSelected
-                                            ? 'bg-club-red/20 border-club-red'
-                                            : 'bg-white/5 border-white/10 hover:border-white/20'
+                                        ? 'bg-club-red/20 border-club-red'
+                                        : 'bg-white/5 border-white/10 hover:border-white/20'
                                         }`}
                                 >
                                     <Icon className={`w-6 h-6 mb-2 ${isSelected ? 'text-club-red' : area.color}`} />
@@ -170,17 +198,21 @@ export default function VoluntariadoPage() {
                     </h2>
 
                     <div className="mb-4">
-                        <p className="text-sm text-white/50 mb-3">Dias disponíveis:</p>
+                        <p className="text-sm text-white/50 mb-3">Dias disponíveis (Segunda a Sábado):</p>
                         <div className="flex flex-wrap gap-2">
                             {DIAS_SEMANA.map(dia => {
                                 const isSelected = dias.includes(dia.id);
+                                const isDisabled = 'disabled' in dia && dia.disabled;
                                 return (
                                     <button
                                         key={dia.id}
-                                        onClick={() => toggleDia(dia.id)}
-                                        className={`w-12 h-12 rounded-full border font-bold text-sm transition-all ${isSelected
-                                                ? 'bg-club-red border-club-red text-white'
-                                                : 'bg-white/5 border-white/10 text-white/50 hover:border-white/20'
+                                        onClick={() => !isDisabled && toggleDia(dia.id)}
+                                        disabled={isDisabled}
+                                        className={`w-12 h-12 rounded-full border font-bold text-sm transition-all ${isDisabled
+                                                ? 'bg-white/5 border-white/5 text-white/20 cursor-not-allowed'
+                                                : isSelected
+                                                    ? 'bg-club-red border-club-red text-white'
+                                                    : 'bg-white/5 border-white/10 text-white/50 hover:border-white/20'
                                             }`}
                                     >
                                         {dia.label}
@@ -190,24 +222,68 @@ export default function VoluntariadoPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm text-white/50 mb-1">Horário início</label>
-                            <input
-                                type="time"
-                                value={horarioInicio}
-                                onChange={e => setHorarioInicio(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
-                            />
+                    {/* Turnos: Manhã e Tarde */}
+                    <div className="space-y-4">
+                        {/* Turno Manhã */}
+                        <div className="p-4 bg-blue-500/10 rounded-xl border border-blue-400/30">
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="text-lg">☀️</span>
+                                <span className="text-sm font-bold text-blue-300 uppercase tracking-wider">Turno Manhã</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs text-white/50 mb-1">Início</label>
+                                    <input
+                                        type="time"
+                                        value={horarioInicio}
+                                        onChange={e => setHorarioInicio(e.target.value)}
+                                        step="900"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-white/50 mb-1">Fim</label>
+                                    <input
+                                        type="time"
+                                        value={horarioFim}
+                                        onChange={e => setHorarioFim(e.target.value)}
+                                        step="900"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
+                                    />
+                                </div>
+                            </div>
+                            <p className="text-[10px] text-white/40 mt-2">Ex: 05:45 às 06:45 (1 hora)</p>
                         </div>
-                        <div>
-                            <label className="block text-sm text-white/50 mb-1">Horário fim</label>
-                            <input
-                                type="time"
-                                value={horarioFim}
-                                onChange={e => setHorarioFim(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
-                            />
+
+                        {/* Turno Tarde */}
+                        <div className="p-4 bg-orange-500/10 rounded-xl border border-orange-400/30">
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="text-lg">🌅</span>
+                                <span className="text-sm font-bold text-orange-300 uppercase tracking-wider">Turno Tarde</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs text-white/50 mb-1">Início</label>
+                                    <input
+                                        type="time"
+                                        value={horarioInicioTarde}
+                                        onChange={e => setHorarioInicioTarde(e.target.value)}
+                                        step="900"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-white/50 mb-1">Fim</label>
+                                    <input
+                                        type="time"
+                                        value={horarioFimTarde}
+                                        onChange={e => setHorarioFimTarde(e.target.value)}
+                                        step="900"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
+                                    />
+                                </div>
+                            </div>
+                            <p className="text-[10px] text-white/40 mt-2">Ex: 16:15 às 17:30 (1h15min)</p>
                         </div>
                     </div>
                 </AnimatedCard>
@@ -227,8 +303,8 @@ export default function VoluntariadoPage() {
                                     key={hab}
                                     onClick={() => toggleHabilidade(hab)}
                                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isSelected
-                                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50'
-                                            : 'bg-white/5 text-white/50 border border-white/10 hover:text-white'
+                                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50'
+                                        : 'bg-white/5 text-white/50 border border-white/10 hover:text-white'
                                         }`}
                                 >
                                     {isSelected && <CheckCircle className="w-3 h-3 inline mr-1" />}

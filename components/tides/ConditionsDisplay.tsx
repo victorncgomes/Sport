@@ -16,44 +16,51 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
         slot.environmentFactors.windDirection
     );
 
-    // Calcular impacto no pace
-    const paceImpact = calculatePaceImpact(
+    // Calcular impacto no pace (Dois cenários: a favor e contra a correnteza)
+    // A favor (0 graus relativos à corrente)
+    const paceImpactFavor = calculatePaceImpact(
         slot.tideFactors.departureCurrentSpeed,
-        0 // ângulo relativo simplificado
+        0 // 0 graus = alinhado com a corrente (a favor)
+    );
+
+    // Contra (180 graus relativos à corrente)
+    const paceImpactContra = calculatePaceImpact(
+        slot.tideFactors.departureCurrentSpeed,
+        180 // 180 graus = oposto à corrente (contra)
     );
 
     return (
-        <div className="space-y-4">
-            {/* Classificação Principal */}
-            <div className={cn(
-                "p-4 rounded-xl border-2 text-center",
-                slot.classification === 'EXCELENTE' && "bg-green-500/20 border-green-400/50",
-                slot.classification === 'BOA' && "bg-blue-500/20 border-blue-400/50",
-                slot.classification === 'MODERADA' && "bg-yellow-500/20 border-yellow-400/50",
-                slot.classification === 'DIFÍCIL' && "bg-orange-500/20 border-orange-400/50",
-                slot.classification === 'PERIGOSA' && "bg-red-500/20 border-red-400/50"
-            )}>
-                <div className="text-xs text-white/60 uppercase tracking-wider mb-1">Classificação</div>
-                <div className={cn(
-                    "text-3xl font-bold uppercase mb-2",
-                    slot.classification === 'EXCELENTE' && "text-green-300",
-                    slot.classification === 'BOA' && "text-blue-300",
-                    slot.classification === 'MODERADA' && "text-yellow-300",
-                    slot.classification === 'DIFÍCIL' && "text-orange-300",
-                    slot.classification === 'PERIGOSA' && "text-red-300"
-                )}>
-                    {slot.classification}
-                </div>
-                <div className="text-sm text-white/70">Score: {slot.score}/100</div>
-            </div>
-
-            {/* Grid de Condições */}
+        <div className="space-y-3">
+            {/* 1ª Linha: Classificação e Correnteza */}
             <div className="grid grid-cols-2 gap-3">
+                {/* Classificação (Reduzida para metade) */}
+                <div className={cn(
+                    "p-3 rounded-xl border flex flex-col items-center justify-center text-center",
+                    slot.classification === 'EXCELENTE' && "bg-green-500/20 border-green-400/50",
+                    slot.classification === 'BOA' && "bg-blue-500/20 border-blue-400/50",
+                    slot.classification === 'MODERADA' && "bg-yellow-500/20 border-yellow-400/50",
+                    slot.classification === 'DIFÍCIL' && "bg-orange-500/20 border-orange-400/50",
+                    slot.classification === 'PERIGOSA' && "bg-red-500/20 border-red-400/50"
+                )}>
+                    <div className="text-[10px] text-white/60 uppercase tracking-wider mb-1 font-bold">Classificação</div>
+                    <div className={cn(
+                        "text-2xl font-bold uppercase mb-1",
+                        slot.classification === 'EXCELENTE' && "text-green-300",
+                        slot.classification === 'BOA' && "text-blue-300",
+                        slot.classification === 'MODERADA' && "text-yellow-300",
+                        slot.classification === 'DIFÍCIL' && "text-orange-300",
+                        slot.classification === 'PERIGOSA' && "text-red-300"
+                    )}>
+                        {slot.classification}
+                    </div>
+                    <div className="text-xs text-white/70">Score: {slot.score}/100</div>
+                </div>
+
                 {/* Correnteza */}
                 <div className="rounded-xl bg-cyan-500/20 p-3 border border-cyan-400/30">
                     <div className="flex items-center gap-2 mb-2">
                         <Navigation className="w-4 h-4 text-cyan-300" />
-                        <span className="text-xs text-white/60 uppercase tracking-wider font-bold">Correnteza</span>
+                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Correnteza</span>
                     </div>
                     <p className="text-xl font-bold text-white">{slot.tideFactors.departureCurrentSpeed.toFixed(2)} <span className="text-sm">m/s</span></p>
                     <p className="text-sm text-cyan-300">
@@ -61,26 +68,25 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                         {slot.tideFactors.departureCurrentType === 'ebb' && '⬇️ Vazante'}
                         {slot.tideFactors.departureCurrentType === 'slack' && '〰️ Estofa'}
                     </p>
-                    <p className="text-xs text-white/50 mt-1">{slot.tideFactors.departurePhase}</p>
+                    <p className="text-[10px] text-white/50 mt-1">{slot.tideFactors.departurePhase}</p>
                 </div>
+            </div>
 
+            {/* 2ª Linha: Superfície e Vento */}
+            <div className="grid grid-cols-2 gap-3">
                 {/* Superfície da Água */}
                 <div className="rounded-xl bg-blue-500/20 p-3 border border-blue-400/30">
                     <div className="flex items-center gap-2 mb-2">
                         <Waves className="w-4 h-4 text-blue-300" />
-                        <span className="text-xs text-white/60 uppercase tracking-wider font-bold">Superfície</span>
+                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Superfície</span>
                     </div>
-                    <p className="text-lg font-bold text-white">
+                    <p className="text-lg font-bold text-white leading-tight">
                         {waterSurface.surface === 'mirror' && '🪞 Espelho'}
                         {waterSurface.surface === 'ripple' && '〰️ Ondulação'}
                         {waterSurface.surface === 'chaotic' && '🌊 Caótico'}
                     </p>
                     <div className="mt-2">
-                        <div className="flex items-center justify-between text-xs text-white/50 mb-1">
-                            <span>Chop Lateral</span>
-                            <span>{waterSurface.side_chop_index}%</span>
-                        </div>
-                        <div className="h-2 bg-black/30 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-black/30 rounded-full overflow-hidden">
                             <div
                                 className={cn(
                                     'h-full rounded-full',
@@ -91,6 +97,7 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                                 style={{ width: `${waterSurface.side_chop_index}%` }}
                             />
                         </div>
+                        <p className="text-[9px] text-white/40 mt-1 text-right">Chop {waterSurface.side_chop_index}%</p>
                     </div>
                 </div>
 
@@ -98,28 +105,41 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                 <div className="rounded-xl bg-purple-500/20 p-3 border border-purple-400/30">
                     <div className="flex items-center gap-2 mb-2">
                         <Wind className="w-4 h-4 text-purple-300" />
-                        <span className="text-xs text-white/60 uppercase tracking-wider font-bold">Vento</span>
+                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Vento</span>
                     </div>
                     <p className="text-xl font-bold text-white">{slot.environmentFactors.windSpeed} <span className="text-sm">km/h</span></p>
-                    <p className="text-xs text-white/50 mt-1">
-                        Ajustado para horário ({slot.period === 'morning' ? 'manhã' : 'tarde'})
+                    <p className="text-[10px] text-white/50 mt-1">
+                        Dir. {slot.environmentFactors.windDirection}°
                     </p>
                 </div>
+            </div>
 
-                {/* Impacto no Pace */}
-                <div className="rounded-xl bg-pink-500/20 p-3 border border-pink-400/30">
+            {/* 3ª Linha: Pace (Favor e Contra) */}
+            <div className="grid grid-cols-2 gap-3">
+                {/* Pace A Favor */}
+                <div className="rounded-xl bg-green-500/10 p-3 border border-green-400/20">
                     <div className="flex items-center gap-2 mb-2">
-                        <Gauge className="w-4 h-4 text-pink-300" />
-                        <span className="text-xs text-white/60 uppercase tracking-wider font-bold">Pace</span>
+                        <Gauge className="w-4 h-4 text-green-300" />
+                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Pace (Favor)</span>
                     </div>
-                    <p className={cn(
-                        "text-xl font-bold",
-                        paceImpact.delta_s_per_500m < 0 ? 'text-green-300' : 'text-red-300'
-                    )}>
-                        {paceImpact.delta_s_per_500m > 0 && '+'}
-                        {paceImpact.delta_s_per_500m.toFixed(1)}s
+                    <p className="text-xl font-bold text-green-300">
+                        {paceImpactFavor.delta_s_per_500m > 0 ? '+' : ''}
+                        {paceImpactFavor.delta_s_per_500m.toFixed(1)}s
                     </p>
-                    <p className="text-xs text-white/50 mt-1">por 500m</p>
+                    <p className="text-[10px] text-white/50 mt-1">por 500m</p>
+                </div>
+
+                {/* Pace Contra */}
+                <div className="rounded-xl bg-red-500/10 p-3 border border-red-400/20">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Gauge className="w-4 h-4 text-red-300" />
+                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Pace (Contra)</span>
+                    </div>
+                    <p className="text-xl font-bold text-red-300">
+                        {paceImpactContra.delta_s_per_500m > 0 ? '+' : ''}
+                        {paceImpactContra.delta_s_per_500m.toFixed(1)}s
+                    </p>
+                    <p className="text-[10px] text-white/50 mt-1">por 500m</p>
                 </div>
             </div>
 

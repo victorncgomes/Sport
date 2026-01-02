@@ -13,19 +13,19 @@ import {
     Download
 } from 'lucide-react';
 
-// Atividades de voluntariado disponíveis
+// Atividades de voluntariado disponíveis (sincronizadas com volunteer-areas.ts)
 const VOLUNTEER_ACTIVITIES = [
-    { id: 'MEDIA', name: 'Mídia e Comunicação', description: 'Fotografia, vídeo, redes sociais, design gráfico', icon: '📸' },
-    { id: 'STORE', name: 'Loja do Clube', description: 'Atendimento, organização, vendas', icon: '🛍️' },
-    { id: 'EVENTS', name: 'Eventos', description: 'Organização de regatas, festas, confraternizações', icon: '🎉' },
-    { id: 'MAINTENANCE', name: 'Manutenção', description: 'Cuidados com barcos, equipamentos, garagem', icon: '🔧' },
-    { id: 'TEACHING', name: 'Ensino', description: 'Auxiliar novos remadores, aulas para iniciantes', icon: '🎓' },
-    { id: 'ADMINISTRATIVE', name: 'Administrativo', description: 'Secretaria, documentação, financeiro', icon: '📋' },
-    { id: 'KITCHEN', name: 'Copa/Cozinha', description: 'Preparação de lanches, café, organização', icon: '☕' },
-    { id: 'SECURITY', name: 'Segurança', description: 'Apoio em eventos, controle de acesso', icon: '🔐' }
+    { id: 'MIDIA', name: 'Mídia e Comunicação', description: 'Fotografia, vídeo, redes sociais', icon: '📸' },
+    { id: 'STORE', name: 'Store', description: 'Atendimento, organização, vendas', icon: '🛍️' },
+    { id: 'MANUTENCAO_BARCOS', name: 'Manutenção de Barcos', description: 'Cuidados com barcos, remos, equipamentos', icon: '🔧' },
+    { id: 'LIMPEZA_CLUBE', name: 'Limpeza do Clube', description: 'Limpeza das instalações, mutirões', icon: '✨' },
+    { id: 'BETA_TESTERS', name: 'Beta Testers do Aplicativo', description: 'Testar app, reportar bugs, sugestões', icon: '📱' },
+    { id: 'ADMINISTRATIVO', name: 'Área Administrativa', description: 'Secretaria, documentação, apoio', icon: '📋' },
+    { id: 'AUXILIARES_TREINADORES', name: 'Auxiliares dos Treinadores', description: 'Apoio aos treinos, iniciantes', icon: '🏆' },
+    { id: 'ATENDIMENTO', name: 'Atendimento', description: 'Recepção de visitantes, telefone', icon: '💬' }
 ];
 
-// Dias da semana para disponibilidade
+// Dias da semana para disponibilidade (Segunda como primeiro dia)
 const WEEK_DAYS = [
     { id: 'MON', name: 'Segunda', short: 'Seg' },
     { id: 'TUE', name: 'Terça', short: 'Ter' },
@@ -33,13 +33,12 @@ const WEEK_DAYS = [
     { id: 'THU', name: 'Quinta', short: 'Qui' },
     { id: 'FRI', name: 'Sexta', short: 'Sex' },
     { id: 'SAT', name: 'Sábado', short: 'Sáb' },
-    { id: 'SUN', name: 'Domingo', short: 'Dom' }
+    { id: 'SUN', name: 'Domingo', short: 'Dom', disabled: true }
 ];
 
 const TIME_SLOTS = [
-    { id: 'MORNING', name: 'Manhã', time: '06:00 - 12:00' },
-    { id: 'AFTERNOON', name: 'Tarde', time: '12:00 - 18:00' },
-    { id: 'EVENING', name: 'Noite', time: '18:00 - 22:00' }
+    { id: 'MORNING', name: 'Manhã', time: '05:30 - 08:00' },
+    { id: 'AFTERNOON', name: 'Tarde', time: '16:00 - 18:00' }
 ];
 
 interface UserData {
