@@ -155,7 +155,11 @@ export function calculateSideChopIndex(
  * Positivo = força para NE (mar)
  * Negativo = força para SW (nascente)
  * 
- * @param tideCurrentSpeed Velocidade da corrente da maré em m/s
+ * NOTA: A velocidade da corrente (tideCurrentSpeed) já vem calculada pelo
+ * rowing-conditions-analyzer.ts usando a tabela de referência da Marinha,
+ * que já contempla a resultante de todas as forças (rio + maré).
+ * 
+ * @param tideCurrentSpeed Velocidade da corrente em m/s (já calculada pelo analyzer)
  * @param tideType Tipo da maré: 'ebb' (vazante), 'flood' (enchente), 'slack' (estofa)
  * @param windSpeed_m_s Velocidade do vento em m/s
  * @param windDirection Direção do vento em graus
@@ -167,34 +171,34 @@ export function calculateNetForce(
     windSpeed_m_s: number,
     windDirection: number
 ): { netForce: number; components: { river: number; tide: number; wind: number } } {
-    // 1. Força do rio (sempre para NE = positivo)
-    const F_river = POTENGI_PHYSICS.naturalCurrentSpeed;
+    // A velocidade da corrente já é a resultante (dados da Marinha)
+    // NÃO adicionar correnteza natural separada - já está embutida
 
-    // 2. Força da maré
+    // Força da corrente (já é a resultante rio + maré)
     let F_tide: number;
     if (tideType === 'ebb') {
-        // Vazante: maré puxa para o mar (NE) = positivo
+        // Vazante: corrente vai para o mar (NE) = positivo
         F_tide = +tideCurrentSpeed;
     } else if (tideType === 'flood') {
-        // Enchente: maré empurra para dentro (SW) = negativo
+        // Enchente: corrente vai para dentro (SW) = negativo
         F_tide = -tideCurrentSpeed;
     } else {
-        // Estofa: sem contribuição da maré
+        // Estofa: sem contribuição significativa
         F_tide = 0;
     }
 
-    // 3. Componente do vento no eixo SW-NE (45°)
+    // Componente do vento no eixo SW-NE (45°)
     const RIVER_AZIMUTH = POTENGI_COURSE.azimuth; // 45°
     const windAngleRad = ((windDirection - RIVER_AZIMUTH) * Math.PI) / 180;
     const F_wind = windSpeed_m_s * Math.cos(windAngleRad) * POTENGI_PHYSICS.windDragCoefficient;
 
-    // Força total
-    const netForce = F_river + F_tide + F_wind;
+    // Força total (sem adicionar rio separado)
+    const netForce = F_tide + F_wind;
 
     return {
         netForce,
         components: {
-            river: F_river,
+            river: 0, // Já embutido na corrente
             tide: F_tide,
             wind: F_wind
         }
@@ -244,16 +248,24 @@ export function calculateDualPaceImpact(
     const timeSW = 500 / effectiveSpeedSW;
     const deltaSW = timeSW - baseTime;
 
-    // Determinar força dominante
+    // Determinar força dominante baseado na corrente (que já inclui efeito do rio)
     let dominantForce: string;
-    if (Math.abs(components.tide) > Math.abs(components.river) + Math.abs(components.wind)) {
-        dominantForce = tideType === 'ebb' ? 'Maré vazante dominante' :
-            tideType === 'flood' ? 'Maré enchente dominante' :
-                'Estofa';
-    } else if (components.river > Math.abs(components.tide)) {
-        dominantForce = 'Correnteza do rio dominante';
+    if (tideType === 'slack' || tideCurrentSpeed < 0.15) {
+        dominantForce = 'Estofa - corrente mínima';
+    } else if (tideType === 'ebb') {
+        if (tideCurrentSpeed > 0.5) {
+            dominantForce = 'Vazante forte';
+        } else {
+            dominantForce = 'Vazante moderada';
+        }
+    } else if (tideType === 'flood') {
+        if (tideCurrentSpeed > 0.5) {
+            dominantForce = 'Enchente forte';
+        } else {
+            dominantForce = 'Enchente moderada';
+        }
     } else {
-        dominantForce = 'Forças equilibradas';
+        dominantForce = 'Condição neutra';
     }
 
     return {

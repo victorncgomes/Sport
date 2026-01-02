@@ -541,7 +541,7 @@ export function TideWidget({ className }: { className?: string }) {
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="text-2xl">⭐</span>
                                         <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">
-                                            Melhor Horário Hoje
+                                            Melhor Horário do Dia
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between mb-2">
