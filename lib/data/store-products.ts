@@ -132,10 +132,10 @@ export const storeProducts: Product[] = [
     {
         id: '12',
         name: 'Isotônico Natural',
-        description: 'Mix de frutas cítricas, água de coco e sal do himalaia.',
-        price: 12.00,
+        description: 'Reposição eletrolítica natural com água de coco, limão siciliano, sal marinho e mel orgânico.',
+        price: 14.00,
         category: 'bar',
-        image: '/store/isotonico_natural.png'
+        image: '/store/isotonico_natural_v2.png' // Placeholder until Quota reset
     },
     {
         id: '13',
@@ -161,5 +161,77 @@ export const storeProducts: Product[] = [
         category: 'lanchonete',
         image: '/store/barra_proteina.png',
         isNew: true
+    },
+    {
+        id: '16',
+        name: 'Água Mineral Premium 500ml',
+        description: 'Água mineral natural de fonte, pH equilibrado.',
+        price: 5.00,
+        category: 'bar',
+        image: '/store/agua_mineral.png'
+    },
+    {
+        id: '17',
+        name: 'Energético Volt 350ml',
+        description: 'Energia extra para o treino intenso. Sabor frutas tropicais.',
+        price: 12.00,
+        category: 'bar',
+        image: '/store/energetico.png'
+    },
+    {
+        id: '18',
+        name: 'Refrigerante Cola 350ml',
+        description: 'Refrescante e clássico. Ideal para acompanhar o lanche.',
+        price: 6.00,
+        category: 'bar',
+        image: '/store/refrigerante.png'
+    },
+    {
+        id: '19',
+        name: 'Cerveja Heineken 350ml',
+        description: 'Puro malte, sabor marcante. (Venda proibida para menores de 18 anos).',
+        price: 9.00,
+        category: 'bar',
+        image: '/store/heineken.png'
+    },
+    {
+        id: '20',
+        name: 'Cerveja Budweiser 350ml',
+        description: 'Leve e refrescante. A cerveja dos campeões.',
+        price: 8.00,
+        category: 'bar',
+        image: '/store/budweiser.png'
+    },
+    {
+        id: '21',
+        name: 'Café da Manhã do Remador',
+        description: 'Combo: Café com leite, misto quente e porção de frutas.',
+        price: 18.00,
+        category: 'lanchonete',
+        image: '/store/cafe_da_manha.png'
+    },
+    {
+        id: '22',
+        name: 'Vitamina Whey Protein',
+        description: 'Banana, morango, leite desnatado e whey protein isolado.',
+        price: 16.00,
+        category: 'lanchonete',
+        image: '/placeholder-vitamin.png' // Pending Quota
+    },
+    {
+        id: '23',
+        name: 'Pão de Queijo Mineiro',
+        description: 'Porção com 6 unidades, quentinhos e crocantes.',
+        price: 12.00,
+        category: 'lanchonete',
+        image: '/placeholder-pao-queijo.png' // Pending Quota
+    },
+    {
+        id: '24',
+        name: 'Salada de Frutas Frescas',
+        description: 'Mix da estação com granola e mel.',
+        price: 10.00,
+        category: 'lanchonete',
+        image: '/placeholder-fruit-salad.png' // Pending Quota
     }
 ];

@@ -186,22 +186,19 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                             Ponte de Igapó
                         </span>
                     </div>
-                    {/* Valor principal em nós - velocidade da CORRENTE */}
+                    {/* Valor principal: Impacto no Pace 500m (GRANDE) */}
                     <p className="text-xl font-bold text-white">
-                        {igapoKnots > 0 ? '+' : ''}{igapoKnots.toFixed(2)} <span className="text-sm">nós</span>
+                        {dualPace.towardsUpstream.delta_s_per_500m > 0 ? '+' : ''}
+                        {dualPace.towardsUpstream.delta_s_per_500m.toFixed(1)}s
                     </p>
                     <p className="text-[9px] text-white/40 mt-0.5">
-                        {igapoKnots > 0.1 ? 'A favor' : igapoKnots < -0.1 ? 'Contra' : 'Neutro'}
+                        {dualPace.towardsUpstream.delta_s_per_500m <= 0 ? 'Ganho' : 'Perda'} no pace
                     </p>
-                    {/* Impacto no pace - canto inferior direito */}
+                    {/* Valor secundário: Nós (PEQUENO) - canto inferior direito */}
                     <div className="absolute bottom-2 right-2 text-right">
-                        <p className="text-[8px] text-white/30 uppercase">Pace 500m</p>
-                        <p className={cn(
-                            "text-[10px] font-bold",
-                            dualPace.towardsUpstream.delta_s_per_500m <= 0 ? "text-green-400/70" : "text-red-400/70"
-                        )}>
-                            {dualPace.towardsUpstream.delta_s_per_500m > 0 ? '+' : ''}
-                            {dualPace.towardsUpstream.delta_s_per_500m.toFixed(1)}s
+                        <p className="text-[8px] text-white/30 uppercase">Corrente</p>
+                        <p className="text-[10px] font-bold text-white/70">
+                            {igapoKnots > 0 ? '+' : ''}{igapoKnots.toFixed(2)} nós
                         </p>
                     </div>
                 </div>
@@ -220,22 +217,19 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                             Ponte da Redinha
                         </span>
                     </div>
-                    {/* Valor principal em nós - velocidade da CORRENTE */}
+                    {/* Valor principal: Impacto no Pace 500m (GRANDE) */}
                     <p className="text-xl font-bold text-white">
-                        {redinhaKnots > 0 ? '+' : ''}{redinhaKnots.toFixed(2)} <span className="text-sm">nós</span>
+                        {dualPace.towardsSea.delta_s_per_500m > 0 ? '+' : ''}
+                        {dualPace.towardsSea.delta_s_per_500m.toFixed(1)}s
                     </p>
                     <p className="text-[9px] text-white/40 mt-0.5">
-                        {redinhaKnots > 0.1 ? 'A favor' : redinhaKnots < -0.1 ? 'Contra' : 'Neutro'}
+                        {dualPace.towardsSea.delta_s_per_500m <= 0 ? 'Ganho' : 'Perda'} no pace
                     </p>
-                    {/* Impacto no pace - canto inferior direito */}
+                    {/* Valor secundário: Nós (PEQUENO) - canto inferior direito */}
                     <div className="absolute bottom-2 right-2 text-right">
-                        <p className="text-[8px] text-white/30 uppercase">Pace 500m</p>
-                        <p className={cn(
-                            "text-[10px] font-bold",
-                            dualPace.towardsSea.delta_s_per_500m <= 0 ? "text-green-400/70" : "text-red-400/70"
-                        )}>
-                            {dualPace.towardsSea.delta_s_per_500m > 0 ? '+' : ''}
-                            {dualPace.towardsSea.delta_s_per_500m.toFixed(1)}s
+                        <p className="text-[8px] text-white/30 uppercase">Corrente</p>
+                        <p className="text-[10px] font-bold text-white/70">
+                            {redinhaKnots > 0 ? '+' : ''}{redinhaKnots.toFixed(2)} nós
                         </p>
                     </div>
                 </div>

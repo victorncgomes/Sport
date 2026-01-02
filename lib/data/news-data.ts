@@ -14,6 +14,81 @@ export interface NewsItem {
 
 export const allNews: NewsItem[] = [
     {
+        id: 'vitoria-regata-historica',
+        title: 'Equipe do SCN conquista ouro na Regata Histórica do Nordeste',
+        excerpt: 'Nossos atletas brilharam no pódio, trazendo o ouro para casa após uma disputa emocionante no Rio Potengi.',
+        content: `Foi um dia de glória para o Sport Club de Natal! Nossa equipe principal conquistou o primeiro lugar na tradicional Regata Histórica do Nordeste, disputada neste fim de semana.
+
+Com um desempenho impecável, o barco "Oito Com" cruzou a linha de chegada com uma vantagem confortável sobre os adversários, reafirmando a força do remo potiguar.
+
+"Essa vitória é fruto de meses de dedicação intensa. O grupo estava focado e a sintonia no barco foi perfeita", declarou o capitão da equipe. A celebração no pódio foi marcada pela emoção, com nossos atletas exibindo orgulhosamente as medalhas de ouro e as cores vermelho e preto do nosso clube.`,
+        image: '/news/news_regata_vitoria.png',
+        gallery: [],
+        category: 'Competição',
+        author: 'Assessoria SCN',
+        publishedAt: '2026-01-02',
+    },
+    {
+        id: 'novo-tecnico-2026',
+        title: 'Sport Club de Natal anuncia novo coordenador técnico para a base',
+        excerpt: 'Com foco na formação de novos talentos, o clube reforça sua equipe técnica visando os Jogos de 2028.',
+        content: `O Sport Club de Natal tem o prazer de anunciar a contratação do novo coordenador técnico para nossas categorias de base. Com vasta experiência na formação de atletas olímpicos, ele chega com a missão de identificar e lapidar as joias do remo potiguar.
+
+"O potencial humano aqui é incrível. O biotipo dos jovens e a condição natural do Rio Potengi formam o cenário ideal para formarmos campeões", afirmou o novo técnico em sua apresentação.
+
+Os treinos sob o novo comando já começam na próxima semana, com foco total na preparação técnica e física dos jovens atletas.`,
+        image: '/news/news_novo_tecnico.png',
+        gallery: [],
+        category: 'Clube',
+        author: 'Diretoria SCN',
+        publishedAt: '2026-01-01',
+    },
+    {
+        id: 'restauracao-classico',
+        title: 'O Renascimento de um Clássico: Barco de 1923 totalmente restaurado',
+        excerpt: 'Após meses de trabalho artesanal, uma das embarcações mais antigas do clube volta a brilhar na garagem.',
+        content: `A oficina do Sport Club de Natal entregou hoje uma verdadeira obra de arte: a restauração completa de um Single Skiff de madeira datado de 1923.
+
+O trabalho minucioso de lixamento, envernizamento e pintura recuperou o brilho original da madeira e os detalhes em vermelho e preto que marcam a identidade do clube.
+
+"Não é apenas um barco, é um pedaço da nossa história que preservamos para as futuras gerações", disse o diretor de patrimônio. O barco ficará em exposição no hall de entrada do clube antes de voltar para a água em ocasiões especiais.`,
+        image: '/news/news_reforma_barco.png',
+        gallery: [],
+        category: 'Patrimônio',
+        author: 'Memória SCN',
+        publishedAt: '2025-12-30',
+    },
+    {
+        id: 'parceria-escolas-publicas',
+        title: 'Projeto "Remando para o Futuro" fecha parceria com escolas estaduais',
+        excerpt: 'Mais de 200 alunos da rede pública terão acesso a aulas gratuitas de remo e cidadania no Sport Club de Natal.',
+        content: `O esporte como ferramenta de transformação social. É com esse espírito que o Sport Club de Natal oficializou hoje a expansão do projeto "Remando para o Futuro" em parceria com três escolas estaduais da região.
+
+O convênio permitirá que alunos contraturno escolar participem de aulas de iniciação ao remo, além de receberem acompanhamento pedagógico e nutricional.
+
+"Queremos democratizar o acesso ao nosso esporte e, quem sabe, descobrir novos campeões olímpicos entre esses jovens", celebrou a presidente do clube. As inscrições começam no próximo mês na secretaria do clube.`,
+        image: '/news/news_parceria_escola.png',
+        gallery: [],
+        category: 'Social',
+        author: 'Responsabilidade Social',
+        publishedAt: '2025-12-28',
+    },
+    {
+        id: 'calendario-competicoes-2026',
+        title: 'Divulgado o Calendário Oficial de Competições para 2026',
+        excerpt: 'Preparem-se! A temporada 2026 promete ser a mais disputada dos últimos anos com novas regatas estaduais.',
+        content: `A Federação Norte-rio-grandense de Remo, em conjunto com os clubes filiados, divulgou o calendário oficial para a temporada 2026. O Sport Club de Natal sediará três das principais etapas do campeonato estadual.
+
+A grande novidade deste ano é a inclusão da "Regata Noturna do Potengi", um evento inédito que promete iluminar as águas do nosso rio.
+
+Os atletas já intensificaram os treinos visando a estreia da temporada, marcada para fevereiro. Confira o calendário completo no nosso site e venha torcer pelo Vermelho e Preto!`,
+        image: '/news/news_calendario_2026.png',
+        gallery: [],
+        category: 'Competição',
+        author: 'Departamento de Esportes',
+        publishedAt: '2025-12-26',
+    },
+    {
         id: '110-anos',
         title: 'O Sport Club de Natal dá início às comemorações pelos 110 anos de história',
         excerpt: 'O Sport Club de Natal iniciou hoje as atividades em celebração aos seus 110 anos de existência. A joia rara do nosso clube, o barco “Oito Com”, desfilou pelo Rio Potengi.',

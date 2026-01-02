@@ -17,45 +17,18 @@ import {
     Calendar
 } from 'lucide-react';
 import { TideWidget } from '@/components/tide-widget';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { allNews, NewsItem } from '@/lib/data/news-data';
 
-// Notícias em destaque
-const heroNews = [
-    {
-        id: '110-anos',
-        title: 'Sport Club de Natal inicia celebração dos 110 anos',
-        category: 'História',
-        image: '/rowers_sunset.jpg',
-    },
-    {
-        id: 'rio-de-esperanca',
-        title: 'Lançamento do Projeto Rio de Esperança',
-        category: 'Social',
-        image: '/news_rio_esperanca.png',
-    },
-];
-
-// Últimas notícias - IDs must match articles in /news/[id]/page.tsx
-const latestNews = [
-    {
-        id: 'cbi-remo-2025',
-        title: 'Sport Club de Natal encerra participação histórica no CBI de Remo',
-        category: 'Competição',
-        date: '22 Dez',
-    },
-    {
-        id: 'confraternizacao-2024',
-        title: 'Família Sport Club de Natal unida em frente à sede histórica',
-        category: 'Eventos',
-        date: '21 Dez',
-    },
-    {
-        id: '1',
-        title: 'Equipe de Remo conquista 5 medalhas no Campeonato Nordestino',
-        category: 'Competição',
-        date: '15 Jan',
-    },
-];
+// Helper para embaralhar array
+function shuffleArray<T>(array: T[]): T[] {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
 
 const stats = [
     { value: '110', suffix: '+', label: 'Anos de História' },
@@ -77,14 +50,33 @@ const upcomingEvents = [
 
 export default function HomePage() {
     const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+    const [heroNews, setHeroNews] = useState<NewsItem[]>([]);
+    const [latestNews, setLatestNews] = useState<NewsItem[]>([]);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    // Inicializar notícias aleatórias apenas no cliente
+    useEffect(() => {
+        const shuffled = shuffleArray(allNews);
+        setHeroNews(shuffled.slice(0, 2)); // 2 para o Hero
+        setLatestNews(shuffled.slice(2, 5)); // 3 para a lista abaixo
+        setIsLoaded(true);
+    }, []);
 
     const nextSlide = () => {
-        setCurrentHeroSlide((prev) => (prev + 1) % heroNews.length);
+        if (heroNews.length > 0) {
+            setCurrentHeroSlide((prev) => (prev + 1) % heroNews.length);
+        }
     };
 
     const prevSlide = () => {
-        setCurrentHeroSlide((prev) => (prev - 1 + heroNews.length) % heroNews.length);
+        if (heroNews.length > 0) {
+            setCurrentHeroSlide((prev) => (prev - 1 + heroNews.length) % heroNews.length);
+        }
     };
+
+    if (!isLoaded) {
+        return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Carregando notícias...</div>;
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-club-black">
@@ -99,95 +91,91 @@ export default function HomePage() {
                         {heroNews.map((news, index) => (
                             <motion.article
                                 key={news.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="relative group cursor-pointer"
+                                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.2 }}
+                                className="group relative h-[300px] md:h-[400px] rounded-2xl overflow-hidden cursor-pointer"
                             >
-                                <Link href={`/news/${news.id}`}>
-                                    <div className="relative aspect-[16/9] md:aspect-[4/3] overflow-hidden bg-gray-800">
-                                        {/* Placeholder - será substituído por imagem real */}
-                                        {/* Imagem Real */}
-                                        <div className="absolute inset-0">
-                                            <Image
-                                                src={news.image}
-                                                alt={news.title}
-                                                fill
-                                                sizes="(max-width: 768px) 100vw, 50vw"
-                                                priority={index === 0}
-                                                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                            />
+                                <Link href={`/news/${news.id}`} className="block h-full">
+                                    <Image
+                                        src={news.image || '/placeholder-news.jpg'} // Fallback se imagem for null
+                                        alt={news.title}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 p-4 md:p-6 w-full">
+                                        <span className="inline-block px-2 py-1 bg-club-red text-white text-xs font-bold uppercase tracking-wider mb-2 rounded">
+                                            {news.category}
+                                        </span>
+                                        <h3 className="text-xl md:text-2xl font-bold text-white mb-2 line-clamp-2 md:line-clamp-3 group-hover:text-club-red transition-colors">
+                                            {news.title}
+                                        </h3>
+                                    </div>
+                                    <div className="absolute inset-0 border-2 border-transparent group-hover:border-club-red/50 transition-all duration-300" />
+                                </Link>
+                            </motion.article>
+                        ))}
+                    </div>
+                </div>
+            </section >
+
+            {/* ========== LATEST NEWS SECTION ========== */}
+            <section className="py-8 md:py-12 bg-gray-900 border-t border-white/5">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                            <span className="w-1 h-6 bg-club-red rounded-full" />
+                            Últimas Notícias
+                        </h2>
+                        <Link href="/news" className="text-gray-400 hover:text-white text-sm flex items-center gap-1 transition-colors">
+                            Ver todas <ChevronRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {latestNews.map((news, index) => (
+                            <motion.article
+                                key={news.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                className="bg-gray-800 rounded-xl overflow-hidden border border-white/5 hover:border-club-red/30 transition-all group cursor-pointer"
+                            >
+                                <Link href={`/news/${news.id}`} className="block h-full">
+                                    <div className="h-48 relative overflow-hidden">
+                                        <Image
+                                            src={news.image || '/placeholder-news.jpg'}
+                                            alt={news.title}
+                                            fill
+                                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                        <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs font-medium text-white">
+                                            {news.date ? news.date : new Date(news.publishedAt!).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                                         </div>
-
-                                        {/* Overlay gradient */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80" />
-
-                                        {/* Content */}
-                                        <div className="absolute inset-x-0 bottom-0 p-4 md:p-6">
-                                            <span className="inline-block px-2 py-1 mb-3 text-[10px] font-bold uppercase tracking-wider bg-club-red text-white">
-                                                {news.category}
-                                            </span>
-                                            <h2 className="text-lg md:text-xl font-bold text-white leading-tight group-hover:text-club-red transition-colors">
-                                                {news.title}
-                                            </h2>
-                                        </div>
-
-                                        {/* Hover effect */}
-                                        <div className="absolute inset-0 border-2 border-transparent group-hover:border-club-red/50 transition-all duration-300" />
+                                    </div>
+                                    <div className="p-4">
+                                        <span className="text-xs font-bold text-club-red uppercase tracking-wider">
+                                            {news.category}
+                                        </span>
+                                        <h3 className="text-lg font-bold text-white mt-2 mb-3 line-clamp-2 group-hover:text-club-red transition-colors">
+                                            {news.title}
+                                        </h3>
+                                        <p className="text-sm text-gray-400 line-clamp-2">
+                                            {news.excerpt}
+                                        </p>
                                     </div>
                                 </Link>
                             </motion.article>
                         ))}
                     </div>
                 </div>
-            </section>
+            </section >
 
-            {/* ========== ÚLTIMAS NOTÍCIAS ========== */}
-            <section className="py-8 px-4">
-                <div className="max-w-7xl mx-auto">
-                    {/* Section Header */}
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-sm font-bold uppercase tracking-widest text-white">
-                            Últimas Notícias
-                        </h2>
-                        <Link
-                            href="/news"
-                            className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-club-red hover:text-club-red-400 transition-colors"
-                        >
-                            Ver Mais <ChevronRight className="w-3 h-3" />
-                        </Link>
-                    </div>
-
-                    {/* News Cards */}
-                    <div className="grid md:grid-cols-3 gap-4">
-                        {latestNews.map((news, i) => (
-                            <motion.article
-                                key={news.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
-                            >
-                                <Link
-                                    href={`/news/${news.id}`}
-                                    className="block p-4 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-club-red/30 transition-all group"
-                                >
-                                    <span className="inline-block px-2 py-0.5 mb-2 text-[9px] font-bold uppercase tracking-wider bg-club-red/20 text-club-red">
-                                        {news.category}
-                                    </span>
-                                    <h3 className="text-sm font-semibold text-white group-hover:text-club-red transition-colors line-clamp-2">
-                                        {news.title}
-                                    </h3>
-                                    <p className="text-xs text-white/40 mt-2">{news.date}</p>
-                                </Link>
-                            </motion.article>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* ========== STATS SECTION ========== */}
-            <section className="py-8 px-4">
+            < section className="py-8 px-4" >
                 <div className="max-w-7xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -211,10 +199,10 @@ export default function HomePage() {
                         ))}
                     </motion.div>
                 </div>
-            </section>
+            </section >
 
             {/* ========== TIDE WIDGET + EVENTS ========== */}
-            <section className="py-8 px-4">
+            < section className="py-8 px-4" >
                 <div className="max-w-7xl mx-auto">
                     <div className="grid md:grid-cols-2 gap-4">
                         {/* Tide Widget */}
@@ -256,10 +244,10 @@ export default function HomePage() {
                         </motion.div>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* ========== CTA SECTION ========== */}
-            <section className="py-12 px-4">
+            < section className="py-12 px-4" >
                 <div className="max-w-3xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -290,10 +278,10 @@ export default function HomePage() {
                         </div>
                     </motion.div>
                 </div>
-            </section>
+            </section >
 
             {/* ========== FOOTER ========== */}
-            <footer className="border-t border-white/10 bg-club-black">
+            < footer className="border-t border-white/10 bg-club-black" >
                 <div className="max-w-7xl mx-auto px-4 py-10">
                     <div className="grid md:grid-cols-3 gap-8 mb-8">
                         {/* Logo & Info - CORRIGIDO: letras maiúsculas */}
@@ -444,7 +432,7 @@ export default function HomePage() {
                         </div>
                     </div>
                 </div>
-            </footer>
-        </div>
+            </footer >
+        </div >
     );
 }
