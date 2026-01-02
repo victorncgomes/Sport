@@ -67,7 +67,7 @@ function addMinutes(time: string, minutes: number): string {
 }
 
 /**
- * Calcula diferença em horas entre dois horários
+ * Calcula diferença em horas entre dois horários (considerando mesmo dia)
  */
 function calculateHoursDifference(time1: string, time2: string): number {
     const [h1, m1] = time1.split(':').map(Number);
@@ -79,10 +79,41 @@ function calculateHoursDifference(time1: string, time2: string): number {
 
 /**
  * Calcula horas desde a preamar para um horário específico
+ * CORRIGIDO: Agora considera o ciclo de maré de 12.42h
+ * 
+ * Se o slot é ANTES da próxima preamar (negativo), calcula distância
+ * Se o slot é DEPOIS da próxima preamar (positivo), calcula distância
+ * 
+ * O valor é normalizado para o intervalo [-6.21, +6.21] considerando
+ * que sempre estamos entre uma preamar anterior e a próxima
  */
-function calculateHoursFromHighTide(time: string, highTideDate: Date): number {
-    const highTideTime = `${highTideDate.getHours().toString().padStart(2, '0')}:${highTideDate.getMinutes().toString().padStart(2, '0')}`;
-    return calculateHoursDifference(time, highTideTime);
+function calculateHoursFromHighTide(slotTime: string, nextHighTide: Date, currentDate?: Date): number {
+    const [slotH, slotM] = slotTime.split(':').map(Number);
+
+    // Criar Date para o slot no mesmo dia que currentDate ou hoje
+    const baseDate = currentDate || new Date();
+    const slotDate = new Date(baseDate);
+    slotDate.setHours(slotH, slotM, 0, 0);
+
+    // Diferença em milissegundos
+    const diffMs = slotDate.getTime() - nextHighTide.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    // Se a diferença for muito grande, ajustar para o ciclo mais próximo
+    const HALF_CYCLE = 6.21; // Metade do ciclo de maré (12.42h)
+
+    if (diffHours < -HALF_CYCLE) {
+        // Estamos muito antes da próxima preamar
+        // Provavelmente estamos mais perto da preamar anterior
+        // Adicionar 12.42h para normalizar
+        return diffHours + 12.42;
+    } else if (diffHours > HALF_CYCLE) {
+        // Estamos muito depois da próxima preamar
+        // Subtrair 12.42h para normalizar
+        return diffHours - 12.42;
+    }
+
+    return diffHours;
 }
 
 /**
@@ -331,9 +362,9 @@ export function analyzeSlot(
     const endTime = addMinutes(startTime, 60);
     const midTime = addMinutes(startTime, 30);
 
-    // Calcular momentos relativos à preamar
-    const departureHoursFromHT = calculateHoursFromHighTide(startTime, input.tideData.nextHighTide);
-    const returnHoursFromHT = calculateHoursFromHighTide(midTime, input.tideData.nextHighTide);
+    // Calcular momentos relativos à preamar (usando currentDate para precisão)
+    const departureHoursFromHT = calculateHoursFromHighTide(startTime, input.tideData.nextHighTide, input.currentDate);
+    const returnHoursFromHT = calculateHoursFromHighTide(midTime, input.tideData.nextHighTide, input.currentDate);
 
     // Obter velocidades das correntes
     const departureCurrentData = getCurrentSpeed(departureHoursFromHT, input.tideData.amplitude);
