@@ -314,6 +314,85 @@ export default function GaragemDiretoriaPage() {
                     )}
                 </div>
             </div>
+
+            {/* Modal Nova Manutenção */}
+            {showNewMaintenanceModal && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowNewMaintenanceModal(false)}>
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="bg-club-black border border-white/10 rounded-2xl p-6 w-full max-w-lg"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold text-white">Nova Manutenção</h2>
+                            <button onClick={() => setShowNewMaintenanceModal(false)} className="text-white/40 hover:text-white">
+                                <XCircle className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-sm text-white/60 mb-1 block">Barco</label>
+                                <select
+                                    value={maintenanceForm.boat}
+                                    onChange={e => setMaintenanceForm(prev => ({ ...prev, boat: e.target.value }))}
+                                    className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white"
+                                >
+                                    <option value="">Selecione o barco...</option>
+                                    {garageBoats.map(boat => (
+                                        <option key={boat.id} value={boat.name}>{boat.name} ({boat.type})</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="text-sm text-white/60 mb-1 block">Descrição do Problema</label>
+                                <textarea
+                                    value={maintenanceForm.issue}
+                                    onChange={e => setMaintenanceForm(prev => ({ ...prev, issue: e.target.value }))}
+                                    placeholder="Descreva o problema ou manutenção necessária..."
+                                    className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 resize-none"
+                                    rows={3}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm text-white/60 mb-1 block">Prioridade</label>
+                                    <select
+                                        value={maintenanceForm.priority}
+                                        onChange={e => setMaintenanceForm(prev => ({ ...prev, priority: e.target.value }))}
+                                        className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white"
+                                    >
+                                        <option value="LOW">Baixa</option>
+                                        <option value="MEDIUM">Média</option>
+                                        <option value="HIGH">Alta</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-sm text-white/60 mb-1 block">Data Agendada</label>
+                                    <input
+                                        type="date"
+                                        value={maintenanceForm.scheduledDate}
+                                        onChange={e => setMaintenanceForm(prev => ({ ...prev, scheduledDate: e.target.value }))}
+                                        className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 mt-6">
+                            <Button variant="outline" className="flex-1" onClick={() => setShowNewMaintenanceModal(false)}>
+                                Cancelar
+                            </Button>
+                            <Button className="flex-1 bg-sky-600 hover:bg-sky-700" onClick={handleNewMaintenance}>
+                                Registrar Manutenção
+                            </Button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 }
