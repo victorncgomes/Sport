@@ -29,18 +29,35 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
         slot.environmentFactors.windDirection
     );
 
-    // Velocidade média do barco em m/s
-    const boatSpeedMs = 4.5;
-
-    // Calcular velocidade EFETIVA em cada direção (em nós)
-    // Para Igapó (SW): barco - netForce (se netForce > 0, corrente está contra)
-    // Para Redinha (NE): barco + netForce (se netForce > 0, corrente está a favor)
+    // Constante de conversão m/s para nós: 1 nó = 0.5144 m/s
     const KNOTS_CONVERSION = 0.5144;
-    const igapoSpeedKnots = Math.max(0, (boatSpeedMs - dualPace.netForce)) / KNOTS_CONVERSION;
-    const redinhaSpeedKnots = Math.max(0, (boatSpeedMs + dualPace.netForce)) / KNOTS_CONVERSION;
 
-    // Velocidade da corrente em nós (para referência)
-    const currentSpeedKnots = Math.abs(dualPace.netForce) / KNOTS_CONVERSION;
+    // Velocidade da CORRENTE em nós (não do barco!)
+    // netForce é a força resultante em m/s
+    // Positivo = favorece direção NE (Redinha)
+    // Negativo = favorece direção SW (Igapó)
+    const igapoCurrentKnots = -dualPace.netForce / KNOTS_CONVERSION;  // Invertido para perspectiva SW
+    const redinhaCurrentKnots = dualPace.netForce / KNOTS_CONVERSION; // Direto para perspectiva NE
+
+    // Função para calcular cor gradiente baseada no valor
+    // Vermelho intenso (valores positivos altos) → Azul (perto de 0) → Verde intenso (valores negativos altos)
+    const getGradientColor = (value: number) => {
+        const absMax = 1.5; // Máximo esperado em nós (~-1.2 a +0.6 na tabela)
+        const normalized = Math.max(-1, Math.min(1, value / absMax));
+
+        if (normalized > 0.1) {
+            // Vermelho gradiente (valores positivos = contra)
+            const intensity = Math.min(1, normalized);
+            return `rgba(239, 68, 68, ${0.1 + intensity * 0.3})`; // red-500
+        } else if (normalized < -0.1) {
+            // Verde gradiente (valores negativos = a favor)
+            const intensity = Math.min(1, -normalized);
+            return `rgba(34, 197, 94, ${0.1 + intensity * 0.3})`; // green-500
+        } else {
+            // Azul (neutro, perto de 0)
+            return `rgba(59, 130, 246, 0.15)`; // blue-500
+        }
+    };
 
     return (
         <div className="space-y-3">
@@ -130,27 +147,28 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
             {/* 3ª Linha: Correnteza para Ponte de Igapó e Ponte da Redinha */}
             <div className="grid grid-cols-2 gap-3">
                 {/* Ponte de Igapó (Nascente/SW) - PRIMEIRO */}
-                <div className={cn(
-                    "rounded-xl p-3 border relative",
-                    dualPace.towardsUpstream.delta_s_per_500m <= 0
-                        ? "bg-green-500/10 border-green-400/20"
-                        : "bg-red-500/10 border-red-400/20"
-                )}>
+                <div
+                    className="rounded-xl p-3 border relative"
+                    style={{
+                        backgroundColor: getGradientColor(igapoCurrentKnots),
+                        borderColor: igapoCurrentKnots > 0 ? 'rgba(239, 68, 68, 0.3)' : igapoCurrentKnots < -0.1 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(59, 130, 246, 0.3)'
+                    }}
+                >
                     <div className="flex items-center gap-2 mb-2">
                         <Anchor className="w-4 h-4 text-orange-300" />
                         <span className="text-[9px] text-white/60 uppercase tracking-wider font-bold">
                             Ponte de Igapó
                         </span>
                     </div>
-                    {/* Valor principal em nós */}
+                    {/* Valor principal em nós - velocidade da CORRENTE */}
                     <p className={cn(
                         "text-xl font-bold",
-                        dualPace.towardsUpstream.delta_s_per_500m <= 0 ? "text-green-300" : "text-red-300"
+                        igapoCurrentKnots < -0.1 ? "text-green-300" : igapoCurrentKnots > 0.1 ? "text-red-300" : "text-blue-300"
                     )}>
-                        {igapoSpeedKnots.toFixed(2)} <span className="text-sm">nós</span>
+                        {igapoCurrentKnots > 0 ? '+' : ''}{igapoCurrentKnots.toFixed(2)} <span className="text-sm">nós</span>
                     </p>
                     <p className="text-[9px] text-white/40 mt-0.5">
-                        {dualPace.towardsUpstream.delta_s_per_500m <= 0 ? 'A favor' : 'Contra'}
+                        {igapoCurrentKnots < -0.1 ? 'A favor' : igapoCurrentKnots > 0.1 ? 'Contra' : 'Neutro'}
                     </p>
                     {/* Impacto no pace - canto inferior direito */}
                     <div className="absolute bottom-2 right-2 text-right">
@@ -166,27 +184,28 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                 </div>
 
                 {/* Ponte da Redinha (Mar/NE) - SEGUNDO */}
-                <div className={cn(
-                    "rounded-xl p-3 border relative",
-                    dualPace.towardsSea.delta_s_per_500m <= 0
-                        ? "bg-green-500/10 border-green-400/20"
-                        : "bg-red-500/10 border-red-400/20"
-                )}>
+                <div
+                    className="rounded-xl p-3 border relative"
+                    style={{
+                        backgroundColor: getGradientColor(redinhaCurrentKnots),
+                        borderColor: redinhaCurrentKnots > 0.1 ? 'rgba(34, 197, 94, 0.3)' : redinhaCurrentKnots < -0.1 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'
+                    }}
+                >
                     <div className="flex items-center gap-2 mb-2">
                         <Anchor className="w-4 h-4 text-blue-300" />
                         <span className="text-[9px] text-white/60 uppercase tracking-wider font-bold">
                             Ponte da Redinha
                         </span>
                     </div>
-                    {/* Valor principal em nós */}
+                    {/* Valor principal em nós - velocidade da CORRENTE */}
                     <p className={cn(
                         "text-xl font-bold",
-                        dualPace.towardsSea.delta_s_per_500m <= 0 ? "text-green-300" : "text-red-300"
+                        redinhaCurrentKnots > 0.1 ? "text-green-300" : redinhaCurrentKnots < -0.1 ? "text-red-300" : "text-blue-300"
                     )}>
-                        {redinhaSpeedKnots.toFixed(2)} <span className="text-sm">nós</span>
+                        {redinhaCurrentKnots > 0 ? '+' : ''}{redinhaCurrentKnots.toFixed(2)} <span className="text-sm">nós</span>
                     </p>
                     <p className="text-[9px] text-white/40 mt-0.5">
-                        {dualPace.towardsSea.delta_s_per_500m <= 0 ? 'A favor' : 'Contra'}
+                        {redinhaCurrentKnots > 0.1 ? 'A favor' : redinhaCurrentKnots < -0.1 ? 'Contra' : 'Neutro'}
                     </p>
                     {/* Impacto no pace - canto inferior direito */}
                     <div className="absolute bottom-2 right-2 text-right">

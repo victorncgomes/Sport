@@ -95,10 +95,28 @@ function applyAmplitudeCorrection(baseSpeed: number, amplitude: number): number 
 
 /**
  * Obtém velocidade da corrente por interpolação
+ * Considera ciclo de maré de 12.42h para normalizar horas
  */
 function getCurrentSpeed(hoursFromHT: number, amplitude: number): { speed: number; type: CurrentType } {
-    // Limitar ao range -6 a +6 horas
-    const clampedHours = Math.max(-6, Math.min(6, hoursFromHT));
+    // Ciclo de maré ~12.42h
+    const TIDE_CYCLE = 12.42;
+
+    // Normalizar horas para o intervalo [-6.21, +6.21]
+    // Se estamos muito longe da próxima preamar, estamos mais perto da anterior
+    let normalizedHours = hoursFromHT;
+
+    // Se hoursFromHT < -6.21, estamos mais perto da preamar anterior
+    // Adicionar 12.42h para obter a posição relativa à anterior
+    if (hoursFromHT < -TIDE_CYCLE / 2) {
+        normalizedHours = hoursFromHT + TIDE_CYCLE;
+    }
+    // Se hoursFromHT > 6.21, estamos mais perto da próxima preamar
+    else if (hoursFromHT > TIDE_CYCLE / 2) {
+        normalizedHours = hoursFromHT - TIDE_CYCLE;
+    }
+
+    // Agora clampar ao range -6 a +6 horas (tabela de referência)
+    const clampedHours = Math.max(-6, Math.min(6, normalizedHours));
 
     const floor = Math.floor(clampedHours);
     const ceil = Math.ceil(clampedHours);
@@ -120,14 +138,19 @@ function getCurrentSpeed(hoursFromHT: number, amplitude: number): { speed: numbe
     // Converter nós para m/s
     const speedMs = correctedSpeed * KNOTS_TO_MS;
 
-    // Determinar tipo
+    // Determinar tipo baseado nas horas NORMALIZADAS
+    // Negativo = antes da preamar = enchente (flood)
+    // Positivo = depois da preamar = vazante (ebb)
+    // Perto de 0 = estofa
     let type: CurrentType;
-    if (clampedHours < -0.5) {
-        type = 'flood';
-    } else if (clampedHours > 0.5) {
-        type = 'ebb';
+    if (Math.abs(normalizedHours) < 0.5) {
+        type = 'slack'; // Estofa de preamar
+    } else if (Math.abs(normalizedHours) > 5.5) {
+        type = 'slack'; // Estofa de baixamar
+    } else if (normalizedHours < 0) {
+        type = 'flood'; // Antes da preamar = enchente
     } else {
-        type = 'slack';
+        type = 'ebb'; // Depois da preamar = vazante
     }
 
     return { speed: speedMs, type };
