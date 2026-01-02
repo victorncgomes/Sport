@@ -76,7 +76,7 @@ O Sport Club de Natal está mais vivo do que nunca!
 Reunimos nossa comunidade em frente à nossa sede histórica na Rua Chile para celebrar as conquistas e reafirmar nosso compromisso com o futuro do remo potiguar.
 
 Com a presença de atletas de todas as gerações, desde a escolinha até a equipe master, celebramos a união que faz deste clube uma referência no esporte.`,
-        image: '/news_confraternizacao.png',
+        image: '/images/news/confraternizacao-2024.png',
         category: 'Eventos',
         author: 'Diretoria Social',
         publishedAt: '2025-12-21',
@@ -93,7 +93,7 @@ Destaque para a guarnição do Double-Skiff Júnior, que superou os adversários
 "Estamos colhendo os frutos de um planejamento técnico rigoroso. Nossos atletas não apenas remaram, eles representaram a alma de Natal", afirmou o Diretor Técnico.
 
 Próximos passos incluem a preparação para o Campeonato Brasileiro, onde buscaremos pódios nacionais. O clube parabeniza todos os envolvidos.`,
-        image: '/news_medals.png',
+        image: '/images/news/medalhas-nordestino.png',
         category: 'Competição',
         author: 'Diretoria Técnica',
         publishedAt: '2025-01-15',
@@ -165,7 +165,7 @@ Próximos passos incluem a preparação para o Campeonato Brasileiro, onde busca
         title: 'A história do remo olímpico no Brasil',
         excerpt: 'Da primeira medalha às conquistas recentes, conheça a trajetória do remo brasileiro.',
         content: 'O remo brasileiro tem uma história rica e cheia de glórias, desde os primeiros clubes no Rio de Janeiro...',
-        image: '/news_historia_remo.png',
+        image: '/images/news/historia-remo-olimpico.png',
         category: 'História',
         author: 'Equipe SCN',
         publishedAt: '2024-12-25',
@@ -185,7 +185,7 @@ Próximos passos incluem a preparação para o Campeonato Brasileiro, onde busca
         title: 'Confraternização de final de ano reúne família do remo',
         excerpt: 'Mais de 150 pessoas participaram do evento que celebrou as conquistas de 2024.',
         content: 'A tradicional confraternização do SCN foi um sucesso absoluto, reunindo atletas, familiares e ex-sócios...',
-        image: '/news_confraternizacao_2.png',
+        image: '/images/news/confraternizacao-2024.png',
         category: 'Eventos',
         author: 'Diretoria Social',
         publishedAt: '2024-12-18',
