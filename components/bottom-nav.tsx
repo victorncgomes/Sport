@@ -122,7 +122,7 @@ export function BottomNav() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                'bottom-nav-item',
+                                'bottom-nav-item relative',
                                 isActive && 'active'
                             )}
                         >
@@ -130,24 +130,19 @@ export function BottomNav() {
                             {isActive && (
                                 <motion.div
                                     layoutId="bottom-nav-indicator"
-                                    className="absolute top-0 w-8 h-0.5 bg-club-red rounded-full"
+                                    className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-club-red rounded-full"
                                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                                 />
                             )}
 
-                            {/* Icon Container */}
-                            <div className={cn(
-                                "relative p-2 rounded-lg transition-all duration-200",
-                                isActive && "bg-club-red/10 -translate-y-1"
-                            )}>
-                                <Icon
-                                    className={cn(
-                                        'w-5 h-5 transition-colors duration-200',
-                                        isActive ? 'text-club-red' : 'text-white/40'
-                                    )}
-                                    strokeWidth={2}
-                                />
-                            </div>
+                            {/* Icon */}
+                            <Icon
+                                className={cn(
+                                    'w-5 h-5 transition-colors duration-200',
+                                    isActive ? 'text-club-red' : 'text-white/40'
+                                )}
+                                strokeWidth={2}
+                            />
 
                             {/* Label */}
                             <span className={cn(

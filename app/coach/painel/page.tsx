@@ -30,13 +30,22 @@ import { getCoachDashboardData } from '@/lib/actions/coach';
 
 export default async function CoachPainelPage() {
     // Para modo demonstração, usamos o treinador do seed
-    const data = await getCoachDashboardData('treinador@scnatal.com.br');
-
-    if (!data) {
-        return <div className="pt-24 text-center text-white font-black uppercase tracking-widest">Erro ao carregar dados do treinador.</div>;
+    let data;
+    try {
+        data = await getCoachDashboardData('treinador@scnatal.com.br');
+    } catch (error) {
+        console.error('Erro ao carregar dados do coach:', error);
+        data = null;
     }
 
-    const { coach, trainings, stats } = data;
+    // Fallback para quando DB não está disponível
+    const fallbackData = {
+        coach: { name: 'Demo Treinador', email: 'treinador@scnatal.com.br' },
+        trainings: [],
+        stats: { totalTrainings: 0, totalStudents: 0, attendanceRate: 0, competingAthletes: 0 }
+    };
+
+    const { coach, trainings, stats } = data || fallbackData;
 
     const coachStats = [
         { label: 'Treinos Aplicados', value: stats.totalTrainings.toString(), icon: Calendar, color: 'text-blue-400' },
