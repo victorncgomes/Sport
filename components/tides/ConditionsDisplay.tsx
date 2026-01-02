@@ -29,8 +29,18 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
         slot.environmentFactors.windDirection
     );
 
-    // Conversão m/s para nós: 1 nó = 0.5144 m/s
-    const currentSpeedKnots = Math.abs(dualPace.netForce / 0.5144);
+    // Velocidade média do barco em m/s
+    const boatSpeedMs = 4.5;
+
+    // Calcular velocidade EFETIVA em cada direção (em nós)
+    // Para Igapó (SW): barco - netForce (se netForce > 0, corrente está contra)
+    // Para Redinha (NE): barco + netForce (se netForce > 0, corrente está a favor)
+    const KNOTS_CONVERSION = 0.5144;
+    const igapoSpeedKnots = Math.max(0, (boatSpeedMs - dualPace.netForce)) / KNOTS_CONVERSION;
+    const redinhaSpeedKnots = Math.max(0, (boatSpeedMs + dualPace.netForce)) / KNOTS_CONVERSION;
+
+    // Velocidade da corrente em nós (para referência)
+    const currentSpeedKnots = Math.abs(dualPace.netForce) / KNOTS_CONVERSION;
 
     return (
         <div className="space-y-3">
@@ -137,7 +147,7 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                         "text-xl font-bold",
                         dualPace.towardsUpstream.delta_s_per_500m <= 0 ? "text-green-300" : "text-red-300"
                     )}>
-                        {currentSpeedKnots.toFixed(2)} <span className="text-sm">nós</span>
+                        {igapoSpeedKnots.toFixed(2)} <span className="text-sm">nós</span>
                     </p>
                     <p className="text-[9px] text-white/40 mt-0.5">
                         {dualPace.towardsUpstream.delta_s_per_500m <= 0 ? 'A favor' : 'Contra'}
@@ -173,7 +183,7 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                         "text-xl font-bold",
                         dualPace.towardsSea.delta_s_per_500m <= 0 ? "text-green-300" : "text-red-300"
                     )}>
-                        {currentSpeedKnots.toFixed(2)} <span className="text-sm">nós</span>
+                        {redinhaSpeedKnots.toFixed(2)} <span className="text-sm">nós</span>
                     </p>
                     <p className="text-[9px] text-white/40 mt-0.5">
                         {dualPace.towardsSea.delta_s_per_500m <= 0 ? 'A favor' : 'Contra'}
