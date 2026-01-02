@@ -94,53 +94,43 @@ function applyAmplitudeCorrection(baseSpeed: number, amplitude: number): number 
 }
 
 /**
- * Obtém velocidade da corrente baseada no ciclo de maré completo
- * 
- * A corrente segue um padrão senoidal entre DUAS estofas:
- * - ESTOFA (slack) = velocidade ZERO (na preamar e na baixamar)
- * - MÁXIMA velocidade = no meio caminho entre preamar e baixamar (~3h de cada)
- * 
- * @param hoursFromNearestSlack Horas desde a estofa mais próxima (0 a 3)
- * @param amplitude Amplitude da maré em cm
- * @param isFloodPhase Se verdadeiro, estamos em fase de enchente
+ * Obtém velocidade da corrente por interpolação
  */
-function getCurrentSpeed(
-    hoursFromNearestSlack: number,
-    amplitude: number,
-    isFloodPhase: boolean
-): { speed: number; type: CurrentType } {
-    // Ciclo de maré completo é ~12.4h, meio ciclo é ~6.2h
-    // A velocidade máxima ocorre a ~3h da estofa
-    // Velocidade base em m/s (para sizígia média ≈ 0.85 m/s máximo)
-    const baseMaxSpeed = 0.85; // m/s
+function getCurrentSpeed(hoursFromHT: number, amplitude: number): { speed: number; type: CurrentType } {
+    // Limitar ao range -6 a +6 horas
+    const clampedHours = Math.max(-6, Math.min(6, hoursFromHT));
 
-    // Fator de amplitude (227cm = sizígia média)
-    const amplitudeFactor = amplitude / 227;
+    const floor = Math.floor(clampedHours);
+    const ceil = Math.ceil(clampedHours);
+    const fraction = clampedHours - floor;
 
-    // hoursFromNearestSlack deve ser 0 a 3:
-    // 0 = na estofa (velocidade = 0)
-    // 3 = no meio do ciclo (velocidade = máxima)
-    const clampedHours = Math.min(Math.abs(hoursFromNearestSlack), 3);
+    const dataFloor = CURRENT_SPEEDS_REFERENCE[floor.toString()];
+    const dataCeil = CURRENT_SPEEDS_REFERENCE[ceil.toString()];
 
-    // Usar senóide: sin(0) = 0, sin(π/2) = 1
-    // Quando clampedHours = 0 → phase = 0 → velocidade = 0
-    // Quando clampedHours = 3 → phase = π/2 → velocidade = máxima
-    const phase = (clampedHours / 3) * (Math.PI / 2);
-    const speedFactor = Math.sin(phase);
-
-    const speed = baseMaxSpeed * amplitudeFactor * speedFactor;
-
-    // Determinar tipo de corrente
-    let type: CurrentType;
-    if (clampedHours < 0.3) {
-        type = 'slack'; // Estofa (muito perto da referência)
-    } else if (isFloodPhase) {
-        type = 'flood'; // Enchendo
-    } else {
-        type = 'ebb'; // Vazando
+    if (!dataFloor || !dataCeil) {
+        return { speed: 0, type: 'slack' };
     }
 
-    return { speed, type };
+    // Interpolar velocidade
+    const baseSpeed = dataFloor.speed + (dataCeil.speed - dataFloor.speed) * fraction;
+
+    // Aplicar correção de amplitude
+    const correctedSpeed = applyAmplitudeCorrection(baseSpeed, amplitude);
+
+    // Converter nós para m/s
+    const speedMs = correctedSpeed * KNOTS_TO_MS;
+
+    // Determinar tipo
+    let type: CurrentType;
+    if (clampedHours < -0.5) {
+        type = 'flood';
+    } else if (clampedHours > 0.5) {
+        type = 'ebb';
+    } else {
+        type = 'slack';
+    }
+
+    return { speed: speedMs, type };
 }
 
 /**
@@ -318,68 +308,13 @@ export function analyzeSlot(
     const endTime = addMinutes(startTime, 60);
     const midTime = addMinutes(startTime, 30);
 
-    // Converter horários para minutos para facilitar comparação
-    const [startH, startM] = startTime.split(':').map(Number);
-    const slotMinutes = startH * 60 + startM;
+    // Calcular momentos relativos à preamar
+    const departureHoursFromHT = calculateHoursFromHighTide(startTime, input.tideData.nextHighTide);
+    const returnHoursFromHT = calculateHoursFromHighTide(midTime, input.tideData.nextHighTide);
 
-    const htMinutes = input.tideData.nextHighTide.getHours() * 60 + input.tideData.nextHighTide.getMinutes();
-    const ltMinutes = input.tideData.nextLowTide.getHours() * 60 + input.tideData.nextLowTide.getMinutes();
-
-    // Determinar em qual fase do ciclo de maré estamos
-    // Se estamos ANTES da preamar e DEPOIS da baixamar anterior → ENCHENDO (flood)
-    // Se estamos DEPOIS da preamar e ANTES da baixamar seguinte → VAZANDO (ebb)
-    let isFloodPhase: boolean;
-    let hoursFromNearestSlack: number;
-
-    // Calcular distância até preamar e baixamar
-    const hoursToHT = (htMinutes - slotMinutes) / 60;
-    const hoursToLT = (ltMinutes - slotMinutes) / 60;
-
-    // Determinar a estofa mais próxima e a fase
-    // A distância da estofa mais próxima determina a velocidade (0 na estofa, máxima a 3h)
-    const absHoursToHT = Math.abs(hoursToHT);
-    const absHoursToLT = Math.abs(hoursToLT);
-
-    if (ltMinutes < htMinutes) {
-        // Sequência do dia: LT ... HT (baixamar primeiro, depois preamar)
-        if (slotMinutes < ltMinutes) {
-            // Antes da baixamar → vazando, se aproximando da estofa da baixamar
-            isFloodPhase = false;
-            hoursFromNearestSlack = absHoursToLT; // Distância até a baixamar
-        } else if (slotMinutes < htMinutes) {
-            // Entre baixamar e preamar → enchendo
-            isFloodPhase = true;
-            // Usar a menor distância (da LT que passou ou da HT que vem)
-            hoursFromNearestSlack = Math.min(absHoursToLT, absHoursToHT);
-        } else {
-            // Depois da preamar → vazando, se afastando da estofa da preamar
-            isFloodPhase = false;
-            hoursFromNearestSlack = absHoursToHT;
-        }
-    } else {
-        // Sequência do dia: HT ... LT (preamar primeiro, depois baixamar)
-        if (slotMinutes < htMinutes) {
-            // Antes da preamar → enchendo, se aproximando da estofa da preamar
-            isFloodPhase = true;
-            hoursFromNearestSlack = absHoursToHT;
-        } else if (slotMinutes < ltMinutes) {
-            // Entre preamar e baixamar → vazando
-            isFloodPhase = false;
-            // Usar a menor distância
-            hoursFromNearestSlack = Math.min(absHoursToHT, absHoursToLT);
-        } else {
-            // Depois de ambas → enchendo para próxima preamar
-            isFloodPhase = true;
-            hoursFromNearestSlack = absHoursToLT;
-        }
-    }
-
-    // Obter velocidades das correntes com a fase correta
-    const departureCurrentData = getCurrentSpeed(hoursFromNearestSlack, input.tideData.amplitude, isFloodPhase);
-
-    // Para o retorno (30 min depois), ajustar distância
-    const midHoursFromSlack = Math.max(0, hoursFromNearestSlack - 0.5);
-    const returnCurrentData = getCurrentSpeed(midHoursFromSlack, input.tideData.amplitude, isFloodPhase);
+    // Obter velocidades das correntes
+    const departureCurrentData = getCurrentSpeed(departureHoursFromHT, input.tideData.amplitude);
+    const returnCurrentData = getCurrentSpeed(returnHoursFromHT, input.tideData.amplitude);
 
     // Calcular balance de corrente
     const currentBalance = calculateCurrentBalance(departureCurrentData, returnCurrentData);
@@ -437,9 +372,9 @@ export function analyzeSlot(
         classification: scoreToClassification(totalScore),
         score: Math.round(totalScore),
         tideFactors: {
-            departurePhase: `${isFloodPhase ? 'Enchendo' : 'Vazando'} - ${hoursFromNearestSlack.toFixed(1)}h da estofa`,
+            departurePhase: formatPhase(departureHoursFromHT),
             departureTime: startTime,
-            returnPhase: `${isFloodPhase ? 'Enchendo' : 'Vazando'} - ${midHoursFromSlack.toFixed(1)}h da estofa`,
+            returnPhase: formatPhase(returnHoursFromHT),
             returnTime: midTime,
             departureCurrentSpeed: departureCurrentData.speed,
             departureCurrentType: departureCurrentData.type,

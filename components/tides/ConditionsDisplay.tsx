@@ -29,11 +29,14 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
         slot.environmentFactors.windDirection
     );
 
+    // Conversão m/s para nós: 1 nó = 0.5144 m/s
+    const currentSpeedKnots = Math.abs(dualPace.netForce / 0.5144);
+
     return (
         <div className="space-y-3">
             {/* 1ª Linha: Classificação e Correnteza */}
             <div className="grid grid-cols-2 gap-3">
-                {/* Classificação (Reduzida para metade) */}
+                {/* Classificação */}
                 <div className={cn(
                     "p-3 rounded-xl border flex flex-col items-center justify-center text-center",
                     slot.classification === 'EXCELENTE' && "bg-green-500/20 border-green-400/50",
@@ -114,52 +117,78 @@ export function ConditionsDisplay({ slot }: ConditionsDisplayProps) {
                 </div>
             </div>
 
-            {/* 3ª Linha: Pace para Mar e Nascente */}
+            {/* 3ª Linha: Correnteza para Ponte de Igapó e Ponte da Redinha */}
             <div className="grid grid-cols-2 gap-3">
-                {/* Pace para o Mar (NE) */}
+                {/* Ponte de Igapó (Nascente/SW) - PRIMEIRO */}
                 <div className={cn(
-                    "rounded-xl p-3 border",
-                    dualPace.towardsSea.delta_s_per_500m <= 0
-                        ? "bg-green-500/10 border-green-400/20"
-                        : "bg-red-500/10 border-red-400/20"
-                )}>
-                    <div className="flex items-center gap-2 mb-2">
-                        <Anchor className="w-4 h-4 text-blue-300" />
-                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">
-                            P/ Mar (NE)
-                        </span>
-                    </div>
-                    <p className={cn(
-                        "text-xl font-bold",
-                        dualPace.towardsSea.delta_s_per_500m <= 0 ? "text-green-300" : "text-red-300"
-                    )}>
-                        {dualPace.towardsSea.delta_s_per_500m > 0 ? '+' : ''}
-                        {dualPace.towardsSea.delta_s_per_500m.toFixed(1)}s
-                    </p>
-                    <p className="text-[10px] text-white/50 mt-1">por 500m</p>
-                </div>
-
-                {/* Pace para Nascente (SW) */}
-                <div className={cn(
-                    "rounded-xl p-3 border",
+                    "rounded-xl p-3 border relative",
                     dualPace.towardsUpstream.delta_s_per_500m <= 0
                         ? "bg-green-500/10 border-green-400/20"
                         : "bg-red-500/10 border-red-400/20"
                 )}>
                     <div className="flex items-center gap-2 mb-2">
                         <Anchor className="w-4 h-4 text-orange-300" />
-                        <span className="text-[10px] text-white/60 uppercase tracking-wider font-bold">
-                            P/ Nascente (SW)
+                        <span className="text-[9px] text-white/60 uppercase tracking-wider font-bold">
+                            Ponte de Igapó
                         </span>
                     </div>
+                    {/* Valor principal em nós */}
                     <p className={cn(
                         "text-xl font-bold",
                         dualPace.towardsUpstream.delta_s_per_500m <= 0 ? "text-green-300" : "text-red-300"
                     )}>
-                        {dualPace.towardsUpstream.delta_s_per_500m > 0 ? '+' : ''}
-                        {dualPace.towardsUpstream.delta_s_per_500m.toFixed(1)}s
+                        {currentSpeedKnots.toFixed(2)} <span className="text-sm">nós</span>
                     </p>
-                    <p className="text-[10px] text-white/50 mt-1">por 500m</p>
+                    <p className="text-[9px] text-white/40 mt-0.5">
+                        {dualPace.towardsUpstream.delta_s_per_500m <= 0 ? 'A favor' : 'Contra'}
+                    </p>
+                    {/* Impacto no pace - canto inferior direito */}
+                    <div className="absolute bottom-2 right-2 text-right">
+                        <p className="text-[8px] text-white/30 uppercase">Pace 500m</p>
+                        <p className={cn(
+                            "text-[10px] font-bold",
+                            dualPace.towardsUpstream.delta_s_per_500m <= 0 ? "text-green-400/70" : "text-red-400/70"
+                        )}>
+                            {dualPace.towardsUpstream.delta_s_per_500m > 0 ? '+' : ''}
+                            {dualPace.towardsUpstream.delta_s_per_500m.toFixed(1)}s
+                        </p>
+                    </div>
+                </div>
+
+                {/* Ponte da Redinha (Mar/NE) - SEGUNDO */}
+                <div className={cn(
+                    "rounded-xl p-3 border relative",
+                    dualPace.towardsSea.delta_s_per_500m <= 0
+                        ? "bg-green-500/10 border-green-400/20"
+                        : "bg-red-500/10 border-red-400/20"
+                )}>
+                    <div className="flex items-center gap-2 mb-2">
+                        <Anchor className="w-4 h-4 text-blue-300" />
+                        <span className="text-[9px] text-white/60 uppercase tracking-wider font-bold">
+                            Ponte da Redinha
+                        </span>
+                    </div>
+                    {/* Valor principal em nós */}
+                    <p className={cn(
+                        "text-xl font-bold",
+                        dualPace.towardsSea.delta_s_per_500m <= 0 ? "text-green-300" : "text-red-300"
+                    )}>
+                        {currentSpeedKnots.toFixed(2)} <span className="text-sm">nós</span>
+                    </p>
+                    <p className="text-[9px] text-white/40 mt-0.5">
+                        {dualPace.towardsSea.delta_s_per_500m <= 0 ? 'A favor' : 'Contra'}
+                    </p>
+                    {/* Impacto no pace - canto inferior direito */}
+                    <div className="absolute bottom-2 right-2 text-right">
+                        <p className="text-[8px] text-white/30 uppercase">Pace 500m</p>
+                        <p className={cn(
+                            "text-[10px] font-bold",
+                            dualPace.towardsSea.delta_s_per_500m <= 0 ? "text-green-400/70" : "text-red-400/70"
+                        )}>
+                            {dualPace.towardsSea.delta_s_per_500m > 0 ? '+' : ''}
+                            {dualPace.towardsSea.delta_s_per_500m.toFixed(1)}s
+                        </p>
+                    </div>
                 </div>
             </div>
 
