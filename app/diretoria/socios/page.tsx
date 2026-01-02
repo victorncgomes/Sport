@@ -21,7 +21,12 @@ import {
     AlertCircle,
     XCircle,
     ChevronRight,
-    User
+    User,
+    Activity,
+    Heart,
+    Clock,
+    FileText,
+    Trophy
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -95,6 +100,24 @@ export default function SociosPage() {
         active: members.filter(m => m.status === 'ACTIVE').length,
         pending: members.filter(m => m.paymentStatus === 'PENDING').length,
         overdue: members.filter(m => m.paymentStatus === 'OVERDUE').length,
+        // Gênero (simulado baseado em categoria)
+        male: members.filter(m => m.category === 'Remador' || m.category === 'Contribuinte' || m.category === 'Benemérito').length,
+        female: members.filter(m => m.category === 'Remadora' || m.category === 'Honorário').length,
+        // Faixa etária (simulado)
+        young: Math.floor(members.length * 0.4),
+        master: Math.floor(members.length * 0.35),
+        // Voluntariado (simulado)
+        volunteers: Math.floor(members.length * 0.3),
+        notVolunteers: Math.floor(members.length * 0.7),
+        // Acesso (simulado)
+        recentAccess: Math.floor(members.filter(m => m.status === 'ACTIVE').length * 0.8),
+        noAccess: Math.floor(members.filter(m => m.status === 'ACTIVE').length * 0.2),
+        // Saúde (simulado)
+        anamneseOk: Math.floor(members.length * 0.7),
+        anamnesePending: Math.floor(members.length * 0.3),
+        awayOver40: members.filter(m => m.status === 'INACTIVE').length,
+        // Atletas competidores
+        athletes: Math.floor(members.filter(m => m.category.includes('Remador')).length * 0.5),
     };
 
     return (
@@ -118,28 +141,179 @@ export default function SociosPage() {
                     </div>
                 </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <AnimatedCard variant="glass" className="p-4 text-center">
-                        <Users className="w-6 h-6 text-blue-400 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-white">{stats.total}</div>
-                        <div className="text-xs text-white/40">Total de Sócios</div>
-                    </AnimatedCard>
-                    <AnimatedCard variant="glass" className="p-4 text-center">
-                        <CheckCircle className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-white">{stats.active}</div>
-                        <div className="text-xs text-white/40">Ativos</div>
-                    </AnimatedCard>
-                    <AnimatedCard variant="glass" className="p-4 text-center">
-                        <AlertCircle className="w-6 h-6 text-amber-400 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-white">{stats.pending}</div>
-                        <div className="text-xs text-white/40">Pendentes</div>
-                    </AnimatedCard>
-                    <AnimatedCard variant="glass" className="p-4 text-center">
-                        <XCircle className="w-6 h-6 text-red-400 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-white">{stats.overdue}</div>
-                        <div className="text-xs text-white/40">Em Atraso</div>
-                    </AnimatedCard>
+                {/* Stats Avançadas */}
+                <div className="mb-8">
+                    <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <Activity className="w-5 h-5 text-club-gold" />
+                        Visão Geral dos Sócios
+                    </h2>
+
+                    {/* Métricas Principais */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <AnimatedCard variant="glass" className="p-4 text-center">
+                            <Users className="w-6 h-6 text-blue-400 mx-auto mb-2" />
+                            <div className="text-2xl font-bold text-white">{stats.total}</div>
+                            <div className="text-xs text-white/40">Total de Sócios</div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-4 text-center">
+                            <CheckCircle className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
+                            <div className="text-2xl font-bold text-white">{stats.active}</div>
+                            <div className="text-xs text-white/40">Ativos</div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-4 text-center">
+                            <AlertCircle className="w-6 h-6 text-amber-400 mx-auto mb-2" />
+                            <div className="text-2xl font-bold text-white">{stats.pending}</div>
+                            <div className="text-xs text-white/40">Pendentes</div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-4 text-center">
+                            <XCircle className="w-6 h-6 text-red-400 mx-auto mb-2" />
+                            <div className="text-2xl font-bold text-white">{stats.overdue}</div>
+                            <div className="text-xs text-white/40">Em Atraso</div>
+                        </AnimatedCard>
+                    </div>
+
+                    {/* Métricas Detalhadas */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                        {/* Gênero */}
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                    <span className="text-sm">♂</span>
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.male}</div>
+                                    <div className="text-[10px] text-white/40">Masculino</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
+                                    <span className="text-sm">♀</span>
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.female}</div>
+                                    <div className="text-[10px] text-white/40">Feminino</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+
+                        {/* Faixa Etária */}
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                                    <span className="text-xs">18-35</span>
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.young}</div>
+                                    <div className="text-[10px] text-white/40">Jovens</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+                                    <span className="text-xs">40+</span>
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.master}</div>
+                                    <div className="text-[10px] text-white/40">Masters</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+
+                        {/* Voluntariado */}
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                    <Heart className="w-4 h-4 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.volunteers}</div>
+                                    <div className="text-[10px] text-white/40">Voluntários</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                                    <Heart className="w-4 h-4 text-white/40" />
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.notVolunteers}</div>
+                                    <div className="text-[10px] text-white/40">Não Voluntários</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+
+                        {/* Acesso e Saúde */}
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                                    <Clock className="w-4 h-4 text-green-400" />
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.recentAccess}</div>
+                                    <div className="text-[10px] text-white/40">Acesso Recente</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                                    <Clock className="w-4 h-4 text-red-400" />
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.noAccess}</div>
+                                    <div className="text-[10px] text-white/40">Sem Acesso 30d</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                    <FileText className="w-4 h-4 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.anamneseOk}</div>
+                                    <div className="text-[10px] text-white/40">Anamnese OK</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+                                    <AlertCircle className="w-4 h-4 text-orange-400" />
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.anamnesePending}</div>
+                                    <div className="text-[10px] text-white/40">Anamnese Pend.</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                                    <Calendar className="w-4 h-4 text-purple-400" />
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.awayOver40}</div>
+                                    <div className="text-[10px] text-white/40">Afastados +40d</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                        <AnimatedCard variant="glass" className="p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-club-gold/20 flex items-center justify-center">
+                                    <Trophy className="w-4 h-4 text-club-gold" />
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold text-white">{stats.athletes}</div>
+                                    <div className="text-[10px] text-white/40">Atletas Comp.</div>
+                                </div>
+                            </div>
+                        </AnimatedCard>
+                    </div>
                 </div>
 
                 {/* Search and Filters */}

@@ -47,6 +47,14 @@ const upcomingReservations = [
 
 export default function GaragemDiretoriaPage() {
     const [activeTab, setActiveTab] = useState<'stats' | 'maintenance' | 'reservations'>('stats');
+    const [showNewMaintenanceModal, setShowNewMaintenanceModal] = useState(false);
+    const [selectedBoat, setSelectedBoat] = useState<string | null>(null);
+    const [maintenanceForm, setMaintenanceForm] = useState({
+        boat: '',
+        issue: '',
+        priority: 'MEDIUM',
+        scheduledDate: ''
+    });
 
     const totalBoats = garageBoats.length;
     const availableBoats = garageBoats.filter(b => b.status === 'available').length;
@@ -55,6 +63,13 @@ export default function GaragemDiretoriaPage() {
 
     const totalHours = boatStats.reduce((sum, b) => sum + b.hoursUsed, 0);
     const avgPerformance = Math.round(boatStats.reduce((sum, b) => sum + b.performance, 0) / boatStats.length);
+
+    const handleNewMaintenance = () => {
+        // Simulação de salvar (em produção, faria API call)
+        console.log('Nova manutenção:', maintenanceForm);
+        setShowNewMaintenanceModal(false);
+        setMaintenanceForm({ boat: '', issue: '', priority: 'MEDIUM', scheduledDate: '' });
+    };
 
     return (
         <div className="min-h-screen bg-club-black pt-20 pb-24">
@@ -73,7 +88,7 @@ export default function GaragemDiretoriaPage() {
                             </h1>
                             <p className="text-white/50">Manutenção, agendamentos e estatísticas de barcos</p>
                         </div>
-                        <Button className="gap-2 bg-sky-600 hover:bg-sky-700">
+                        <Button onClick={() => setShowNewMaintenanceModal(true)} className="gap-2 bg-sky-600 hover:bg-sky-700">
                             <Wrench className="w-4 h-4" />
                             Nova Manutenção
                         </Button>

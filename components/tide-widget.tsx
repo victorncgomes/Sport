@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Waves,
@@ -620,13 +621,14 @@ export function TideWidget({ className }: { className?: string }) {
                             {/* Condições do Horário Selecionado */}
                             <ConditionsDisplay slot={selectedSlotAnalysis} />
 
-                            {/* Botão Mais Informações */}
-                            <button
-                                onClick={() => setShowMoreInfo(!showMoreInfo)}
-                                className="w-full px-4 py-3 text-sm font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-2"
+                            {/* Botão Mais Informações - Abre Nova Página */}
+                            <Link
+                                href={`/tides-weather?day=${dayOffset}&time=${selectedTime}`}
+                                className="w-full px-4 py-3 text-sm font-bold uppercase tracking-wider bg-club-red/80 hover:bg-club-red text-white rounded-lg border border-club-red/50 transition-all flex items-center justify-center gap-2"
                             >
-                                {showMoreInfo ? '▲ Ocultar Detalhes' : '▼ Mais Informações'}
-                            </button>
+                                <ExternalLink className="w-4 h-4" />
+                                Mais Informações
+                            </Link>
 
                             {/* Seção Mais Informações (Tabela + Dados Extras) */}
                             {showMoreInfo && (

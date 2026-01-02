@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { prisma } from '@/lib/prisma';
-import { authOptions } from '@/auth';
+import { auth } from '@/auth';
+import { prisma } from '@/lib/db';
 import { BOAT_HIERARCHY, checkBoatUnlockCriteria } from '@/lib/utils/boat-progression';
 import { XP_ACTIONS } from '@/lib/utils/xp-system';
 
@@ -11,7 +10,7 @@ interface UnlockBoatRequest {
 
 export async function POST(request: Request) {
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
 
         if (!session?.user?.email) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
@@ -109,9 +108,9 @@ export async function POST(request: Request) {
         await prisma.activityLog.create({
             data: {
                 userId: user.id,
-                type: 'BOAT_UNLOCK',
+                activityType: 'BOAT_UNLOCK',
                 description: `Desbloqueou o barco ${boat.displayName}`,
-                points: XP_ACTIONS.DESBLOQUEAR_BARCO,
+                xpEarned: XP_ACTIONS.DESBLOQUEAR_BARCO,
                 metadata: JSON.stringify({ boatId, boatName: boat.displayName })
             }
         });

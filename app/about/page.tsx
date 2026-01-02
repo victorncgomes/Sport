@@ -76,13 +76,18 @@ const AppDetailsSection = () => {
                                 <div className="space-y-4">
                                     <div className="relative pl-6 border-l border-blue-500/30">
                                         <div className="absolute top-0 -left-1.5 w-3 h-3 rounded-full bg-blue-500 border-2 border-club-black" />
-                                        <div className="text-sm font-bold text-blue-400 mb-1">V0.4.5</div>
-                                        <p className="text-xs text-white/70">Módulo Coach, Alongamento, Fichas de Sócio e muito mais.</p>
+                                        <div className="text-sm font-bold text-blue-400 mb-1">V0.4.7</div>
+                                        <p className="text-xs text-white/70">Sistema de Votações, Gestão de Sócios avançada, Voluntariado expandido.</p>
                                     </div>
                                     <div className="relative pl-6 border-l border-blue-500/30">
                                         <div className="absolute top-0 -left-1.5 w-3 h-3 rounded-full bg-blue-500/50 border-2 border-club-black" />
-                                        <div className="text-[10px] font-bold text-white/30 mb-1">V0.4.0</div>
-                                        <p className="text-xs text-white/50">Treinos com GPS, logos de parceiros.</p>
+                                        <div className="text-[10px] font-bold text-white/30 mb-1">V0.4.6</div>
+                                        <p className="text-xs text-white/50">Imagens de notícias e galeria, Tide Widget aprimorado.</p>
+                                    </div>
+                                    <div className="relative pl-6 border-l border-blue-500/30">
+                                        <div className="absolute top-0 -left-1.5 w-3 h-3 rounded-full bg-blue-500/30 border-2 border-club-black" />
+                                        <div className="text-[10px] font-bold text-white/20 mb-1">V0.4.5</div>
+                                        <p className="text-xs text-white/40">Módulo Coach, Alongamento, Fichas de Sócio.</p>
                                     </div>
                                 </div>
                                 <Link href="/docs" onClick={(e) => e.stopPropagation()} className="mt-6 inline-flex items-center gap-2 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">

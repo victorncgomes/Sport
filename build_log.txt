@@ -1,4 +1,0 @@
-﻿
-> sport-club-natal@0.4.3 build
-> next build
-

@@ -11,7 +11,7 @@ import {
     Waves as Surf,
     CircleDot,
     Mountain,
-    Volleyball,
+    Trophy, // Substituindo Volleyball que deu erro
     Play,
     ChevronRight,
     ChevronLeft
@@ -68,7 +68,7 @@ const activities = [
         id: 'VOLLEYBALL',
         title: 'Vôlei',
         description: 'Vôlei de praia ou quadra',
-        icon: Volleyball,
+        icon: Trophy,
         color: 'from-yellow-500 to-orange-500'
     },
     {

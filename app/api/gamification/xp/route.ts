@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { prisma } from '@/lib/prisma';
-import { authOptions } from '@/auth';
+import { auth } from '@/auth';
+import { prisma } from '@/lib/db';
 import { XP_ACTIONS, checkLevelUp } from '@/lib/utils/xp-system';
 
 interface AddXPRequest {
@@ -11,7 +10,7 @@ interface AddXPRequest {
 
 export async function POST(request: Request) {
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
 
         if (!session?.user?.email) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
@@ -55,9 +54,9 @@ export async function POST(request: Request) {
         await prisma.activityLog.create({
             data: {
                 userId: user.id,
-                type: 'XP_GAIN',
+                activityType: 'XP_GAIN',
                 description: `Ganhou ${xpAmount} XP por ${action}`,
-                points: xpAmount,
+                xpEarned: xpAmount,
                 metadata: JSON.stringify({ action, leveledUp: levelUpInfo.leveledUp })
             }
         });
@@ -76,7 +75,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
     try {
-        const session = await getServerSession(authOptions);
+        const session = await auth();
 
         if (!session?.user?.email) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
