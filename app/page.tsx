@@ -88,8 +88,8 @@ export default function HomePage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-club-black">
-            {/* Spacer for fixed header - reduzido para mobile */}
-            <div className="h-8 md:h-10" />
+            {/* Spacer for fixed header - altura do header mobile (125px) e desktop (100px) */}
+            <div className="h-[125px] lg:h-[100px]" />
 
             {/* ========== HERO NEWS SECTION (Estilo Flamengo) ========== */}
             <section className="relative">
