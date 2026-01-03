@@ -81,8 +81,12 @@ export default function NoticiasGerenciamentoPage() {
         title: '',
         excerpt: '',
         content: '',
-        hashtags: ''
+        hashtags: '',
+        imageUrl: '',
+        imageMode: 'upload' as 'upload' | 'ai', // 'upload' = manual, 'ai' = gerar com IA
     });
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [generatingImage, setGeneratingImage] = useState(false);
 
     const filteredNews = news.filter(n =>
         n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -116,7 +120,8 @@ export default function NoticiasGerenciamentoPage() {
 
         setNews([newNews, ...news]);
         setIsModalOpen(false);
-        setNewArticle({ title: '', excerpt: '', content: '', hashtags: '' });
+        setNewArticle({ title: '', excerpt: '', content: '', hashtags: '', imageUrl: '', imageMode: 'upload' });
+        setImagePreview(null);
         setLoading(false);
     };
 
@@ -323,11 +328,89 @@ export default function NoticiasGerenciamentoPage() {
                                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
                                         />
                                     </div>
-                                    <div className="flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                                        <Image className="w-5 h-5 text-amber-400" />
-                                        <span className="text-sm text-amber-400">
-                                            Upload de imagem será habilitado em breve
-                                        </span>
+                                    {/* Image Upload Section */}
+                                    <div className="space-y-3">
+                                        <label className="block text-sm text-white/60 mb-1">
+                                            <Image className="w-3 h-3 inline mr-1" />
+                                            Imagem da Notícia
+                                        </label>
+
+                                        {/* Image Mode Tabs */}
+                                        <div className="flex gap-2 mb-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewArticle({ ...newArticle, imageMode: 'upload' })}
+                                                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${newArticle.imageMode === 'upload'
+                                                        ? 'bg-club-red text-white'
+                                                        : 'bg-white/10 text-white/60 hover:bg-white/20'
+                                                    }`}
+                                            >
+                                                📤 Upload Manual
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewArticle({ ...newArticle, imageMode: 'ai' })}
+                                                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${newArticle.imageMode === 'ai'
+                                                        ? 'bg-purple-500 text-white'
+                                                        : 'bg-white/10 text-white/60 hover:bg-white/20'
+                                                    }`}
+                                            >
+                                                🤖 Gerar com IA
+                                            </button>
+                                        </div>
+
+                                        {/* Upload Mode */}
+                                        {newArticle.imageMode === 'upload' && (
+                                            <div>
+                                                <input
+                                                    type="url"
+                                                    value={newArticle.imageUrl}
+                                                    onChange={e => {
+                                                        setNewArticle({ ...newArticle, imageUrl: e.target.value });
+                                                        setImagePreview(e.target.value);
+                                                    }}
+                                                    placeholder="Cole a URL da imagem ou faça upload..."
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white text-sm"
+                                                />
+                                                <p className="text-[11px] text-white/40 mt-1">
+                                                    Formatos: JPG, PNG, WebP. Tamanho recomendado: 1200x630px
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* AI Mode */}
+                                        {newArticle.imageMode === 'ai' && (
+                                            <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+                                                <p className="text-sm text-purple-300 mb-2">
+                                                    A imagem será gerada automaticamente com base no título e conteúdo.
+                                                </p>
+                                                <p className="text-[11px] text-purple-300/60">
+                                                    Cores: vermelho e preto do clube | Estilo: esportivo brasileiro
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* Image Preview */}
+                                        {imagePreview && newArticle.imageMode === 'upload' && (
+                                            <div className="relative">
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Preview"
+                                                    className="w-full h-32 object-cover rounded-lg border border-white/10"
+                                                    onError={() => setImagePreview(null)}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setImagePreview(null);
+                                                        setNewArticle({ ...newArticle, imageUrl: '' });
+                                                    }}
+                                                    className="absolute top-2 right-2 p-1 bg-black/50 rounded-full hover:bg-red-500/70"
+                                                >
+                                                    <Eye className="w-4 h-4 text-white" />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex gap-3 pt-4">
                                         <Button

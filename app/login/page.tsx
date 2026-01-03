@@ -195,8 +195,8 @@ function LoginContent() {
                 {/* Link de Proposta */}
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-center mb-6">
                     <p className="text-white/40 text-sm mb-2">Ainda não é associado?</p>
-                    <Link href="/member/proposal" className="inline-flex items-center gap-2 text-club-gold font-black uppercase tracking-widest text-[10px] hover:text-club-gold-400 transition-colors">
-                        Envie-nos uma proposta!
+                    <Link href="/about#fale-conosco" className="inline-flex items-center gap-2 text-club-gold font-black uppercase tracking-widest text-[10px] hover:text-club-gold-400 transition-colors">
+                        Fale Conosco para Associar-se!
                         <ArrowRight className="w-3 h-3" />
                     </Link>
                 </motion.div>

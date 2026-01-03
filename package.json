@@ -1,6 +1,6 @@
 {
     "name": "sport-club-natal",
-    "version": "0.4.7",
+    "version": "0.4.9",
     "description": "Sistema de gestão para o Sport Club de Natal",
     "private": true,
     "scripts": {

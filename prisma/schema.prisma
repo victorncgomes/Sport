@@ -1363,3 +1363,123 @@ model ExperimentalClass {
   @@unique([date, time]) // Garante que não há dois agendamentos no mesmo horário
   @@map("experimental_classes")
 }
+
+// ═══════════════════════════════════════════════════════════════
+// v0.4.9 - NOVOS MODELOS
+// ═══════════════════════════════════════════════════════════════
+
+// --- PROGRAMAS DE TREINAMENTO ---
+
+model TrainingProgram {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  level           String   @default("INICIANTE") // INICIANTE, INTERMEDIARIO, AVANCADO, MASTER, ELITE
+  durationWeeks   Int      @default(4)
+  sessionsPerWeek Int      @default(3)
+  createdBy       String   // 'SYSTEM' ou ID do coach
+  status          String   @default("ACTIVE") // ACTIVE, DRAFT, ARCHIVED
+  isSystem        Boolean  @default(false) // Programas do sistema vs criados por coach
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  sessions        ProgramSession[]
+  athletes        AthleteProgram[]
+
+  @@map("training_programs")
+}
+
+model ProgramSession {
+  id          String   @id @default(cuid())
+  programId   String
+  dayOfWeek   Int      // 0=Dom, 1=Seg, ..., 6=Sáb
+  type        String   // REMO, CORRIDA, BIKE, MUSCULACAO, RECUPERACAO
+  title       String
+  description String?
+  duration    Int      // minutos
+  intensity   String   @default("MODERADO") // LEVE, MODERADO, INTENSO
+  order       Int      @default(0) // ordem na semana
+  
+  program     TrainingProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@map("program_sessions")
+}
+
+model AthleteProgram {
+  id          String   @id @default(cuid())
+  userId      String
+  programId   String
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  status      String   @default("PENDING") // PENDING, ACTIVE, COMPLETED, CANCELLED
+  validatedBy String?  // ID do coach que validou
+  validatedAt DateTime?
+  progress    Float    @default(0) // 0-100%
+  notes       String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  program     TrainingProgram @relation(fields: [programId], references: [id])
+
+  @@unique([userId, programId])
+  @@map("athlete_programs")
+}
+
+// --- ÁREAS DE VOLUNTARIADO DINÂMICAS ---
+
+model VolunteerArea {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  description     String
+  icon            String   @default("Heart") // Nome do ícone Lucide
+  color           String   @default("#6B7280") // Cor hex
+  colorClass      String   @default("bg-gray-500") // Classe Tailwind
+  guide           String?  // Guia/manual da área (markdown)
+  coordinator     String?  // ID do coordenador
+  minVolunteers   Int      @default(1) // Mínimo por turno
+  isActive        Boolean  @default(true)
+  order           Int      @default(0) // Ordem de exibição
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("volunteer_areas")
+}
+
+// --- GALERIA COM PERSISTÊNCIA ---
+
+model GalleryPost {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String
+  category    String   @default("eventos") // historico, treinos, social, paisagens, eventos
+  authorId    String
+  authorName  String
+  likes       Int      @default(0)
+  isApproved  Boolean  @default(true) // Para moderação se necessário
+  isFeatured  Boolean  @default(false) // Destaque
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  comments    GalleryComment[]
+
+  @@map("gallery_posts")
+}
+
+model GalleryComment {
+  id          String   @id @default(cuid())
+  postId      String
+  userId      String
+  userName    String
+  text        String
+  
+  createdAt   DateTime @default(now())
+
+  post        GalleryPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("gallery_comments")
+}

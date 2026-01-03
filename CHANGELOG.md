@@ -8,7 +8,36 @@ Histórico completo de versões do sistema de gestão do Sport Club de Natal.
 
 ---
 
-## [0.4.7] - 2025-12-31 _(Versão Atual)_
+## [0.4.9] - 2026-01-02
+
+### Corrigido
+- **Módulo de Treino:**
+  - Navegação entre semanas em "Meu Programa" com botões ◀ ▶
+  - Botão "Voltar para esta semana" quando navegando fora da semana atual
+  - Roteamento de "Outras Atividades" para `/training/start?sport=OTHER&activity=SURF`
+  
+- **Módulo Coach:**
+  - Sistema de chamada completo (`/coach/chamada`)
+  - Campo de atletas obrigatório no diário com validação
+  - Botões do painel linkados corretamente (Chamada, Metas, Ajustes)
+  
+- **Módulo de Musculação:**
+  - Botões +/- mais visíveis com cores distintas:
+    - Roxo para repetições
+    - Azul para peso (kg)
+
+- **UI/UX:**
+  - Correção de FOUT (Flash of Unstyled Text) no header
+  - Header fixo no tema claro
+  - Modal de busca mobile com altura completa
+
+### Verificado
+- Todos os testes de funcionalidade executados com sucesso
+- Walkthrough completo criado com evidências
+
+---
+
+## [0.4.7] - 2025-12-31
 
 ### Corrigido
 - **Módulo de Treino:**

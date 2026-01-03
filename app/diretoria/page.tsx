@@ -14,11 +14,31 @@ import {
     FileText,
     ArrowRight,
     Ship,
-    Archive
+    Archive,
+    Newspaper,
+    MessageSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 const menuItems = [
+    {
+        href: '/diretoria/noticias',
+        icon: Newspaper,
+        title: 'Notícias',
+        description: 'Publicar e gerenciar notícias do clube',
+        color: 'text-club-red',
+        bgColor: 'bg-club-red/20',
+    },
+    {
+        href: '/diretoria/mensagens',
+        icon: MessageSquare,
+        title: 'Mensagens',
+        description: 'Mensagens recebidas e propostas de sócios',
+        color: 'text-yellow-500',
+        bgColor: 'bg-yellow-500/20',
+        hasNotification: true,
+    },
     {
         href: '/diretoria/financeiro',
         icon: DollarSign,

@@ -4,14 +4,16 @@ import React, { useState, useEffect } from 'react';
 import { HeroSection } from '@/components/ui/hero-section';
 import { AnimatedCard } from '@/components/ui/animated-card';
 import { galleryImages, GalleryCategory, GalleryImage, GalleryComment } from '@/lib/data/gallery-images';
-import { Camera, Filter, Calendar, Info, MapPin, Search, Trophy, Target, Heart, TrendingUp, TrendingDown, Minus, Medal, Flame, MessageCircle, Share2, Send, X, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { Camera, Filter, Calendar, Info, MapPin, Search, Trophy, Target, Heart, TrendingUp, TrendingDown, Minus, Medal, Flame, MessageCircle, Share2, Send, X, ChevronLeft, ChevronRight, User, Plus, Trash2, Image, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSocialRanking } from '@/lib/actions/ranking';
 import { performanceRanking } from '@/lib/data/club-assets';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/components/auth-context';
 
 export default function GalleryPage() {
+    const { role, isLoaded } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState<GalleryCategory | 'all'>('all');
     const [rankingUsers, setRankingUsers] = useState<any[]>([]);
     const [activeRankingTab, setActiveRankingTab] = useState<'performance' | 'attendance' | 'social'>('performance');
@@ -22,6 +24,15 @@ export default function GalleryPage() {
     const [likedImages, setLikedImages] = useState<Set<string>>(new Set());
     const [newComment, setNewComment] = useState('');
     const [localComments, setLocalComments] = useState<Record<string, GalleryComment[]>>({});
+
+    // Estados para postagem (roles: socio, treinador, diretoria)
+    const [showPostModal, setShowPostModal] = useState(false);
+    const [newPost, setNewPost] = useState({ title: '', description: '', category: 'eventos' as GalleryCategory, imageUrl: '' });
+    const [postLoading, setPostLoading] = useState(false);
+
+    // Permissões por role
+    const canPost = isLoaded && role && ['socio', 'atleta', 'treinador', 'diretoria', 'admin'].includes(role);
+    const canDelete = isLoaded && role && ['diretoria', 'admin'].includes(role);
 
     const filteredImages = selectedCategory === 'all'
         ? galleryImages
@@ -159,6 +170,17 @@ export default function GalleryPage() {
                                 {cat.label}
                             </button>
                         ))}
+
+                        {/* Botão Nova Foto - apenas para roles autorizados */}
+                        {canPost && (
+                            <Button
+                                onClick={() => setShowPostModal(true)}
+                                className="ml-2 gap-2 bg-emerald-500 hover:bg-emerald-600 text-white"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Nova Foto
+                            </Button>
+                        )}
                     </div>
                 </div>
 
@@ -533,6 +555,186 @@ export default function GalleryPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal Nova Foto */}
+            <AnimatePresence>
+                {showPostModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                            onClick={() => setShowPostModal(false)}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-gray-900 border border-white/10 rounded-2xl w-full max-w-md p-6 relative z-10"
+                        >
+                            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                <Camera className="w-5 h-5 text-emerald-400" />
+                                Adicionar Nova Foto
+                            </h2>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                setPostLoading(true);
+                                // Simular envio
+                                setTimeout(() => {
+                                    setShowPostModal(false);
+                                    setNewPost({ title: '', description: '', category: 'eventos', imageUrl: '' });
+                                    setPostLoading(false);
+                                }, 1000);
+                            }} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm text-white/60 mb-1">Título</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        value={newPost.title}
+                                        onChange={e => setNewPost({ ...newPost, title: e.target.value })}
+                                        placeholder="Título da foto..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-white/60 mb-1">Descrição</label>
+                                    <textarea
+                                        value={newPost.description}
+                                        onChange={e => setNewPost({ ...newPost, description: e.target.value })}
+                                        placeholder="Descrição opcional..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white h-20 resize-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-white/60 mb-1">Categoria</label>
+                                    <select
+                                        value={newPost.category}
+                                        onChange={e => setNewPost({ ...newPost, category: e.target.value as GalleryCategory })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                                    >
+                                        <option value="treinos">Treinos</option>
+                                        <option value="eventos">Eventos</option>
+                                        <option value="social">Compromisso Social</option>
+                                        <option value="paisagens">Paisagens</option>
+                                        <option value="historico">Histórico</option>
+                                        <option value="regatas">Regatas</option>
+                                        <option value="institucional">Institucional</option>
+                                    </select>
+                                </div>
+
+                                {/* Upload de Arquivo */}
+                                <div>
+                                    <label className="block text-sm text-white/60 mb-2">Imagem</label>
+
+                                    {/* Área de Drag & Drop */}
+                                    <div
+                                        className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-emerald-400/50 transition-colors cursor-pointer"
+                                        onClick={() => document.getElementById('file-upload')?.click()}
+                                        onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-emerald-400'); }}
+                                        onDragLeave={(e) => { e.currentTarget.classList.remove('border-emerald-400'); }}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            e.currentTarget.classList.remove('border-emerald-400');
+                                            const file = e.dataTransfer.files[0];
+                                            if (file && file.type.startsWith('image/')) {
+                                                const reader = new FileReader();
+                                                reader.onload = (ev) => {
+                                                    setNewPost({ ...newPost, imageUrl: ev.target?.result as string });
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    >
+                                        <Image className="w-8 h-8 mx-auto mb-2 text-white/40" />
+                                        <p className="text-sm text-white/60">
+                                            Arraste uma imagem aqui ou <span className="text-emerald-400">clique para selecionar</span>
+                                        </p>
+                                        <p className="text-xs text-white/30 mt-1">PNG, JPG ou WEBP</p>
+                                    </div>
+
+                                    <input
+                                        id="file-upload"
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = (ev) => {
+                                                    setNewPost({ ...newPost, imageUrl: ev.target?.result as string });
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    />
+
+                                    {/* OU usar URL */}
+                                    <div className="flex items-center gap-3 my-3">
+                                        <div className="flex-1 h-px bg-white/10" />
+                                        <span className="text-xs text-white/40">OU</span>
+                                        <div className="flex-1 h-px bg-white/10" />
+                                    </div>
+
+                                    <input
+                                        type="url"
+                                        value={newPost.imageUrl.startsWith('data:') ? '' : newPost.imageUrl}
+                                        onChange={e => setNewPost({ ...newPost, imageUrl: e.target.value })}
+                                        placeholder="Cole a URL da imagem..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white text-sm"
+                                    />
+                                </div>
+
+                                {/* Preview */}
+                                {newPost.imageUrl && (
+                                    <div className="relative">
+                                        <img
+                                            src={newPost.imageUrl}
+                                            alt="Preview"
+                                            className="w-full h-40 object-cover rounded-lg border border-white/10"
+                                            onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setNewPost({ ...newPost, imageUrl: '' })}
+                                            className="absolute top-2 right-2 bg-red-500/80 text-white rounded-full p-1"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+
+                                <div className="flex gap-3 pt-4">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        className="flex-1"
+                                        onClick={() => setShowPostModal(false)}
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 gap-2"
+                                        disabled={postLoading || !newPost.imageUrl}
+                                    >
+                                        {postLoading ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Plus className="w-4 h-4" />
+                                                Publicar
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

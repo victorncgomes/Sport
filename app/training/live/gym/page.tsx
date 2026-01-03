@@ -321,10 +321,10 @@ function GymWorkoutContent() {
                                     <div className="flex items-center gap-1">
                                         <button
                                             onClick={() => updateSet(exercise.id, setIndex, { reps: Math.max(1, set.reps - 1) })}
-                                            className="w-6 h-6 rounded bg-white/10 flex items-center justify-center"
+                                            className="w-8 h-8 rounded-lg bg-purple-600/40 hover:bg-purple-600/60 flex items-center justify-center text-white border border-purple-500/50"
                                             disabled={set.completed}
                                         >
-                                            <Minus className="w-3 h-3" />
+                                            <Minus className="w-4 h-4" />
                                         </button>
                                         <div className="w-12 text-center">
                                             <span className="font-bold">{set.reps}</span>
@@ -332,10 +332,10 @@ function GymWorkoutContent() {
                                         </div>
                                         <button
                                             onClick={() => updateSet(exercise.id, setIndex, { reps: set.reps + 1 })}
-                                            className="w-6 h-6 rounded bg-white/10 flex items-center justify-center"
+                                            className="w-8 h-8 rounded-lg bg-purple-600/40 hover:bg-purple-600/60 flex items-center justify-center text-white border border-purple-500/50"
                                             disabled={set.completed}
                                         >
-                                            <Plus className="w-3 h-3" />
+                                            <Plus className="w-4 h-4" />
                                         </button>
                                     </div>
 
@@ -343,10 +343,10 @@ function GymWorkoutContent() {
                                     <div className="flex items-center gap-1">
                                         <button
                                             onClick={() => updateSet(exercise.id, setIndex, { weight: Math.max(0, set.weight - 2.5) })}
-                                            className="w-6 h-6 rounded bg-white/10 flex items-center justify-center"
+                                            className="w-8 h-8 rounded-lg bg-blue-600/40 hover:bg-blue-600/60 flex items-center justify-center text-white border border-blue-500/50"
                                             disabled={set.completed}
                                         >
-                                            <Minus className="w-3 h-3" />
+                                            <Minus className="w-4 h-4" />
                                         </button>
                                         <div className="w-16 text-center">
                                             <span className="font-bold">{set.weight}</span>
@@ -354,10 +354,10 @@ function GymWorkoutContent() {
                                         </div>
                                         <button
                                             onClick={() => updateSet(exercise.id, setIndex, { weight: set.weight + 2.5 })}
-                                            className="w-6 h-6 rounded bg-white/10 flex items-center justify-center"
+                                            className="w-8 h-8 rounded-lg bg-blue-600/40 hover:bg-blue-600/60 flex items-center justify-center text-white border border-blue-500/50"
                                             disabled={set.completed}
                                         >
-                                            <Plus className="w-3 h-3" />
+                                            <Plus className="w-4 h-4" />
                                         </button>
                                     </div>
 

@@ -39,6 +39,101 @@
     --header-height-mobile: 80px;
 }
 
+/* ========================================
+   TEMA CLARO (Light Theme)
+======================================== */
+.light-theme,
+[data-theme="light"] {
+    /* Cores principais */
+    --club-red: #DC2626;
+    --club-red-dark: #B91C1C;
+    --club-black: #FAFAFA;
+    --club-gold: #D97706;
+    --club-white: #171717;
+
+    /* Cores de fundo - tema claro */
+    --bg-primary: #F5F5F5;
+    --bg-secondary: #E5E5E5;
+    --bg-card: #FFFFFF;
+    --bg-hover: #F0F0F0;
+
+    /* Acentos */
+    --accent-blue: #2563EB;
+    --accent-green: #059669;
+    --accent-orange: #EA580C;
+    --accent-purple: #7C3AED;
+
+    /* Sombras mais suaves */
+    --shadow-red: 0 4px 20px rgba(220, 38, 38, 0.15);
+    --shadow-gold: 0 4px 20px rgba(217, 119, 6, 0.15);
+}
+
+/* Estilos específicos para tema claro */
+.light-theme body,
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #F5F5F5 0%, #E5E5E5 100%) !important;
+    color: #171717 !important;
+}
+
+.light-theme .bg-club-black,
+[data-theme="light"] .bg-club-black {
+    background-color: #FAFAFA !important;
+}
+
+.light-theme .text-white,
+[data-theme="light"] .text-white {
+    color: #171717 !important;
+}
+
+.light-theme .text-white\/60,
+.light-theme .text-white\/50,
+.light-theme .text-white\/40,
+.light-theme .text-white\/30,
+[data-theme="light"] .text-white\/60,
+[data-theme="light"] .text-white\/50,
+[data-theme="light"] .text-white\/40,
+[data-theme="light"] .text-white\/30 {
+    color: rgba(23, 23, 23, 0.6) !important;
+}
+
+.light-theme .bg-white\/5,
+.light-theme .bg-white\/10,
+[data-theme="light"] .bg-white\/5,
+[data-theme="light"] .bg-white\/10 {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.light-theme .border-white\/10,
+.light-theme .border-white\/20,
+[data-theme="light"] .border-white\/10,
+[data-theme="light"] .border-white\/20 {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-theme .glass-card,
+[data-theme="light"] .glass-card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-theme .bg-slate-900,
+.light-theme .bg-gray-900,
+[data-theme="light"] .bg-slate-900,
+[data-theme="light"] .bg-gray-900 {
+    background-color: #FFFFFF !important;
+}
+
+.light-theme .bg-black\/80,
+[data-theme="light"] .bg-black\/80 {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Header e navegação NÃO mudam no tema claro - devem permanecer escuros */
+/* A navegação inferior e superior sempre permanece escura para legibilidade */
+
+/* NOTA: NÃO aplicar estilos de tema claro ao header (.club-header) ou bottom-nav */
+/* Isso garante que eles permaneçam legíveis em qualquer tema */
+
 /* Variáveis CSS adicionais para o header */
 .club-red {
     background-color: #DC2626;
@@ -167,11 +262,28 @@ h6 {
 
 .bottom-nav-inner {
     display: flex !important;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
     height: 100%;
+    width: 100%;
     max-width: 100%;
     margin: 0 auto;
+    padding: 0 8px;
+}
+
+.bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0;
+    min-width: 0;
+    max-width: 72px;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 .bottom-nav-item {

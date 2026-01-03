@@ -94,36 +94,36 @@ export function SearchBar() {
                             onClick={handleClose}
                         />
 
-                        {/* Search Panel */}
+                        {/* Search Panel - Fixed for mobile */}
                         <motion.div
                             initial={{ opacity: 0, y: -50 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -50 }}
-                            className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-2xl z-50 px-4"
+                            className="fixed inset-x-0 top-0 bottom-0 z-50 flex flex-col p-4 pt-[env(safe-area-inset-top,16px)] pb-[env(safe-area-inset-bottom,16px)]"
                         >
-                            <div className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+                            <div className="flex-1 flex flex-col max-w-2xl w-full mx-auto bg-slate-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden mt-4 mb-4 max-h-[calc(100vh-120px)]">
                                 {/* Search Input */}
-                                <div className="flex items-center gap-3 p-4 border-b border-white/10">
+                                <div className="flex items-center gap-3 p-4 border-b border-white/10 flex-shrink-0">
                                     <Search className="w-5 h-5 text-white/60" />
                                     <input
                                         ref={inputRef}
                                         type="text"
                                         value={query}
                                         onChange={(e) => setQuery(e.target.value)}
-                                        placeholder="Buscar notícias, eventos, membros, barcos..."
-                                        className="flex-1 bg-transparent text-white placeholder-white/40 outline-none"
+                                        placeholder="Buscar notícias, eventos, membros..."
+                                        className="flex-1 bg-transparent text-white placeholder-white/40 outline-none text-base"
                                     />
                                     {loading && <Loader2 className="w-5 h-5 text-white/60 animate-spin" />}
                                     <button
                                         onClick={handleClose}
-                                        className="p-1 rounded-lg hover:bg-white/10 transition-colors"
+                                        className="p-2 rounded-lg hover:bg-white/10 transition-colors"
                                     >
                                         <X className="w-5 h-5 text-white/60" />
                                     </button>
                                 </div>
 
-                                {/* Results */}
-                                <div className="max-h-96 overflow-y-auto p-4">
+                                {/* Results - Scrollable */}
+                                <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 scrollbar-thin scrollbar-thumb-white/10">
                                     {!results && query.length < 2 && (
                                         <p className="text-white/40 text-sm text-center py-8">
                                             Digite pelo menos 2 caracteres para buscar

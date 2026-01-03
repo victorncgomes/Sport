@@ -59,7 +59,7 @@ export default function DiaryPage() {
     const [newEntry, setNewEntry] = useState({ title: '', content: '', athletes: '', tags: '' });
 
     const handleAddEntry = () => {
-        if (!newEntry.title || !newEntry.content) return;
+        if (!newEntry.title || !newEntry.content || !newEntry.athletes.trim()) return;
 
         const entry: DiaryEntry = {
             id: Date.now().toString(),
@@ -128,14 +128,21 @@ export default function DiaryPage() {
                                     rows={4}
                                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white resize-none"
                                 />
-                                <div className="grid grid-cols-2 gap-4">
-                                    <input
-                                        type="text"
-                                        placeholder="Atletas (separados por vírgula)"
-                                        value={newEntry.athletes}
-                                        onChange={e => setNewEntry(prev => ({ ...prev, athletes: e.target.value }))}
-                                        className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm"
-                                    />
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <label className="flex items-center gap-2 text-sm text-white/70 mb-2">
+                                            <User className="w-4 h-4" />
+                                            Atletas Vinculados <span className="text-club-red">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="Ex: João Silva, Maria Santos, Ana Beatriz..."
+                                            value={newEntry.athletes}
+                                            onChange={e => setNewEntry(prev => ({ ...prev, athletes: e.target.value }))}
+                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm"
+                                        />
+                                        <p className="text-xs text-white/40 mt-1">Separe os nomes por vírgula. Toda anotação deve estar vinculada a pelo menos um atleta.</p>
+                                    </div>
                                     <input
                                         type="text"
                                         placeholder="Tags (separadas por vírgula)"

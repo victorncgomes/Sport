@@ -26,9 +26,15 @@ import {
     Heart,
     Clock,
     FileText,
-    Trophy
+    Trophy,
+    X,
+    Send,
+    UserPlus,
+    Shield,
+    GraduationCap,
+    Loader2
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const members = [
     { id: '1', name: 'João Paulo Silva', email: 'joaopaulo@email.com', phone: '(84) 99999-1234', category: 'Remador', status: 'ACTIVE', memberSince: '2020-03-15', lastPayment: '2025-01-05', paymentStatus: 'PAID', avatar: 'JP' },
@@ -87,6 +93,12 @@ const paymentStatusConfig = {
 export default function SociosPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<string | null>(null);
+    const [showNovoSocioModal, setShowNovoSocioModal] = useState(false);
+    const [novoSocioTab, setNovoSocioTab] = useState<'convite' | 'manual'>('convite');
+    const [inviteEmail, setInviteEmail] = useState('');
+    const [inviteSending, setInviteSending] = useState(false);
+    const [manualForm, setManualForm] = useState({ name: '', email: '', phone: '', category: 'Remador' });
+    const [activeRoleMenu, setActiveRoleMenu] = useState<string | null>(null);
 
     const filteredMembers = members.filter(member => {
         const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -94,6 +106,31 @@ export default function SociosPage() {
         const matchesFilter = !filterStatus || member.status === filterStatus;
         return matchesSearch && matchesFilter;
     });
+
+    const handleSendInvite = async () => {
+        if (!inviteEmail) return;
+        setInviteSending(true);
+        // Simular envio
+        await new Promise(r => setTimeout(r, 1500));
+        setInviteSending(false);
+        setInviteEmail('');
+        setShowNovoSocioModal(false);
+        alert('Convite enviado para ' + inviteEmail);
+    };
+
+    const handleManualRegister = async () => {
+        if (!manualForm.name || !manualForm.email) return;
+        // Simular registro
+        await new Promise(r => setTimeout(r, 500));
+        setManualForm({ name: '', email: '', phone: '', category: 'Remador' });
+        setShowNovoSocioModal(false);
+        alert('Sócio ' + manualForm.name + ' cadastrado!');
+    };
+
+    const handlePromoteRole = (memberId: string, newRole: 'Treinador' | 'Diretoria') => {
+        alert(`Membro ${memberId} promovido para ${newRole}!`);
+        setActiveRoleMenu(null);
+    };
 
     const stats = {
         total: members.length,
@@ -134,7 +171,7 @@ export default function SociosPage() {
                             <h1 className="text-2xl sm:text-3xl font-bold text-white">Gestão de Sócios</h1>
                             <p className="text-white/50">Cadastro, mensalidades e filiações</p>
                         </div>
-                        <Button className="gap-2">
+                        <Button className="gap-2" onClick={() => setShowNovoSocioModal(true)}>
                             <Plus className="w-4 h-4" />
                             Novo Sócio
                         </Button>
@@ -412,7 +449,12 @@ export default function SociosPage() {
 
                                             {/* Actions */}
                                             <div className="flex items-center gap-2">
-                                                <Button variant="ghost" size="icon" className="text-white/30 hover:text-white">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="text-white/30 hover:text-white"
+                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveRoleMenu(member.id); }}
+                                                >
                                                     <MoreVertical className="w-4 h-4" />
                                                 </Button>
                                                 <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors" />
@@ -432,6 +474,183 @@ export default function SociosPage() {
                     </div>
                 )}
             </div>
+
+            {/* Modal Novo Sócio */}
+            <AnimatePresence>
+                {showNovoSocioModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowNovoSocioModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            className="bg-zinc-900 border border-white/10 rounded-2xl w-full max-w-md"
+                        >
+                            <div className="flex items-center justify-between p-4 border-b border-white/10">
+                                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                                    <UserPlus className="w-5 h-5 text-emerald-400" />
+                                    Novo Sócio
+                                </h2>
+                                <button
+                                    onClick={() => setShowNovoSocioModal(false)}
+                                    className="text-white/40 hover:text-white"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Tabs */}
+                            <div className="flex border-b border-white/10">
+                                <button
+                                    onClick={() => setNovoSocioTab('convite')}
+                                    className={`flex-1 py-3 text-sm font-medium transition-colors ${novoSocioTab === 'convite' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-white/50'}`}
+                                >
+                                    <Mail className="w-4 h-4 inline mr-2" />
+                                    Enviar Convite
+                                </button>
+                                <button
+                                    onClick={() => setNovoSocioTab('manual')}
+                                    className={`flex-1 py-3 text-sm font-medium transition-colors ${novoSocioTab === 'manual' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-white/50'}`}
+                                >
+                                    <UserPlus className="w-4 h-4 inline mr-2" />
+                                    Cadastro Manual
+                                </button>
+                            </div>
+
+                            <div className="p-4">
+                                {novoSocioTab === 'convite' ? (
+                                    <div className="space-y-4">
+                                        <p className="text-white/60 text-sm">
+                                            Envie um link de cadastro para o email do futuro sócio.
+                                            Ele receberá instruções para completar o cadastro.
+                                        </p>
+                                        <div>
+                                            <label className="text-white/70 text-sm mb-1 block">Email do convidado</label>
+                                            <Input
+                                                type="email"
+                                                placeholder="email@exemplo.com"
+                                                value={inviteEmail}
+                                                onChange={e => setInviteEmail(e.target.value)}
+                                                className="bg-white/5 border-white/10"
+                                            />
+                                        </div>
+                                        <Button
+                                            onClick={handleSendInvite}
+                                            disabled={!inviteEmail || inviteSending}
+                                            className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700"
+                                        >
+                                            {inviteSending ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            ) : (
+                                                <Send className="w-4 h-4" />
+                                            )}
+                                            {inviteSending ? 'Enviando...' : 'Enviar Convite'}
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <p className="text-white/60 text-sm">
+                                            Cadastre manualmente um novo sócio. Um email de boas-vindas
+                                            será enviado automaticamente.
+                                        </p>
+                                        <div>
+                                            <label className="text-white/70 text-sm mb-1 block">Nome completo *</label>
+                                            <Input
+                                                placeholder="Nome do sócio"
+                                                value={manualForm.name}
+                                                onChange={e => setManualForm(f => ({ ...f, name: e.target.value }))}
+                                                className="bg-white/5 border-white/10"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-white/70 text-sm mb-1 block">Email *</label>
+                                            <Input
+                                                type="email"
+                                                placeholder="email@exemplo.com"
+                                                value={manualForm.email}
+                                                onChange={e => setManualForm(f => ({ ...f, email: e.target.value }))}
+                                                className="bg-white/5 border-white/10"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-white/70 text-sm mb-1 block">Telefone</label>
+                                            <Input
+                                                placeholder="(84) 99999-9999"
+                                                value={manualForm.phone}
+                                                onChange={e => setManualForm(f => ({ ...f, phone: e.target.value }))}
+                                                className="bg-white/5 border-white/10"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-white/70 text-sm mb-1 block">Categoria</label>
+                                            <select
+                                                value={manualForm.category}
+                                                onChange={e => setManualForm(f => ({ ...f, category: e.target.value }))}
+                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                                            >
+                                                <option value="Remador">Remador</option>
+                                                <option value="Remadora">Remadora</option>
+                                                <option value="Contribuinte">Contribuinte</option>
+                                            </select>
+                                        </div>
+                                        <Button
+                                            onClick={handleManualRegister}
+                                            disabled={!manualForm.name || !manualForm.email}
+                                            className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700"
+                                        >
+                                            <UserPlus className="w-4 h-4" />
+                                            Cadastrar Sócio
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Menu de Promoção de Cargo (aparece ao clicar em MoreVertical) */}
+            <AnimatePresence>
+                {activeRoleMenu && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-40"
+                        onClick={() => setActiveRoleMenu(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 border border-white/10 rounded-xl p-2 min-w-[200px]"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="text-xs text-white/40 px-3 py-2">Promover para:</div>
+                            <button
+                                onClick={() => handlePromoteRole(activeRoleMenu, 'Treinador')}
+                                className="w-full flex items-center gap-3 px-3 py-2 text-left text-white hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                                <GraduationCap className="w-4 h-4 text-blue-400" />
+                                Treinador
+                            </button>
+                            <button
+                                onClick={() => handlePromoteRole(activeRoleMenu, 'Diretoria')}
+                                className="w-full flex items-center gap-3 px-3 py-2 text-left text-white hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                                <Shield className="w-4 h-4 text-amber-400" />
+                                Diretoria
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

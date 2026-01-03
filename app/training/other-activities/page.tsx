@@ -84,7 +84,8 @@ export default function OtherActivitiesPage() {
     const router = useRouter();
 
     const handleActivitySelect = (activityId: string) => {
-        router.push(`/training/start?sport=${activityId}`);
+        // Usa sport=OTHER e passa a atividade específica como parâmetro
+        router.push(`/training/start?sport=OTHER&activity=${activityId}`);
     };
 
     return (

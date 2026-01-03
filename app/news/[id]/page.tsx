@@ -19,10 +19,12 @@ import {
     ChefHat,
     Heart,
     Newspaper,
-    Megaphone
+    Megaphone,
+    Edit2
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/components/auth-context';
 
 import { allNews } from '@/lib/data/news-data';
 
@@ -42,7 +44,11 @@ const categoryIcons: Record<string, any> = {
 export default function ArticlePage() {
     const params = useParams();
     const router = useRouter();
+    const { role } = useAuth();
     const id = params?.id as string;
+
+    // Verifica se é diretor ou admin para mostrar botão editar
+    const canEdit = role === 'diretoria' || role === 'admin';
 
     // Busca a notícia pelo ID
     const article = allNews.find(n => n.id === id);
@@ -122,7 +128,17 @@ export default function ArticlePage() {
                                 </div>
                             </div>
 
-                            <div className="ml-auto">
+                            <div className="ml-auto flex items-center gap-2">
+                                {canEdit && (
+                                    <Button
+                                        variant="outline"
+                                        className="gap-2 text-xs uppercase font-black tracking-widest border-club-gold/30 text-club-gold hover:bg-club-gold/10"
+                                        onClick={() => alert('Editor de notícias em desenvolvimento. Por enquanto, edite lib/data/news-data.ts')}
+                                    >
+                                        <Edit2 className="w-4 h-4" />
+                                        Editar
+                                    </Button>
+                                )}
                                 <Button variant="ghost" className="gap-2 text-white/40 hover:text-white text-xs uppercase font-black tracking-widest">
                                     <Share2 className="w-4 h-4" /> Compartilhar
                                 </Button>

@@ -156,6 +156,10 @@ export default function VoluntariadoDiretoriaPage() {
                             <h1 className="text-2xl sm:text-3xl font-bold text-white">Controle do Voluntariado</h1>
                             <p className="text-white/50">Gestão de escalas, áreas e voluntários</p>
                         </div>
+                        <Button className="gap-2 bg-club-red hover:bg-club-red/90" onClick={() => alert('Funcionalidade de adicionar nova área será implementada. Por enquanto, edite o arquivo lib/config/volunteer-areas.ts')}>
+                            <Target className="w-4 h-4" />
+                            Nova Área
+                        </Button>
                     </div>
                 </div>
 

@@ -366,45 +366,6 @@ export default function PersonalDataPage() {
                         </div>
                     </div>
                 </motion.div>
-
-                {/* Informações Náuticas */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="bg-white/10 backdrop-blur-lg rounded-2xl p-6"
-                >
-                    <div className="flex items-center gap-2 mb-4">
-                        <CreditCard className="w-5 h-5 text-purple-400" />
-                        <h2 className="text-lg font-semibold text-white">Informações Náuticas</h2>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-white/70 text-sm mb-1">Nível de Natação</label>
-                            <select
-                                value={data.swimLevel}
-                                onChange={(e) => updateField('swimLevel', e.target.value)}
-                                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white"
-                            >
-                                <option value="NONE">Não sabe nadar</option>
-                                <option value="BASIC">Básico</option>
-                                <option value="INTERMEDIATE">Intermediário</option>
-                                <option value="ADVANCED">Avançado</option>
-                            </select>
-                        </div>
-
-                        <label className="flex items-center gap-3 p-3 bg-white/5 rounded-lg cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={data.canFlipBoat}
-                                onChange={(e) => updateField('canFlipBoat', e.target.checked)}
-                                className="w-5 h-5 rounded border-white/20"
-                            />
-                            <span className="text-white">Sabe desvirar o barco sozinho</span>
-                        </label>
-                    </div>
-                </motion.div>
             </div>
 
             {/* Botão Salvar */}

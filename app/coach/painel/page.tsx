@@ -237,8 +237,10 @@ export default async function CoachPainelPage() {
                                                 </div>
                                             </div>
                                             <div className="flex gap-2">
-                                                <Button className="bg-white/5 hover:bg-club-red text-white border border-white/10 hover:border-club-red transition-all px-6 text-[10px] font-black uppercase tracking-widest h-11">Chamada</Button>
-                                                <Button variant="outline" className="border-white/10 text-white/40 hover:text-white hover:bg-white/5 h-11"><ArrowRight className="w-4 h-4" /></Button>
+                                                <Link href="/coach/chamada">
+                                                    <Button className="bg-white/5 hover:bg-club-red text-white border border-white/10 hover:border-club-red transition-all px-6 text-[10px] font-black uppercase tracking-widest h-11">Chamada</Button>
+                                                </Link>
+                                                <Button variant="outline" className="border-white/10 text-white/40 hover:text-white hover:bg-white/5 h-11 gap-1 text-[10px]">Detalhes <ArrowRight className="w-3 h-3" /></Button>
                                             </div>
                                         </div>
                                     </AnimatedCard>
@@ -315,12 +317,16 @@ export default async function CoachPainelPage() {
                         <AnimatedCard variant="glass" className="p-6">
                             <h4 className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Atalhos do Treinador</h4>
                             <div className="grid grid-cols-2 gap-2">
-                                <Button variant="outline" className="h-20 flex-col gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest">
-                                    <Target className="w-5 h-5 text-club-red" /> Metas
-                                </Button>
-                                <Button variant="outline" className="h-20 flex-col gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest">
-                                    <Settings className="w-5 h-5 text-blue-500" /> Ajustes
-                                </Button>
+                                <Link href="/coach/metas">
+                                    <Button variant="outline" className="w-full h-20 flex-col gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest">
+                                        <Target className="w-5 h-5 text-club-red" /> Metas
+                                    </Button>
+                                </Link>
+                                <Link href="/coach/ajustes">
+                                    <Button variant="outline" className="w-full h-20 flex-col gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest">
+                                        <Settings className="w-5 h-5 text-blue-500" /> Ajustes
+                                    </Button>
+                                </Link>
                             </div>
                         </AnimatedCard>
                     </div>

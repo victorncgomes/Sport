@@ -8,14 +8,16 @@ import { Providers } from "@/components/providers"
 const outfit = Outfit({
     subsets: ["latin"],
     variable: '--font-outfit',
-    display: 'swap',
+    display: 'block',
+    preload: true,
 })
 
 const sairaCondensed = Saira_Condensed({
     subsets: ["latin"],
-    weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+    weight: ["400", "600", "700", "800", "900"],
     variable: '--font-saira-condensed',
-    display: 'swap',
+    display: 'block',
+    preload: true,
 })
 
 export const metadata: Metadata = {

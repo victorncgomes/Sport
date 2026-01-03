@@ -7,8 +7,8 @@ import { AnimatedCard } from '@/components/ui/animated-card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-    Calendar, Target, Clock, ChevronRight, Play,
-    CheckCircle, Circle, TrendingUp, Award, Flame
+    Calendar, Target, Clock, ChevronRight, ChevronLeft, Play,
+    CheckCircle, Circle, TrendingUp, Award, Flame, History
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -64,6 +64,7 @@ const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 export default function MyProgramPage() {
     const router = useRouter();
     const today = new Date().getDay();
+    const [selectedWeekOffset, setSelectedWeekOffset] = useState(0); // 0 = current week, -1 = last week, 1 = next week
 
     // Programa mock atribuído ao atleta
     const [program] = useState<MyProgram>({
@@ -227,10 +228,36 @@ export default function MyProgramPage() {
 
                 {/* Calendário da Semana */}
                 <div>
-                    <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                        <Calendar className="w-5 h-5 text-blue-400" />
-                        Esta Semana
-                    </h3>
+                    <div className="flex items-center justify-between mb-3">
+                        <button
+                            onClick={() => setSelectedWeekOffset(prev => prev - 1)}
+                            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                        >
+                            <ChevronLeft className="w-5 h-5 text-white" />
+                        </button>
+                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                            <Calendar className="w-5 h-5 text-blue-400" />
+                            {selectedWeekOffset === 0 ? 'Esta Semana' :
+                                selectedWeekOffset === -1 ? 'Semana Passada' :
+                                    selectedWeekOffset === 1 ? 'Próxima Semana' :
+                                        selectedWeekOffset < 0 ? `${Math.abs(selectedWeekOffset)} semanas atrás` :
+                                            `Daqui a ${selectedWeekOffset} semanas`}
+                        </h3>
+                        <button
+                            onClick={() => setSelectedWeekOffset(prev => prev + 1)}
+                            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                        >
+                            <ChevronRight className="w-5 h-5 text-white" />
+                        </button>
+                    </div>
+                    {selectedWeekOffset !== 0 && (
+                        <button
+                            onClick={() => setSelectedWeekOffset(0)}
+                            className="w-full mb-3 text-center text-sm text-club-gold hover:underline"
+                        >
+                            Voltar para esta semana
+                        </button>
+                    )}
                     <div className="grid grid-cols-7 gap-1">
                         {[0, 1, 2, 3, 4, 5, 6].map(day => {
                             const session = program.sessions.find(s => s.dayOfWeek === day);

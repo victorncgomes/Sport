@@ -216,7 +216,7 @@ export const storeProducts: Product[] = [
         description: 'Banana, morango, leite desnatado e whey protein isolado.',
         price: 16.00,
         category: 'lanchonete',
-        image: '/placeholder-vitamin.png' // Pending Quota
+        image: '/store/vitamina_whey.png'
     },
     {
         id: '23',
@@ -224,7 +224,7 @@ export const storeProducts: Product[] = [
         description: 'Porção com 6 unidades, quentinhos e crocantes.',
         price: 12.00,
         category: 'lanchonete',
-        image: '/placeholder-pao-queijo.png' // Pending Quota
+        image: '/store/pao_de_queijo.png'
     },
     {
         id: '24',
@@ -232,6 +232,6 @@ export const storeProducts: Product[] = [
         description: 'Mix da estação com granola e mel.',
         price: 10.00,
         category: 'lanchonete',
-        image: '/placeholder-fruit-salad.png' // Pending Quota
+        image: '/store/salada_frutas.png'
     }
 ];
